@@ -1,0 +1,64 @@
+.panel {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(24, 33, 47, 0.06);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panelHeader h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+}
+
+.panelHeader p {
+  margin: 0;
+  color: #667085;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.metrics div {
+  display: grid;
+  gap: 8px;
+  min-height: 84px;
+  padding: 14px;
+  border: 1px solid #edf0f5;
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.metrics dt {
+  color: #667085;
+  font-size: 0.82rem;
+}
+
+.metrics dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .panelHeader {
+    flex-direction: column;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,6 +2,10 @@
   "name": "@repo/typescript-config",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "check-types": "node -e \"process.exit(0)\""
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"
