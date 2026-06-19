@@ -1,14 +1,31 @@
-import { Pool } from "pg";
+import { Pool, type PoolConfig } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { env } from "../config/env";
+
+function buildPoolConfig(databaseUrl: string): PoolConfig {
+  try {
+    const url = new URL(databaseUrl);
+    const hasSsl = url.searchParams.has("sslmode");
+    // Remove sslmode (and libpq compat flag) from the URL so pg-connection-string
+    // doesn't apply its own SSL policy — we control it via the ssl option below.
+    url.searchParams.delete("sslmode");
+    url.searchParams.delete("uselibpqcompat");
+    return {
+      connectionString: url.toString(),
+      ssl: hasSsl ? { rejectUnauthorized: false } : undefined,
+    };
+  } catch {
+    return { connectionString: databaseUrl };
+  }
+}
 
 let client: PrismaClient | null = null;
 let pool: Pool | null = null;
 
 export const getPrismaClient = (): PrismaClient => {
   if (client === null) {
-    pool = new Pool({ connectionString: env.DATABASE_URL });
+    pool = new Pool(buildPoolConfig(env.DATABASE_URL));
     const adapter = new PrismaPg(pool);
     client = new PrismaClient({ adapter });
   }

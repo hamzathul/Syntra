@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,6 @@ import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
 import { setSession } from "@/lib/auth";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -26,8 +24,7 @@ export function RegisterForm() {
       const { user, token } = response.data.data;
       setSession(token.accessToken, user);
       toast.success("Account created!");
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {

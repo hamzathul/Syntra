@@ -34,11 +34,26 @@ export interface ApiErrorPayload {
   readonly details?: readonly ApiErrorDetail[];
 }
 
+/** Included in error responses only when NODE_ENV !== "production". */
+export interface ApiErrorDebug {
+  /** Original error class name (e.g. "TypeError", "ConflictError"). */
+  readonly name: string;
+  /** Parsed stack frames — file path, line, column, function name. */
+  readonly stack: readonly {
+    readonly fn: string;
+    readonly file: string;
+    readonly line: number;
+    readonly col: number;
+  }[];
+}
+
 export interface ApiErrorResponse {
   readonly status: "error";
   readonly message: string;
   readonly error: ApiErrorPayload;
   readonly meta: ApiResponseMeta;
+  /** Only present outside production. */
+  readonly debug?: ApiErrorDebug;
 }
 
 export type ApiResponse<TData> = ApiSuccessResponse<TData> | ApiErrorResponse;

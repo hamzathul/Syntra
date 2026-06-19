@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import {
   DEFAULT_API_VERSION,
+  type ApiErrorDebug,
   type ApiErrorDetail,
   type ApiErrorResponse,
   type ApiResponseMeta,
@@ -22,6 +23,7 @@ interface ErrorOptions {
   readonly code: string;
   readonly message: string;
   readonly details?: readonly ApiErrorDetail[];
+  readonly debug?: ApiErrorDebug;
 }
 
 export class V1Response {
@@ -58,6 +60,7 @@ export class V1Response {
         details: options.details,
       },
       meta: this.createMeta(options.request),
+      ...(options.debug !== undefined && { debug: options.debug }),
     });
   }
 

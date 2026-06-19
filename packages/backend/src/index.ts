@@ -23,4 +23,6 @@ export * from "./patterns/observer/domain-event-bus";
 export * from "./patterns/strategy/cursor-pagination.strategy";
 export * from "./responses/v1-response";
 export * from "./utils/bearer-token";
+export * from "./utils/paginate";
+export * from "./utils/parse-stack";
 export * from "./utils/sanitize";

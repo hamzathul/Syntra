@@ -16,7 +16,7 @@ import type {
   LoginRequestDto,
   RegisterRequestDto,
 } from "shared";
-import type { UserRepository } from "./user.repository";
+import type { IUserRepository } from "./user.repository.port";
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -28,7 +28,7 @@ export interface AuthServicePort {
 
 export class AuthService extends BaseService implements AuthServicePort {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: IUserRepository,
     private readonly tokenSigner: TokenSigner,
     private readonly transactionManager: TransactionManager,
     private readonly eventBus: DomainEventBus,

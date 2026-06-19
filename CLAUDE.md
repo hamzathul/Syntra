@@ -22,10 +22,15 @@ pnpm --filter frontend dev      # Next.js frontend on port 3000
 pnpm --filter backend-p build
 ```
 
-Prisma (run from `apps/backend`):
+Prisma (`apps/backend`, package name `core`):
 ```bash
-pnpm --filter core prisma migrate dev
-pnpm --filter core prisma generate
+pnpm --filter core db:migrate          # create + apply a new migration (dev)
+pnpm --filter core db:migrate:prod     # apply pending migrations (CI/production)
+pnpm --filter core db:reset            # drop DB, re-run all migrations + seed (dev only)
+pnpm --filter core db:generate         # regenerate Prisma Client after schema change
+pnpm --filter core db:studio           # open Prisma Studio GUI
+pnpm --filter core db:seed             # run prisma/seed.ts
+pnpm --filter core db:status           # show which migrations are applied
 ```
 
 ## Monorepo Layout

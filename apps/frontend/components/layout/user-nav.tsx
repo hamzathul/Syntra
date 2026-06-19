@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, Settings, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,36 +13,47 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { clearSession, getUser } from "@/lib/auth";
+import { clearSession, getUser, type AuthUser } from "@/lib/auth";
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((part) => part[0] ?? "")
+    .filter(Boolean)
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 export function UserNav() {
   const router = useRouter();
-  const user = getUser();
+  // Start null on both server and client — populated after mount via cookie read.
+  // This prevents SSR/CSR mismatch since js-cookie needs document.cookie.
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-  const initials = user?.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) ?? "??";
+  useEffect(() => {
+    setUser(getUser());
+  }, []);
 
   const handleLogout = () => {
     clearSession();
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="h-9 w-9 cursor-pointer">
-          <AvatarFallback>{initials}</AvatarFallback>
+          <AvatarFallback>{user ? getInitials(user.name) : ""}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name ?? "User"}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user?.email ?? ""}</p>
+            <p className="text-sm font-medium leading-none">{user?.name ?? ""}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user?.email ?? ""}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -56,7 +68,10 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="text-destructive focus:text-destructive"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Log out
         </DropdownMenuItem>

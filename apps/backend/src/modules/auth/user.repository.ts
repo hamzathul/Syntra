@@ -1,35 +1,22 @@
 import type { PrismaClient } from "@prisma/client";
-import { BaseRepository } from "backend-p";
+import { PrismaCrudRepository } from "../../infrastructure/prisma/prisma-crud.repository";
+import type { IUserRepository } from "./user.repository.port";
+import type {
+  UserRecord,
+  CreateUserInput,
+  UpdateUserInput,
+  UserFilter,
+} from "./user.types";
 
-export interface UserRecord {
-  readonly id: string;
-  readonly name: string;
-  readonly email: string;
-  readonly passwordHash: string;
-  readonly role: "USER" | "ADMIN";
-  readonly isActive: boolean;
-}
-
-interface CreateUserInput {
-  readonly name: string;
-  readonly email: string;
-  readonly passwordHash: string;
-}
-
-export class UserRepository extends BaseRepository<UserRecord, string> {
+export class UserRepository
+  extends PrismaCrudRepository<UserRecord, CreateUserInput, UpdateUserInput, UserFilter>
+  implements IUserRepository
+{
   constructor(private readonly prisma: PrismaClient) {
-    super();
+    super(prisma.user);
   }
 
-  async findById(id: string): Promise<UserRecord | null> {
-    return this.prisma.user.findUnique({ where: { id } });
-  }
-
-  async findByEmail(email: string): Promise<UserRecord | null> {
+  findByEmail(email: string): Promise<UserRecord | null> {
     return this.prisma.user.findUnique({ where: { email } });
-  }
-
-  async create(input: CreateUserInput): Promise<UserRecord> {
-    return this.prisma.user.create({ data: input });
   }
 }
