@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "core",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,23 +10,34 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.8.0",
+    "@prisma/client": "7.8.0",
+    "pg": "^8.0.0",
     "@repo/ui": "workspace:*",
     "@types/express": "^4.17.21",
+    "backend-p": "workspace:*",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.0.0",
+    "helmet": "^8.0.0",
+    "zod": "^4.4.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "ts-node-dev": "^2.0.0",
+    "jose": "^6.2.3",
     "pino": "^9.1.0",
     "pino-pretty": "^11.1.0",
     "shared": "workspace:*",
-    "backend-p": "workspace:*",
-    "cors": "^2.8.5"
+    "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.0.0",
     "@types/cors": "^2.8.17",
     "@types/node": "^20.12.12",
     "eslint": "^9.39.1",
+    "prisma": "7.8.0",
     "typescript": "^5.4.5"
   }
 }

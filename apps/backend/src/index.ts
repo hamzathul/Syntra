@@ -1,23 +1,33 @@
+import { env } from "./config/env";
 import cors from "cors";
-import express, { type Express } from "express";
-import dotenv from "dotenv";
+import express from "express";
+import helmet from "helmet";
 import {
   createGlobalErrorHandler,
+  createRequestLogMiddleware,
   notFoundHandler,
   requestIdMiddleware,
   sanitizeRequestBody,
 } from "backend-p";
+import { disconnectPrisma } from "./database/prisma.client";
 import routes from "./routes";
 import logger from "./utils/logger";
 
-dotenv.config();
+const app = express();
 
-const app: Express = express();
-const port = process.env.PORT || 3001;
-
-app.use(cors());
+app.use(helmet());
+app.use(
+  cors({
+    origin:
+      env.CORS_ORIGINS === "*"
+        ? "*"
+        : env.CORS_ORIGINS.split(",").map((o) => o.trim()),
+    credentials: true,
+  }),
+);
 app.use(requestIdMiddleware);
-app.use(express.json());
+app.use(createRequestLogMiddleware(logger));
+app.use(express.json({ limit: "10kb" }));
 app.use(sanitizeRequestBody);
 
 app.use("/api", routes);
@@ -25,9 +35,18 @@ app.use("/api", routes);
 app.use(notFoundHandler);
 app.use(createGlobalErrorHandler(logger));
 
-app.listen(port, () => {
-  logger.info(
-    { port },
-    `[server]: Server is running at http://localhost:${port}`,
-  );
+const server = app.listen(env.PORT, () => {
+  logger.info({ port: env.PORT, env: env.NODE_ENV }, "Server started");
 });
+
+const shutdown = () => {
+  logger.info("Received shutdown signal");
+  server.close(async () => {
+    await disconnectPrisma();
+    logger.info("Server closed");
+    process.exit(0);
+  });
+};
+
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);

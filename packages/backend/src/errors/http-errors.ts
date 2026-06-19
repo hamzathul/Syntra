@@ -7,9 +7,27 @@ export class BadRequestError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message = "Authentication is required") {
+    super(401, "UNAUTHORIZED", message);
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = "You do not have permission to access this resource") {
+    super(403, "FORBIDDEN", message);
+  }
+}
+
 export class ValidationError extends AppError {
   constructor(details: readonly ApiErrorDetail[]) {
     super(422, "VALIDATION_ERROR", "Request validation failed", details);
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message = "Resource already exists") {
+    super(409, "CONFLICT", message);
   }
 }
 
@@ -29,6 +47,15 @@ export const createBadRequestError = (
   message?: string,
   details?: readonly ApiErrorDetail[],
 ) => new BadRequestError(message, details);
+
+export const createUnauthorizedError = (message?: string) =>
+  new UnauthorizedError(message);
+
+export const createForbiddenError = (message?: string) =>
+  new ForbiddenError(message);
+
+export const createConflictError = (message?: string) =>
+  new ConflictError(message);
 
 export const createNotFoundError = (resource?: string) =>
   new NotFoundError(resource);
