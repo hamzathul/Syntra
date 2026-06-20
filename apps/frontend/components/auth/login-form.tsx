@@ -26,14 +26,13 @@ export function LoginForm() {
 
       const companies = await companyApi.list();
       if (companies.length === 0) {
-        toast.success("Welcome back! Please set up your company.");
+        toast.success("Welcome back! Let's set up your company.");
         window.location.href = "/onboarding";
         return;
       }
 
       const defaultCompany = companies.find((c) => c.isDefault) ?? companies[0]!;
       setActiveCompany({ id: defaultCompany.id, name: defaultCompany.name, role: defaultCompany.role });
-
       toast.success("Welcome back!");
       window.location.href = "/dashboard";
     } catch (error) {
@@ -45,8 +44,10 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-sm font-medium">
+          Email
+        </Label>
         <Input
           id="email"
           name="email"
@@ -54,10 +55,13 @@ export function LoginForm() {
           placeholder="you@example.com"
           required
           autoComplete="email"
+          className="rounded-xl h-10"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-sm font-medium">
+          Password
+        </Label>
         <Input
           id="password"
           name="password"
@@ -66,9 +70,14 @@ export function LoginForm() {
           required
           autoComplete="current-password"
           minLength={8}
+          className="rounded-xl h-10"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button
+        type="submit"
+        className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
+        disabled={pending}
+      >
         {pending ? "Signing in…" : "Sign in"}
       </Button>
     </form>

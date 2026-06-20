@@ -34,8 +34,10 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Full name</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="name" className="text-sm font-medium">
+          Full name
+        </Label>
         <Input
           id="name"
           name="name"
@@ -44,10 +46,13 @@ export function RegisterForm() {
           required
           autoComplete="name"
           minLength={2}
+          className="rounded-xl h-10"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-sm font-medium">
+          Email
+        </Label>
         <Input
           id="email"
           name="email"
@@ -55,10 +60,13 @@ export function RegisterForm() {
           placeholder="you@example.com"
           required
           autoComplete="email"
+          className="rounded-xl h-10"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-sm font-medium">
+          Password
+        </Label>
         <Input
           id="password"
           name="password"
@@ -67,9 +75,14 @@ export function RegisterForm() {
           required
           autoComplete="new-password"
           minLength={8}
+          className="rounded-xl h-10"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button
+        type="submit"
+        className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
+        disabled={pending}
+      >
         {pending ? "Creating account…" : "Create account"}
       </Button>
     </form>

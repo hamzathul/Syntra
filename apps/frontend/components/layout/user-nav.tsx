@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { LogOut, Settings, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -26,9 +25,6 @@ function getInitials(name: string): string {
 }
 
 export function UserNav() {
-  const router = useRouter();
-  // Start null on both server and client — populated after mount via cookie read.
-  // This prevents SSR/CSR mismatch since js-cookie needs document.cookie.
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
@@ -43,36 +39,45 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-9 w-9 cursor-pointer">
-          <AvatarFallback>{user ? getInitials(user.name) : ""}</AvatarFallback>
+        <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-transparent transition-all hover:ring-primary/30">
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+            {user ? getInitials(user.name) : ""}
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+
+      <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name ?? ""}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email ?? ""}
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-semibold">
+              {user ? getInitials(user.name) : ""}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <p className="truncate text-sm font-medium">{user?.name ?? ""}</p>
+              <p className="truncate text-xs text-muted-foreground">{user?.email ?? ""}</p>
+            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="gap-2 cursor-pointer">
+            <User className="h-4 w-4 text-muted-foreground" />
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
-            <Settings className="mr-2 h-4 w-4" />
+          <DropdownMenuItem
+            onClick={() => (window.location.href = "/dashboard/settings")}
+            className="gap-2 cursor-pointer"
+          >
+            <Settings className="h-4 w-4 text-muted-foreground" />
             Settings
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}
-          className="text-destructive focus:text-destructive"
+          className="gap-2 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="h-4 w-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

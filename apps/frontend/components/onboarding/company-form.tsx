@@ -31,9 +31,11 @@ export function CompanyForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor="name">Company name</Label>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="name" className="text-sm font-medium">
+          Company name
+        </Label>
         <Input
           id="name"
           name="name"
@@ -42,9 +44,14 @@ export function CompanyForm() {
           required
           minLength={2}
           maxLength={100}
+          className="rounded-xl h-10"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button
+        type="submit"
+        className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
+        disabled={pending}
+      >
         {pending ? "Creating…" : "Create company"}
       </Button>
     </form>
