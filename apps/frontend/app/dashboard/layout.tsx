@@ -1,3 +1,4 @@
+import { CompanySwitcher } from "@/components/layout/company-switcher";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserNav } from "@/components/layout/user-nav";
@@ -11,7 +12,7 @@ export default function DashboardLayout({
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 items-center justify-between border-b bg-background px-6">
-          <div />
+          <CompanySwitcher />
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <UserNav />

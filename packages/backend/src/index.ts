@@ -1,5 +1,6 @@
 export * from "./abstractions/base.controller";
 export * from "./abstractions/base.repository";
+export * from "./adapters/prisma/prisma-crud.repository";
 export * from "./abstractions/base.service";
 export * from "./auth/auth-context";
 export * from "./auth/token-signer.port";

@@ -1,18 +1,22 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "stream",
-  "globalEnv": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "CORS_ORIGINS", "LOG_LEVEL", "PORT", "CORE_API_URL", "NEXT_PUBLIC_CORE_API_URL", "NEXT_PUBLIC_ERP_API_URL"],
+  "globalEnv": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "CORS_ORIGINS", "LOG_LEVEL", "PORT", "CORE_API_URL", "NEXT_PUBLIC_CORE_API_URL", "NEXT_PUBLIC_ERP_API_URL", "NEXT_PUBLIC_ERP_DATABASE_URL"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "db:generate": {
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["src/generated/**"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types", "db:generate"]
     },
     "dev": {
       "cache": false,

@@ -1,5 +1,5 @@
-import type { PrismaClient } from "@prisma/client";
-import { PrismaCrudRepository } from "../../infrastructure/prisma/prisma-crud.repository";
+import type { PrismaClient } from "../../generated/prisma";
+import { PrismaCrudRepository } from "backend-p";
 import type { IUserRepository } from "./user.repository.port";
 import type {
   UserRecord,

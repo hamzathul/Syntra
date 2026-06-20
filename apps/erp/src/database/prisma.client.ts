@@ -7,8 +7,6 @@ function buildPoolConfig(databaseUrl: string): PoolConfig {
   try {
     const url = new URL(databaseUrl);
     const hasSsl = url.searchParams.has("sslmode");
-    // Remove sslmode (and libpq compat flag) from the URL so pg-connection-string
-    // doesn't apply its own SSL policy — we control it via the ssl option below.
     url.searchParams.delete("sslmode");
     url.searchParams.delete("uselibpqcompat");
     return {

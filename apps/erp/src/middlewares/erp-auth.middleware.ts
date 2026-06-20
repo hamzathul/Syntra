@@ -1,15 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
-import { UnauthorizedError } from "backend-p";
-import { getUserFromToken } from "../utils/core-client";
+import { setAuthenticatedUser, UnauthorizedError } from "backend-p";
+import type { UserRoleDto } from "shared";
+import { env } from "../config/env";
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Express {
-    interface Locals {
-      user: { id: string; name: string; email: string; role: "USER" | "ADMIN" };
-    }
-  }
+interface JwtClaims {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRoleDto;
+  [key: string]: unknown;
 }
+
+const secretKey = new TextEncoder().encode(env.JWT_SECRET);
 
 export const erpAuthMiddleware = async (
   req: Request,
@@ -24,7 +26,16 @@ export const erpAuthMiddleware = async (
 
   const token = authHeader.slice(7);
   try {
-    res.locals.user = await getUserFromToken(token);
+    const { jwtVerify } = await import("jose");
+    const { payload } = await jwtVerify(token, secretKey);
+    const claims = payload as unknown as JwtClaims;
+
+    setAuthenticatedUser(res, {
+      id: claims.id,
+      name: claims.name,
+      email: claims.email,
+      role: claims.role,
+    });
     next();
   } catch {
     next(new UnauthorizedError("Invalid or expired token"));

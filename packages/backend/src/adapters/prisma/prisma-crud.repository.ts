@@ -1,5 +1,5 @@
-import { BaseCrudRepository, paginateResult, type ListOptions } from "backend-p";
-import type { CursorPaginationResult } from "backend-p";
+import { BaseCrudRepository, paginateResult, type ListOptions } from "../../index";
+import type { CursorPaginationResult } from "../../patterns/strategy/cursor-pagination.strategy";
 
 // Prisma's per-model delegate types are deeply generated generics. We describe
 // only the five methods we call, using `unknown` for args/return so any Prisma

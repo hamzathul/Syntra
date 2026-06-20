@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
-import { setSession } from "@/lib/auth";
+import { companyApi } from "@/lib/api/erp-client";
+import { setSession, setActiveCompany } from "@/lib/auth";
 
 export function LoginForm() {
   const [pending, setPending] = useState(false);
@@ -22,6 +23,21 @@ export function LoginForm() {
       const response = await authApi.login({ email, password });
       const { user, token } = response.data.data;
       setSession(token.accessToken, user);
+
+      const companies = await companyApi.list();
+      if (companies.length === 0) {
+        toast.success("Welcome back! Please set up your company.");
+        window.location.href = "/onboarding";
+        return;
+      }
+
+      const defaultCompany = companies.find((c) => c.isDefault) ?? companies[0]!;
+      setActiveCompany({
+        id: defaultCompany.id,
+        name: defaultCompany.name,
+        role: defaultCompany.role,
+      });
+
       toast.success("Welcome back!");
       window.location.href = "/dashboard";
     } catch (error) {

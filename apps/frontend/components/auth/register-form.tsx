@@ -23,8 +23,8 @@ export function RegisterForm() {
       const response = await authApi.register({ name, email, password });
       const { user, token } = response.data.data;
       setSession(token.accessToken, user);
-      toast.success("Account created!");
-      window.location.href = "/dashboard";
+      toast.success("Account created! Let's set up your company.");
+      window.location.href = "/onboarding";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {

@@ -1,4 +1,5 @@
 import { env } from "./config/env";
+import { disconnectPrisma } from "./database/prisma.client";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
@@ -40,7 +41,8 @@ const server = app.listen(env.PORT, () => {
 
 const shutdown = () => {
   logger.info("Received shutdown signal");
-  server.close(() => {
+  server.close(async () => {
+    await disconnectPrisma();
     logger.info("ERP server closed");
     process.exit(0);
   });
