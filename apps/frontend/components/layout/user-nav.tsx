@@ -35,8 +35,8 @@ export function UserNav() {
     setUser(getUser());
   }, []);
 
-  const handleLogout = () => {
-    clearSession();
+  const handleLogout = async () => {
+    await clearSession();
     window.location.href = "/login";
   };
 

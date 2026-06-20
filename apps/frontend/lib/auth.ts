@@ -1,7 +1,6 @@
 import Cookies from "js-cookie";
 import type { CompanyDto } from "shared";
 
-export const TOKEN_KEY = "access_token";
 export const USER_KEY = "auth_user";
 export const ACTIVE_COMPANY_KEY = "active_company";
 
@@ -20,8 +19,6 @@ export interface ActiveCompany {
   role: CompanyDto["role"];
 }
 
-export const getToken = (): string | null => Cookies.get(TOKEN_KEY) ?? null;
-
 export const getUser = (): AuthUser | null => {
   const raw = Cookies.get(USER_KEY);
   if (!raw) return null;
@@ -32,13 +29,12 @@ export const getUser = (): AuthUser | null => {
   }
 };
 
-export const setSession = (token: string, user: AuthUser): void => {
-  Cookies.set(TOKEN_KEY, token, { expires: 1, sameSite: "strict" });
+export const setUser = (user: AuthUser): void => {
   Cookies.set(USER_KEY, JSON.stringify(user), { expires: 1, sameSite: "strict" });
 };
 
-export const clearSession = (): void => {
-  Cookies.remove(TOKEN_KEY);
+export const clearSession = async (): Promise<void> => {
+  await fetch("/api/auth/logout", { method: "POST" });
   Cookies.remove(USER_KEY);
   Cookies.remove(ACTIVE_COMPANY_KEY);
 };
@@ -64,4 +60,4 @@ export const clearActiveCompany = (): void => {
   Cookies.remove(ACTIVE_COMPANY_KEY);
 };
 
-export const isAuthenticated = (): boolean => Boolean(getToken());
+export const isAuthenticated = (): boolean => Boolean(Cookies.get(USER_KEY));

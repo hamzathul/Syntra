@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
 import { companyApi } from "@/lib/api/erp-client";
-import { setSession, setActiveCompany } from "@/lib/auth";
+import { setUser, setActiveCompany } from "@/lib/auth";
 
 export function LoginForm() {
   const [pending, setPending] = useState(false);
@@ -21,8 +21,8 @@ export function LoginForm() {
     setPending(true);
     try {
       const response = await authApi.login({ email, password });
-      const { user, token } = response.data.data;
-      setSession(token.accessToken, user);
+      const { user } = response.data.data;
+      setUser(user);
 
       const companies = await companyApi.list();
       if (companies.length === 0) {
@@ -32,11 +32,7 @@ export function LoginForm() {
       }
 
       const defaultCompany = companies.find((c) => c.isDefault) ?? companies[0]!;
-      setActiveCompany({
-        id: defaultCompany.id,
-        name: defaultCompany.name,
-        role: defaultCompany.role,
-      });
+      setActiveCompany({ id: defaultCompany.id, name: defaultCompany.name, role: defaultCompany.role });
 
       toast.success("Welcome back!");
       window.location.href = "/dashboard";

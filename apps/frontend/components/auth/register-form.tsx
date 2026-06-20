@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
-import { setSession } from "@/lib/auth";
+import { setUser } from "@/lib/auth";
 
 export function RegisterForm() {
   const [pending, setPending] = useState(false);
@@ -21,8 +21,8 @@ export function RegisterForm() {
     setPending(true);
     try {
       const response = await authApi.register({ name, email, password });
-      const { user, token } = response.data.data;
-      setSession(token.accessToken, user);
+      const { user } = response.data.data;
+      setUser(user);
       toast.success("Account created! Let's set up your company.");
       window.location.href = "/onboarding";
     } catch (error) {
