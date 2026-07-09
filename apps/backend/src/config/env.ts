@@ -6,7 +6,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3001),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
-  JWT_EXPIRES_IN: z.coerce.number().int().positive().default(3600),
+  JWT_EXPIRES_IN: z.coerce.number().int().positive().default(900),
+  REFRESH_TOKEN_EXPIRES_IN: z.coerce.number().int().positive().default(604800),
   LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal"])
     .default("info"),

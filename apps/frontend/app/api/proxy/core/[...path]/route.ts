@@ -25,6 +25,28 @@ async function handler(req: NextRequest, { params }: { params: Promise<{ path: s
     );
   }
 
+  if (res.status === 401) {
+    const refreshRes = await fetch(`${req.nextUrl.origin}/api/auth/refresh`, {
+      method: "POST",
+    });
+
+    if (refreshRes.ok) {
+      const refreshedCookieStore = await cookies();
+      const newToken = refreshedCookieStore.get("access_token")?.value;
+      if (newToken) {
+        headers["Authorization"] = `Bearer ${newToken}`;
+        try {
+          res = await fetch(url, { method: req.method, headers, body });
+        } catch {
+          return NextResponse.json(
+            { status: "error", message: "Core service unavailable" },
+            { status: 503 },
+          );
+        }
+      }
+    }
+  }
+
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
 }

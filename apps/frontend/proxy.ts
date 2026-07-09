@@ -10,17 +10,14 @@ export function proxy(request: NextRequest) {
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isOnboarding = pathname.startsWith("/onboarding");
 
-  // Unauthenticated user trying to access protected routes
   if ((isDashboardRoute || isOnboarding) && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Authenticated but no company → must go to onboarding
   if (isDashboardRoute && token && !activeCompany) {
     return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
-  // Authenticated with company → skip auth pages
   if (isAuthRoute && token) {
     const destination = activeCompany ? "/dashboard" : "/onboarding";
     return NextResponse.redirect(new URL(destination, request.url));

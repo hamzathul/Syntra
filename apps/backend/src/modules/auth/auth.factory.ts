@@ -9,6 +9,7 @@ import { getPrismaClient } from "../../database/prisma.client";
 import { JoseTokenSigner } from "./jose-token-signer";
 import { JoseTokenVerifier } from "./jose-token-verifier";
 import { UserRepository } from "./user.repository";
+import { RefreshTokenRepository } from "./refresh-token.repository";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import logger from "../../utils/logger";
@@ -39,10 +40,12 @@ export class AuthModuleFactory {
     const prisma = getPrismaClient();
     const transactionManager = new NoopTransactionManager();
     const userRepository = new UserRepository(prisma);
+    const refreshTokenRepository = new RefreshTokenRepository(prisma);
     const tokenSigner = new JoseTokenSigner(env.JWT_SECRET, env.JWT_EXPIRES_IN);
     const service = new AuthService(
       userRepository,
       tokenSigner,
+      refreshTokenRepository,
       transactionManager,
       eventBus,
       logger,
