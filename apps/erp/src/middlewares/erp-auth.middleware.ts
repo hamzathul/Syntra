@@ -1,17 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { setAuthenticatedUser, UnauthorizedError } from "backend-p";
-import type { UserRoleDto } from "shared";
-import { env } from "../config/env";
-
-interface JwtClaims {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRoleDto;
-  [key: string]: unknown;
-}
-
-const secretKey = new TextEncoder().encode(env.JWT_SECRET);
+import { getUserFromToken } from "../utils/core-client";
 
 export const erpAuthMiddleware = async (
   req: Request,
@@ -26,15 +15,13 @@ export const erpAuthMiddleware = async (
 
   const token = authHeader.slice(7);
   try {
-    const { jwtVerify } = await import("jose");
-    const { payload } = await jwtVerify(token, secretKey);
-    const claims = payload as unknown as JwtClaims;
+    const user = await getUserFromToken(token);
 
     setAuthenticatedUser(res, {
-      id: claims.id,
-      name: claims.name,
-      email: claims.email,
-      role: claims.role,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     });
     next();
   } catch {

@@ -15,6 +15,7 @@ export interface CreateUserInput {
 
 export interface UpdateUserInput {
   readonly name?: string;
+  readonly passwordHash?: string;
   readonly isActive?: boolean;
   readonly role?: "USER" | "ADMIN";
 }

@@ -31,6 +31,13 @@ export async function POST(req: NextRequest) {
     path: "/",
     maxAge: 60 * 60 * 24,
   });
+  cookieStore.set("refresh_token", data.data.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
+  });
 
   return NextResponse.json({
     status: "success",

@@ -34,7 +34,28 @@ export const authTokenSchema = z.object({
 export const authSessionSchema = z.object({
   user: authUserSchema,
   token: authTokenSchema,
+  refreshToken: z.string(),
+  refreshExpiresIn: z.number().int().positive(),
 });
+
+export const refreshRequestSchema = z
+  .object({
+    refreshToken: z.string().min(1),
+  })
+  .strict();
+
+export const logoutRequestSchema = z
+  .object({
+    refreshToken: z.string().min(1),
+  })
+  .strict();
+
+export const changePasswordRequestSchema = z
+  .object({
+    currentPassword: z.string().min(8).max(128),
+    newPassword: z.string().min(8).max(128),
+  })
+  .strict();
 
 export const authSessionResponseSchema =
   createApiSuccessResponseSchema(authSessionSchema);
@@ -48,3 +69,6 @@ export type RegisterRequestDto = z.infer<typeof registerRequestSchema>;
 export type LoginRequestDto = z.infer<typeof loginRequestSchema>;
 export type AuthTokenDto = z.infer<typeof authTokenSchema>;
 export type AuthSessionDto = z.infer<typeof authSessionSchema>;
+export type RefreshRequestDto = z.infer<typeof refreshRequestSchema>;
+export type LogoutRequestDto = z.infer<typeof logoutRequestSchema>;
+export type ChangePasswordRequestDto = z.infer<typeof changePasswordRequestSchema>;

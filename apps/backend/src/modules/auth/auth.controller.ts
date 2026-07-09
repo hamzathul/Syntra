@@ -4,7 +4,10 @@ import {
   ResponseFactory,
   getAuthenticatedUser,
 } from "backend-p";
-import type { LoginRequestDto, RegisterRequestDto } from "shared";
+import type {
+  LoginRequestDto,
+  RegisterRequestDto,
+} from "shared";
 import type { AuthServicePort } from "./auth.service";
 
 export class AuthController extends BaseController {
@@ -37,6 +40,46 @@ export class AuthController extends BaseController {
         request,
         message: "Login successful",
         data: session,
+      });
+    },
+  );
+
+  readonly refresh: RequestHandler = this.asyncHandler(
+    async (request, response) => {
+      const dto = request.body as { refreshToken: string };
+      const session = await this.authService.refresh(dto);
+
+      this.v1Response.success(response, {
+        request,
+        message: "Token refreshed successfully",
+        data: session,
+      });
+    },
+  );
+
+  readonly logout: RequestHandler = this.asyncHandler(
+    async (request, response) => {
+      const dto = request.body as { refreshToken: string };
+      await this.authService.logout(dto);
+
+      this.v1Response.success(response, {
+        request,
+        message: "Logged out successfully",
+        data: {} as Record<string, never>,
+      });
+    },
+  );
+
+  readonly changePassword: RequestHandler = this.asyncHandler(
+    async (request, response) => {
+      const { id } = getAuthenticatedUser(response.locals);
+      const dto = request.body as { currentPassword: string; newPassword: string };
+      await this.authService.changePassword(id, dto);
+
+      this.v1Response.success(response, {
+        request,
+        message: "Password changed successfully",
+        data: {} as Record<string, never>,
       });
     },
   );
