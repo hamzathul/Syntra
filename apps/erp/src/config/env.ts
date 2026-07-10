@@ -9,6 +9,7 @@ const envSchema = z.object({
   LOG_LEVEL: z
     .enum(["trace", "debug", "info", "warn", "error", "fatal"])
     .default("info"),
+  LOG_DIR: z.string().default("logs"),
   CORS_ORIGINS: z.string().default("*"),
 });
 

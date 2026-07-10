@@ -1,6 +1,7 @@
 import type { CompanyDto, CreateCompanyDto } from "shared";
 import type { ICompanyRepository } from "./company.repository.port";
 import type { CompanyWithRole } from "./company.types";
+import logger from "../../utils/logger";
 
 export interface ICompanyService {
   createCompany(dto: CreateCompanyDto, userId: string): Promise<CompanyDto>;
@@ -12,6 +13,12 @@ export class CompanyService implements ICompanyService {
 
   async createCompany(dto: CreateCompanyDto, userId: string): Promise<CompanyDto> {
     const company = await this.companyRepo.create({ name: dto.name, userId });
+
+    logger.info(
+      { category: "audit", action: "company.created", companyId: company.id, userId },
+      "Company created",
+    );
+
     return this.toDto(company);
   }
 
