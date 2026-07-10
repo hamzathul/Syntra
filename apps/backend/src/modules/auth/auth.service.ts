@@ -160,11 +160,16 @@ export class AuthService extends BaseService implements AuthServicePort {
         const stored =
           await this.refreshTokenRepository.findByTokenHash(hashInput);
 
-        if (
-          stored === null ||
-          stored.revokedAt !== null ||
-          stored.expiresAt < new Date()
-        ) {
+        if (stored === null) {
+          throw new UnauthorizedError("Invalid refresh token");
+        }
+
+        if (stored.revokedAt !== null) {
+          await this.refreshTokenRepository.revokeAllByFamily(stored.family);
+          throw new UnauthorizedError("Invalid refresh token");
+        }
+
+        if (stored.expiresAt < new Date()) {
           throw new UnauthorizedError("Invalid refresh token");
         }
 
