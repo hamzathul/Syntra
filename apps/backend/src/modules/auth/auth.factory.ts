@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import {
   createAuthenticationMiddleware,
   DomainEventBus,
-  NoopTransactionManager,
+  PrismaTransactionManager,
 } from "backend-p";
 import { env } from "../../config/env";
 import { getPrismaClient } from "../../database/prisma.client";
@@ -38,7 +38,7 @@ export class AuthModuleFactory {
   private static build(): AuthController {
     const eventBus = DomainEventBus.getInstance();
     const prisma = getPrismaClient();
-    const transactionManager = new NoopTransactionManager();
+    const transactionManager = new PrismaTransactionManager(prisma);
     const userRepository = new UserRepository(prisma);
     const refreshTokenRepository = new RefreshTokenRepository(prisma);
     const tokenSigner = new JoseTokenSigner(env.JWT_SECRET, env.JWT_EXPIRES_IN);

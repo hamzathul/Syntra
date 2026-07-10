@@ -17,3 +17,17 @@ export class NoopTransactionManager
     return operation({ id: "noop-transaction" });
   }
 }
+
+export class PrismaTransactionManager
+  implements TransactionManager
+{
+  constructor(
+    private readonly prisma: { $transaction<T>(fn: (tx: unknown) => Promise<T>): Promise<T> },
+  ) {}
+
+  async runInTransaction<TResult>(
+    operation: (client: TransactionClient) => Promise<TResult>,
+  ): Promise<TResult> {
+    return this.prisma.$transaction((tx) => operation(tx as TransactionClient));
+  }
+}
