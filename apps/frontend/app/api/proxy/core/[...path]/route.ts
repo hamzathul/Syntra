@@ -26,23 +26,45 @@ async function handler(req: NextRequest, { params }: { params: Promise<{ path: s
   }
 
   if (res.status === 401) {
-    const refreshRes = await fetch(`${req.nextUrl.origin}/api/auth/refresh`, {
-      method: "POST",
-    });
+    const refreshToken = cookieStore.get("refresh_token")?.value;
 
-    if (refreshRes.ok) {
-      const refreshedCookieStore = await cookies();
-      const newToken = refreshedCookieStore.get("access_token")?.value;
-      if (newToken) {
-        headers["Authorization"] = `Bearer ${newToken}`;
-        try {
-          res = await fetch(url, { method: req.method, headers, body });
-        } catch {
-          return NextResponse.json(
-            { status: "error", message: "Core service unavailable" },
-            { status: 503 },
-          );
+    if (refreshToken) {
+      try {
+        const refreshRes = await fetch(`${CORE_URL}/auth/refresh`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          const newToken = refreshData?.data?.token?.accessToken as string | undefined;
+
+          if (newToken) {
+            cookieStore.set("access_token", newToken, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "strict",
+              path: "/",
+              maxAge: refreshData.data.token.expiresIn,
+            });
+            cookieStore.set("refresh_token", refreshData.data.refreshToken, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "strict",
+              path: "/",
+              maxAge: refreshData.data.refreshExpiresIn,
+            });
+
+            headers["Authorization"] = `Bearer ${newToken}`;
+            res = await fetch(url, { method: req.method, headers, body });
+          }
         }
+      } catch {
+        return NextResponse.json(
+          { status: "error", message: "Auth service unavailable" },
+          { status: 503 },
+        );
       }
     }
   }
