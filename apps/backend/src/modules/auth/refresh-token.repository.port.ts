@@ -19,6 +19,7 @@ export interface IRefreshTokenRepository {
   create(data: CreateRefreshTokenInput): Promise<RefreshTokenRecord>;
   findByTokenHash(tokenHash: string): Promise<RefreshTokenRecord | null>;
   revoke(id: string): Promise<void>;
+  revokeIfUnrevoked(id: string): Promise<boolean>;
   revokeAllByUserId(userId: string): Promise<void>;
   revokeAllByFamily(family: string): Promise<void>;
 }

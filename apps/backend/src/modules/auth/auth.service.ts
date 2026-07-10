@@ -173,7 +173,13 @@ export class AuthService extends BaseService implements AuthServicePort {
           throw new UnauthorizedError("Invalid refresh token");
         }
 
-        await this.refreshTokenRepository.revoke(stored.id);
+        const wasRevoked =
+          await this.refreshTokenRepository.revokeIfUnrevoked(stored.id);
+
+        if (!wasRevoked) {
+          await this.refreshTokenRepository.revokeAllByFamily(stored.family);
+          throw new UnauthorizedError("Invalid refresh token");
+        }
 
         const user = await this.userRepository.findById(stored.userId);
         if (user === null || !user.isActive) {
