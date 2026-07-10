@@ -1,10 +1,4 @@
-import {
-  BaseService,
-  type DomainEventBus,
-  type LoggerPort,
-  type TransactionManager,
-  withErrorLogging,
-} from "backend-p";
+import { BaseService, withErrorLogging, type LoggerPort } from "backend-p";
 import type { HealthStatusDto } from "shared";
 import type { HealthRepository } from "./health.repository";
 
@@ -15,8 +9,6 @@ export interface HealthServicePort {
 export class HealthService extends BaseService implements HealthServicePort {
   constructor(
     private readonly healthRepository: HealthRepository,
-    private readonly transactionManager: TransactionManager,
-    private readonly eventBus: DomainEventBus,
     private readonly logger: LoggerPort,
   ) {
     super("HealthService");
@@ -26,28 +18,17 @@ export class HealthService extends BaseService implements HealthServicePort {
     return withErrorLogging(
       `${this.name}.getHealthStatus`,
       this.logger,
-      async () =>
-        this.transactionManager.runInTransaction(async () => {
-          const currentHealth = await this.healthRepository.getCurrentStatus();
-          const checkedAt = new Date().toISOString();
-          const healthStatus: HealthStatusDto = {
-            service: currentHealth.service,
-            status: currentHealth.status,
-            uptime: process.uptime(),
-            checkedAt,
-          };
+      async () => {
+        const currentHealth = await this.healthRepository.getCurrentStatus();
+        const checkedAt = new Date().toISOString();
 
-          this.eventBus.publish({
-            name: "health.checked",
-            occurredAt: checkedAt,
-            payload: {
-              service: healthStatus.service,
-              status: healthStatus.status,
-            },
-          });
-
-          return healthStatus;
-        }),
+        return {
+          service: currentHealth.service,
+          status: currentHealth.status,
+          uptime: process.uptime(),
+          checkedAt,
+        };
+      },
     );
   }
 }

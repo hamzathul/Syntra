@@ -1,6 +1,6 @@
 import type { PrismaClient } from "../../generated/prisma";
 import type { ICompanyRepository } from "./company.repository.port";
-import type { MemberRole, CompanyWithRole, CreateCompanyInput } from "./company.types";
+import type { CompanyWithRole, CreateCompanyInput, MemberRole } from "./company.types";
 
 export class CompanyRepository implements ICompanyRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -49,12 +49,5 @@ export class CompanyRepository implements ICompanyRepository {
       where: { userId, companyId },
     });
     return count > 0;
-  }
-
-  async getMemberRole(userId: string, companyId: string): Promise<MemberRole | null> {
-    const member = await this.prisma.companyMember.findUnique({
-      where: { userId_companyId: { userId, companyId } },
-    });
-    return member ? (member.role as MemberRole) : null;
   }
 }

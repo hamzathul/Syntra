@@ -6,7 +6,6 @@ import {
   NotFoundError,
   UnauthorizedError,
   withErrorLogging,
-  type DomainEventBus,
   type LoggerPort,
   type TokenSigner,
   type TransactionManager,
@@ -38,7 +37,6 @@ export class AuthService extends BaseService implements AuthServicePort {
     private readonly tokenSigner: TokenSigner,
     private readonly refreshTokenRepository: IRefreshTokenRepository,
     private readonly transactionManager: TransactionManager,
-    private readonly eventBus: DomainEventBus,
     private readonly logger: LoggerPort,
   ) {
     super("AuthService");
@@ -81,11 +79,10 @@ export class AuthService extends BaseService implements AuthServicePort {
           ),
         });
 
-        this.eventBus.publish({
-          name: "auth.user.registered",
-          occurredAt: new Date().toISOString(),
-          payload: { userId: user.id, email: user.email },
-        });
+        this.logger.info(
+          { category: "audit", action: "user.registered", userId: user.id, email: user.email },
+          "User registered",
+        );
 
         return {
           user: authUser,
@@ -105,11 +102,19 @@ export class AuthService extends BaseService implements AuthServicePort {
         const user = await this.userRepository.findByEmail(dto.email);
 
         if (user === null || !user.isActive) {
+          this.logger.info(
+            { category: "audit", action: "login.failed", reason: "user_not_found", email: dto.email },
+            "Login failed",
+          );
           throw new UnauthorizedError("Invalid credentials");
         }
 
         const isPasswordValid = await compare(dto.password, user.passwordHash);
         if (!isPasswordValid) {
+          this.logger.info(
+            { category: "audit", action: "login.failed", reason: "invalid_password", userId: user.id },
+            "Login failed",
+          );
           throw new UnauthorizedError("Invalid credentials");
         }
 
@@ -133,11 +138,10 @@ export class AuthService extends BaseService implements AuthServicePort {
           ),
         });
 
-        this.eventBus.publish({
-          name: "auth.user.logged_in",
-          occurredAt: new Date().toISOString(),
-          payload: { userId: user.id },
-        });
+        this.logger.info(
+          { category: "audit", action: "login.success", userId: user.id, email: user.email },
+          "Login successful",
+        );
 
         return {
           user: authUser,
@@ -166,6 +170,10 @@ export class AuthService extends BaseService implements AuthServicePort {
 
         if (stored.revokedAt !== null) {
           await this.refreshTokenRepository.revokeAllByFamily(stored.family);
+          this.logger.info(
+            { category: "audit", action: "token.reuse", family: stored.family, userId: stored.userId },
+            "Token reuse detected — revoked token presented",
+          );
           throw new UnauthorizedError("Invalid refresh token");
         }
 
@@ -178,6 +186,10 @@ export class AuthService extends BaseService implements AuthServicePort {
 
         if (!wasRevoked) {
           await this.refreshTokenRepository.revokeAllByFamily(stored.family);
+          this.logger.info(
+            { category: "audit", action: "token.reuse", family: stored.family, userId: stored.userId },
+            "Token reuse detected — concurrent rotation conflict",
+          );
           throw new UnauthorizedError("Invalid refresh token");
         }
 
@@ -208,6 +220,11 @@ export class AuthService extends BaseService implements AuthServicePort {
           ),
         });
 
+        this.logger.info(
+          { category: "audit", action: "token.refreshed", userId: user.id, family: stored.family },
+          "Token refreshed",
+        );
+
         return {
           user: authUser,
           token,
@@ -230,6 +247,10 @@ export class AuthService extends BaseService implements AuthServicePort {
           await this.refreshTokenRepository.findByTokenHash(hashInput);
         if (stored !== null) {
           await this.refreshTokenRepository.revoke(stored.id);
+          this.logger.info(
+            { category: "audit", action: "user.logout", userId: stored.userId },
+            "User logged out",
+          );
         }
       },
     );
@@ -257,6 +278,11 @@ export class AuthService extends BaseService implements AuthServicePort {
         await this.userRepository.update(userId, { passwordHash: newHash });
 
         await this.refreshTokenRepository.revokeAllByUserId(userId);
+
+        this.logger.info(
+          { category: "audit", action: "password.changed", userId },
+          "Password changed",
+        );
       },
     );
   }

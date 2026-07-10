@@ -1,9 +1,5 @@
 import type { RequestHandler } from "express";
-import {
-  createAuthenticationMiddleware,
-  DomainEventBus,
-  PrismaTransactionManager,
-} from "backend-p";
+import { createAuthenticationMiddleware, PrismaTransactionManager } from "backend-p";
 import { env } from "../../config/env";
 import { getPrismaClient } from "../../database/prisma.client";
 import { JoseTokenSigner } from "./jose-token-signer";
@@ -17,7 +13,6 @@ import logger from "../../utils/logger";
 export class AuthModuleFactory {
   private static controller: AuthController | null = null;
   private static authMiddleware: RequestHandler | null = null;
-  private static hasRegisteredObservers = false;
 
   static createController(): AuthController {
     if (AuthModuleFactory.controller === null) {
@@ -36,7 +31,6 @@ export class AuthModuleFactory {
   }
 
   private static build(): AuthController {
-    const eventBus = DomainEventBus.getInstance();
     const prisma = getPrismaClient();
     const transactionManager = new PrismaTransactionManager(prisma);
     const userRepository = new UserRepository(prisma);
@@ -47,34 +41,9 @@ export class AuthModuleFactory {
       tokenSigner,
       refreshTokenRepository,
       transactionManager,
-      eventBus,
       logger,
     );
 
-    AuthModuleFactory.registerObservers(eventBus);
-
     return new AuthController(service);
-  }
-
-  private static registerObservers(eventBus: DomainEventBus): void {
-    if (AuthModuleFactory.hasRegisteredObservers) {
-      return;
-    }
-
-    eventBus.subscribe("auth.user.registered", (event) => {
-      logger.info(
-        { eventName: event.name, payload: event.payload },
-        "User registered",
-      );
-    });
-
-    eventBus.subscribe("auth.user.logged_in", (event) => {
-      logger.info(
-        { eventName: event.name, payload: event.payload },
-        "User logged in",
-      );
-    });
-
-    AuthModuleFactory.hasRegisteredObservers = true;
   }
 }
