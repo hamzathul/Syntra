@@ -8,6 +8,13 @@ export const erpApi = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+erpApi.interceptors.response.use((response) => {
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    response.data = response.data.data;
+  }
+  return response;
+});
+
 erpApi.interceptors.request.use((config) => {
   const company = getActiveCompany();
   if (company) config.headers["X-Company-Id"] = company.id;
@@ -16,8 +23,8 @@ erpApi.interceptors.request.use((config) => {
 
 export const companyApi = {
   list: (): Promise<CompanyDto[]> =>
-    erpApi.get<{ data: CompanyDto[] }>("/companies").then((r) => r.data.data),
+    erpApi.get<CompanyDto[]>("/companies").then((r) => r.data),
 
   create: (dto: CreateCompanyDto): Promise<CompanyDto> =>
-    erpApi.post<{ data: CompanyDto }>("/companies", dto).then((r) => r.data.data),
+    erpApi.post<CompanyDto>("/companies", dto).then((r) => r.data),
 };

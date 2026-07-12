@@ -1,6 +1,7 @@
 import type { Router } from "express";
 import type { RequestHandler } from "express";
 import { getPrismaClient } from "../../database/prisma.client";
+import logger from "../../utils/logger";
 import { CompanyRepository } from "./company.repository";
 import { CompanyService } from "./company.service";
 import { CompanyController } from "./company.controller";
@@ -15,7 +16,7 @@ export class CompanyModuleFactory {
     if (CompanyModuleFactory.controller === null) {
       const prisma = getPrismaClient();
       const repo = new CompanyRepository(prisma);
-      const service = new CompanyService(repo);
+      const service = new CompanyService(repo, logger);
       CompanyModuleFactory.controller = new CompanyController(service);
       CompanyModuleFactory.companyContextMw = createCompanyContextMiddleware(repo);
     }

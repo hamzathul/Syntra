@@ -1,20 +1,19 @@
 import type { CompanyDto, CreateCompanyDto } from "shared";
+import type { LoggerPort } from "backend-p";
 import type { ICompanyRepository } from "./company.repository.port";
 import type { CompanyWithRole } from "./company.types";
-import logger from "../../utils/logger";
-
-export interface ICompanyService {
-  createCompany(dto: CreateCompanyDto, userId: string): Promise<CompanyDto>;
-  getUserCompanies(userId: string): Promise<CompanyDto[]>;
-}
+import type { ICompanyService } from "./company.service.port";
 
 export class CompanyService implements ICompanyService {
-  constructor(private readonly companyRepo: ICompanyRepository) {}
+  constructor(
+    private readonly companyRepo: ICompanyRepository,
+    private readonly logger: LoggerPort,
+  ) {}
 
   async createCompany(dto: CreateCompanyDto, userId: string): Promise<CompanyDto> {
     const company = await this.companyRepo.create({ name: dto.name, userId });
 
-    logger.info(
+    this.logger.info(
       { category: "audit", action: "company.created", companyId: company.id, userId },
       "Company created",
     );

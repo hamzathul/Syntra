@@ -22,14 +22,7 @@ import { env } from "../../config/env";
 
 const BCRYPT_SALT_ROUNDS = 12;
 
-export interface AuthServicePort {
-  register(dto: RegisterRequestDto): Promise<AuthSessionDto>;
-  login(dto: LoginRequestDto): Promise<AuthSessionDto>;
-  getMe(userId: string): Promise<AuthUserDto>;
-  refresh(dto: { refreshToken: string }): Promise<AuthSessionDto>;
-  logout(dto: { refreshToken: string }): Promise<void>;
-  changePassword(userId: string, dto: { currentPassword: string; newPassword: string }): Promise<void>;
-}
+import type { AuthServicePort } from "./auth.service.port";
 
 export class AuthService extends BaseService implements AuthServicePort {
   constructor(

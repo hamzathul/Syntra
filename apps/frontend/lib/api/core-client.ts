@@ -1,4 +1,9 @@
 import axios, { type AxiosError } from "axios";
+import type {
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  AuthUserDto,
+} from "shared";
 
 export const coreApi = axios.create({
   baseURL: "/api/proxy/core",
@@ -13,31 +18,6 @@ export const authApi = {
     axios.post<ApiSuccessResponse<{ user: AuthUserDto }>>("/api/auth/register", data),
   me: () => coreApi.get<ApiSuccessResponse<AuthUserDto>>("/auth/me"),
 };
-
-export interface ApiSuccessResponse<T> {
-  status: "success";
-  message: string;
-  data: T;
-}
-
-export interface ApiErrorResponse {
-  status: "error";
-  message: string;
-  error: { code: string };
-}
-
-export interface AuthTokenDto {
-  accessToken: string;
-  tokenType: "Bearer";
-  expiresIn: number;
-}
-
-export interface AuthUserDto {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN";
-}
 
 export const getApiErrorMessage = (error: unknown): string => {
   const axiosError = error as AxiosError<ApiErrorResponse>;

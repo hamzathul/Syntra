@@ -8,7 +8,7 @@ import type {
   LoginRequestDto,
   RegisterRequestDto,
 } from "shared";
-import type { AuthServicePort } from "./auth.service";
+import type { AuthServicePort } from "./auth.service.port";
 
 export class AuthController extends BaseController {
   private readonly v1Response = ResponseFactory.createV1Response();
