@@ -1,17 +1,10 @@
 import Cookies from "js-cookie";
-import type { CompanyDto } from "shared";
+import type { AuthUserDto as AuthUser, CompanyDto } from "shared";
 
 export const USER_KEY = "auth_user";
 export const ACTIVE_COMPANY_KEY = "active_company";
 
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  role: "USER" | "ADMIN";
-}
-
-export type { CompanyDto };
+export type { AuthUser, CompanyDto };
 
 export interface ActiveCompany {
   id: string;

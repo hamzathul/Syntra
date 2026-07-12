@@ -1,8 +1,7 @@
 import type { RequestHandler } from "express";
 import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
-import { validateRequest } from "backend-p";
-import { createCompanySchema, type CreateCompanyDto } from "shared";
-import type { ICompanyService } from "./company.service";
+import type { CreateCompanyDto } from "shared";
+import type { ICompanyService } from "./company.service.port";
 
 export class CompanyController extends BaseController {
   private readonly v1 = ResponseFactory.createV1Response();
@@ -34,8 +33,4 @@ export class CompanyController extends BaseController {
       data: companies,
     });
   });
-
-  static validations: { create: RequestHandler } = {
-    create: validateRequest({ body: createCompanySchema }),
-  };
 }

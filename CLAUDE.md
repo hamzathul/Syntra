@@ -1,165 +1,112 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance for OpenCode/Claude Code agents working in this repository.
 
 ## Commands
 
-All commands run from the repo root via Turbo unless targeting a specific workspace.
+All commands run from the repo root via pnpm.
 
-```bash
-pnpm dev              # start all apps in watch mode
-pnpm build            # build all packages and apps
-pnpm lint             # ESLint across all workspaces (zero warnings policy)
-pnpm check-types      # TypeScript strict check across all workspaces
-pnpm format           # Prettier on **/*.{ts,tsx,md}
-```
+### General
+- `pnpm dev` — Start all apps in watch mode.
+- `pnpm build` — Build all packages and apps.
+- `pnpm lint` — ESLint across all workspaces (zero warnings policy).
+- `pnpm check-types` — TypeScript strict check across all workspaces.
+- `pnpm format` — Prettier on `**/*.{ts,tsx,md}`.
 
-To target a single workspace:
-```bash
-pnpm --filter core dev          # Core (auth) API on port 3001
-pnpm --filter erp dev           # ERP API on port 3002
-pnpm --filter frontend dev      # Next.js frontend on port 3000
-pnpm --filter backend-p build
-```
+### Workspace-Specific
+Use `--filter <package-name>`:
+- `pnpm --filter core dev` — Core (Auth) API on port 3001 (`apps/backend`).
+- `pnpm --filter erp dev` — ERP API on port 3002.
+- `pnpm --filter frontend dev` — Next.js frontend on port 3000.
+- `pnpm --filter backend-p build` — Build `packages/backend`.
 
-Prisma (`apps/backend`, package name `core`):
-```bash
-pnpm --filter core db:migrate          # create + apply a new migration (dev)
-pnpm --filter core db:migrate:prod     # apply pending migrations (CI/production)
-pnpm --filter core db:reset            # drop DB, re-run all migrations + seed (dev only)
-pnpm --filter core db:generate         # regenerate Prisma Client after schema change
-pnpm --filter core db:studio           # open Prisma Studio GUI
-pnpm --filter core db:seed             # run prisma/seed.ts
-pnpm --filter core db:status           # show which migrations are applied
-```
+### Prisma (for `apps/backend`, package name `core`)
+- `pnpm --filter core db:migrate` — Create and apply new migration (development).
+- `pnpm --filter core db:migrate:prod` — Apply pending migrations (CI/production).
+- `pnpm --filter core db:reset` — Drop DB, re-run all migrations, and seed (dev only).
+- `pnpm --filter core db:generate` — Regenerate Prisma Client after schema change.
+- `pnpm --filter core db:studio` — Open Prisma Studio GUI.
+- `pnpm --filter core db:seed` — Run `prisma/seed.ts`.
+- `pnpm --filter core db:status` — Show applied migrations.
 
 ## Monorepo Layout
 
-```
 apps/
-  backend/      # "core" package — Auth & User service (port 3001)
-  erp/          # ERP service — calls core for identity (port 3002)
-  frontend/     # Next.js 16 application (port 3000)
+  backend/       — "core" package — Auth & User service (port 3001)
+  erp/           — "erp" package — ERP service (port 3002)
+  frontend/      — Next.js 16 application (port 3000)
 packages/
-  backend/      # "backend-p" — reusable Express abstractions (published internally)
-  frontend/     # "frontend-p" — Axios HTTP client patterns
-  shared/       # Contracts (Zod schemas + TypeScript types) shared between apps
-  ui/           # React component library stub
-  eslint-config/
-  typescript-config/
-```
+  backend/       — "backend-p" — reusable Express abstractions
+  shared/        — Zod schemas + TypeScript types shared between apps
+  eslint-config/ — "@repo/eslint-config"
+  typescript-config/ — "@repo/typescript-config"
 
-> **Note**: The directory is `apps/backend` but the package name is `"core"`. Use `--filter core` in pnpm commands.
+> Note: The directory is `apps/backend` but the package name is `"core"`. Use `--filter core` in pnpm commands.
 
 ## Microservice Architecture
 
-```
-Browser (apps/frontend)
-  ├── Auth calls → Core API (apps/backend, port 3001)
-  │     POST /api/v1/auth/register
-  │     POST /api/v1/auth/login
-  │     GET  /api/v1/auth/me
-  └── ERP calls → ERP API (apps/erp, port 3002)
-        GET  /api/v1/items
-        GET  /api/v1/sales
-        GET  /api/v1/purchases
-        GET  /api/v1/settings
+Browser (Frontend) → Core API (port 3001) for auth → ERP API (port 3002) for ERP data.
+ERP validates identity by calling Core API `GET /api/v1/auth/me`, passing the incoming Bearer token. ERP never holds the JWT secret.
 
-ERP API (apps/erp)
-  └── Validates identity → Core API GET /api/v1/auth/me
-        (passes Bearer token from incoming request)
-```
+Frontend uses Next.js API routes as a BFF layer — httpOnly cookies are converted to Bearer tokens for backend services. Proxy routes (`/api/proxy/core/*`, `/api/proxy/erp/*`) handle automatic token refresh on 401.
 
-JWT is issued by Core, stored in a browser cookie (`access_token`), and sent as `Authorization: Bearer <token>` to both Core and ERP APIs. ERP validates identity by calling Core's `/me` endpoint — it never holds the JWT secret.
+## Request Lifecycle (apps/backend and apps/erp)
 
-## Request lifecycle (apps/backend and apps/erp)
+Express app → requestId → requestLog → sanitize → routes → globalError
 
-```
-Express app (src/index.ts)
-  → requestId middleware
-  → requestLog middleware
-  → sanitize middleware
-  → route handler
-      → validateRequest middleware (Zod schema)
-      → authenticate middleware  (optional)
-      → Controller (extends BaseController)
-          → Service (extends BaseService)
-              → Repository (extends BaseRepository)
-  → globalError middleware
-```
+Per-route: validateRequest(Zod schema) → [authenticate] → Controller → Service → Repository
 
-## Frontend structure (apps/frontend)
+## Frontend Structure (apps/frontend)
 
-```
 app/
-  (auth)/         # Route group — login, register (no sidebar)
-  (dashboard)/    # Route group — protected by middleware
-    layout.tsx    # Sidebar + header with theme toggle + user nav
-    page.tsx      # Overview
-    sales/
-    purchases/
-    items/
-    reports/
-    settings/
-  layout.tsx      # Root layout — ThemeProvider, QueryClient, Toaster
-  globals.css     # Tailwind v4 + shadcn CSS variables (light + dark)
-components/
-  ui/             # shadcn components (button, card, input, label, etc.)
-  layout/         # Sidebar, ThemeToggle, UserNav
-  auth/           # LoginForm, RegisterForm
-lib/
-  auth.ts         # Cookie helpers — getToken, setSession, clearSession
-  utils.ts        # cn() utility
-  api/
-    core-client.ts   # Axios client for Core API
-    erp-client.ts    # Axios client for ERP API
-middleware.ts     # Route protection — redirects unauthenticated → /login
-```
+  (auth)/         — Route group — login, register (no sidebar)
+  (main)/         — Route group — protected, with sidebar + header
+    layout.tsx    — Sidebar + header with UserNav (profile, dark mode toggle)
+    dashboard/
+    sales/        — Stub page ("coming soon")
+    purchases/    — Stub page ("coming soon")
+    items/        — Stub page ("coming soon")
+    reports/      — Stub page ("coming soon")
+    settings/     — Stub page ("coming soon")
+  onboarding/
+  api/auth/*      — Login, register, logout, refresh route handlers (BFF)
+  api/proxy/*     — Proxy routes with auto token refresh
+  layout.tsx      — Root layout: ThemeProvider, QueryClient, Toaster
+  globals.css     — Tailwind v4 + shadcn CSS variables (light + dark)
+proxy.ts          — Route protection middleware (redirects unauthenticated → /login)
 
-**Dark/light mode**: `next-themes` with `attribute="class"` and `defaultTheme="system"`. The `.dark` class is applied to `<html>` and all CSS variables re-map under `.dark {}`.
+Dark/light mode: next-themes with `attribute="class"` and `defaultTheme="system"`. Toggle is in the user dropdown nav.
 
-## Dependency injection
+## Dependency Injection
 
-All major dependencies flow through constructor injection. Interface contracts live in `*.port.ts` files. Concrete implementations are wired in `factories/*.factory.ts` inside `apps/backend`.
+Interfaces in `*.port.ts` files. Concrete classes wired in `factories/*.factory.ts` inside `apps/backend` and `apps/erp`. Constructor injection only — the factory is the only place concrete classes are instantiated.
 
-## Error handling
+## Error Handling
 
-Throw an `AppError` subclass — the global error middleware catches it and formats via `ResponseFactory`. HTTP error classes live in `packages/backend/src/errors/http-errors.ts`: `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `ValidationError`, `ConflictError`, `NotFoundError`, `InternalServerError`.
+Throw an `AppError` subclass — global error middleware catches and formats via `ResponseFactory`. HTTP error classes in `packages/backend/src/errors/http-errors.ts`: `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `ValidationError`, `ConflictError`, `NotFoundError`, `InternalServerError`.
 
-## API response shape
+## API Response Shape
 
-All responses go through `V1ResponseFactory` (singleton). Shapes are defined in `packages/shared/src/api/response.ts`: `ApiSuccessResponse<TData>` / `ApiErrorResponse`.
+All responses use `V1ResponseFactory` (singleton). Shapes defined in `packages/shared/src/api/response.ts`. Success: `{ status, message, data, meta }`. Error: `{ status, message, error, meta, debug? }`.
 
 ## Auth
 
-- `packages/backend/src/auth/token-verifier.port.ts` — `TokenVerifier` interface.
 - `packages/backend/src/auth/token-signer.port.ts` — `TokenSigner` interface.
-- `packages/backend/src/middlewares/authentication.middleware.ts` — `createAuthMiddleware(verifier)`.
-- `packages/backend/src/middlewares/authorization.middleware.ts` — role-based guard.
+- `packages/backend/src/auth/token-verifier.port.ts` — `TokenVerifier` interface.
 - JWT via **jose** (dynamic import — ESM-only package); roles: `USER | ADMIN`.
 
 ## Contracts (shared package)
 
 Zod schemas in `packages/shared/src/contracts/` are the single source of truth.
-- `auth.contract.ts` — register, login, me shapes
-- `erp.contract.ts` — item, sale, purchase DTOs
-- `health.contract.ts` — health check
+- `auth.contract.ts` — register, login, me, token, session shapes.
+- `company.contract.ts` — company CRUD shapes.
 
-## Patterns in backend-p
-
-| Pattern | Location | Purpose |
-|---|---|---|
-| Adapter | `patterns/adapter/pino-logger.adapter.ts` | Wraps Pino behind `LoggerPort` |
-| Decorator | `patterns/decorator/with-error-logging.decorator.ts` | Logging around service methods |
-| Observer | `patterns/observer/domain-event-bus.ts` | In-process domain events |
-| Strategy | `patterns/strategy/cursor-pagination.strategy.ts` | Pluggable cursor pagination |
-| Factory | `patterns/factory/response.factory.ts` | Singleton response builder |
-
-## Key conventions
+## Key Conventions
 
 - **Ports** (`*.port.ts`) define interfaces; never import a concrete class where a port suffices.
 - **Factories** (`*.factory.ts`) are the only place where concrete classes are instantiated.
-- Validation at middleware layer only — `validateRequest(schema)`. Services trust their inputs.
-- Cursor pagination for list endpoints — `CursorPaginationStrategy`.
+- Validation at middleware layer via `validateRequest(schema)`. Services trust their inputs.
 - Logging via `LoggerPort` only — never `pino` or `console` directly.
 - shadcn components live in `apps/frontend/components/ui/`. Use `cn()` from `@/lib/utils`.
+- React Query hooks in `apps/frontend/hooks/` with query key factory pattern.
+- Frontend API types import from `shared` — never redefine locally.
