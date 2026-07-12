@@ -20,7 +20,6 @@ export * from "./middlewares/validate-request.middleware";
 export * from "./patterns/adapter/pino-logger.adapter";
 export * from "./patterns/decorator/with-error-logging.decorator";
 export * from "./patterns/factory/response.factory";
-export * from "./patterns/observer/domain-event-bus";
 export * from "./patterns/strategy/cursor-pagination.strategy";
 export * from "./responses/v1-response";
 export * from "./utils/bearer-token";
