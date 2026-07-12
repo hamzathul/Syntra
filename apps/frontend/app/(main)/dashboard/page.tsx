@@ -63,7 +63,6 @@ export default function DashboardOverviewPage() {
         ))}
       </div>
 
-      {/* Empty state */}
       <div className="rounded-2xl border bg-card p-10 text-center shadow-sm">
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent">
           <BarChart3 className="h-6 w-6 text-accent-foreground" />

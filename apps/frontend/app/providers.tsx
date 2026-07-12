@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
 import { useState, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +15,8 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
           queries: {
             retry: 1,
             staleTime: 15_000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: false,
           },
         },
       }),
@@ -26,6 +29,7 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
           {children}
           <Toaster richColors position="bottom-right" />
         </TooltipProvider>
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
       </QueryClientProvider>
     </ThemeProvider>
   );

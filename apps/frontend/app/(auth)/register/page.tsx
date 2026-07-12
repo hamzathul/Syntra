@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function RegisterPage() {
   return (
     <div className="flex flex-col gap-6">
-      {/* Brand */}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-lg shadow-primary/25">
           S
@@ -15,10 +15,15 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Card */}
-      <div className="rounded-2xl border bg-card p-6 shadow-sm">
-        <RegisterForm />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Register</CardTitle>
+          <CardDescription>Fill in your details to get started</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RegisterForm />
+        </CardContent>
+      </Card>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}

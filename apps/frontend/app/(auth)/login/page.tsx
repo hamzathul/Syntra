@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
     <div className="flex flex-col gap-6">
-      {/* Brand */}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-lg shadow-primary/25">
           S
@@ -15,10 +15,15 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Card */}
-      <div className="rounded-2xl border bg-card p-6 shadow-sm">
-        <LoginForm />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Sign in</CardTitle>
+          <CardDescription>Enter your credentials to continue</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LoginForm />
+        </CardContent>
+      </Card>
 
       <p className="text-center text-sm text-muted-foreground">
         {"Don't have an account? "}

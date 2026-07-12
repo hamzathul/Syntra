@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/sales", label: "Sales", icon: TrendingUp },
-  { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingCart },
-  { href: "/dashboard/items", label: "Items", icon: Package },
-  { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/sales", label: "Sales", icon: TrendingUp },
+  { href: "/purchases", label: "Purchases", icon: ShoppingCart },
+  { href: "/items", label: "Items", icon: Package },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
