@@ -44,7 +44,7 @@ describe("registerRequestSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("strips unknown keys", () => {
+  it("rejects unknown keys", () => {
     const result = registerRequestSchema.safeParse({
       name: "John Doe",
       email: "john@example.com",
