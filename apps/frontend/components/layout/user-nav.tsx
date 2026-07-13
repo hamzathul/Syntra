@@ -83,6 +83,7 @@ export function UserNav() {
             Dark mode
           </span>
           <Switch
+            aria-label="Toggle dark mode"
             checked={mounted ? isDark : false}
             onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
           />
