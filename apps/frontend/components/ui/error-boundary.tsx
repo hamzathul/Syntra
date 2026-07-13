@@ -17,7 +17,9 @@ export function PageError({ error, reset }: ErrorBoundaryProps) {
         </div>
         <h2 className="text-lg font-semibold">Something went wrong</h2>
         <p className="text-sm text-muted-foreground">
-          {error.message || "An unexpected error occurred"}
+          {process.env.NODE_ENV === "development"
+            ? error.message || "An unexpected error occurred"
+            : "An unexpected error occurred"}
         </p>
         <Button variant="outline" onClick={reset}>
           Try again
