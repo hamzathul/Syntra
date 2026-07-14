@@ -27,7 +27,7 @@ app.use(
 );
 app.use(requestIdMiddleware);
 app.use(createRequestLogMiddleware(logger));
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ limit: "1mb" }));
 app.use(sanitizeRequestBody);
 
 app.use("/api", routes);
