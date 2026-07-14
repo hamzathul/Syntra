@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { erpAuthMiddleware } from "../middlewares/erp-auth.middleware";
 import { CompanyModuleFactory } from "../modules/company/company.factory";
+import { SettingsModuleFactory } from "../modules/settings/settings.factory";
 import itemsRoutes from "../modules/items/items.routes";
 import purchasesRoutes from "../modules/purchases/purchases.routes";
 import salesRoutes from "../modules/sales/sales.routes";
-import settingsRoutes from "../modules/settings/settings.routes";
 
 const router: Router = Router();
 
@@ -19,6 +19,6 @@ const companyCtx = CompanyModuleFactory.createCompanyContextMiddleware();
 router.use("/v1/items", companyCtx, itemsRoutes);
 router.use("/v1/sales", companyCtx, salesRoutes);
 router.use("/v1/purchases", companyCtx, purchasesRoutes);
-router.use("/v1/settings", companyCtx, settingsRoutes);
+router.use("/v1/settings", companyCtx, SettingsModuleFactory.createRouter());
 
 export default router;

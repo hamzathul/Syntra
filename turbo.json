@@ -11,7 +11,7 @@
     "test": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "vitest.config.ts", "src/**/*.ts"]
-    }
+    },
     "db:generate": {
       "inputs": ["prisma/schema.prisma"],
       "outputs": ["src/generated/**"]

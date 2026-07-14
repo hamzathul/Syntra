@@ -8,3 +8,8 @@ export const companyKeys = {
   list: () => [...companyKeys.all, "list"] as const,
   detail: (id: string) => [...companyKeys.all, "detail", id] as const,
 };
+
+export const settingsKeys = {
+  all: ["settings"] as const,
+  companyProfile: () => [...settingsKeys.all, "company-profile"] as const,
+};

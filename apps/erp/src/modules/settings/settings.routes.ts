@@ -1,14 +1,17 @@
 import { Router } from "express";
-import { erpAuthMiddleware } from "../../middlewares/erp-auth.middleware";
+import { validateRequest } from "backend-p";
+import { updateCompanyProfileSchema } from "shared";
+import type { CompanyProfileController } from "./company-profile/company-profile.controller";
 
-const router: Router = Router();
+export function createSettingsRouter(companyProfileCtrl: CompanyProfileController): Router {
+  const router = Router();
 
-router.get("/", erpAuthMiddleware, (_req, res) => {
-  res.json({ data: {} });
-});
+  router.get("/company-profile", companyProfileCtrl.get);
+  router.patch(
+    "/company-profile",
+    validateRequest({ body: updateCompanyProfileSchema }),
+    companyProfileCtrl.update,
+  );
 
-router.patch("/", erpAuthMiddleware, (_req, res) => {
-  res.json({ data: {} });
-});
-
-export default router;
+  return router;
+}
