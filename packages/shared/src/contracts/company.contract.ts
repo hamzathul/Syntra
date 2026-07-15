@@ -69,7 +69,7 @@ export const updateCompanyProfileSchema = z.object({
   state: z.string().max(100).nullable().optional(),
   businessType: z.string().max(100).nullable().optional(),
   businessCategory: z.string().max(100).nullable().optional(),
-  logo: z.string().max(800_000, "Logo image too large").nullable().optional()
+  logo: z.string().max(800_000, "Logo image too large").nullable().optional(),
   showOnCard: z.array(z.string()).optional(),
 });
 

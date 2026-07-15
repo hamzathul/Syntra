@@ -10,15 +10,21 @@ export class CompanyProfileService implements ICompanyProfileService {
     private readonly logger: LoggerPort,
   ) {}
 
-  async getProfile(companyId: string): Promise<CompanyProfileDto> {
-    const record = await this.repo.findById(companyId);
+  async getProfile(companyId: string, userId: string): Promise<CompanyProfileDto> {
+    const [record, membership] = await Promise.all([
+      this.repo.findById(companyId),
+      this.repo.getMembership(userId, companyId),
+    ]);
     if (!record) throw new NotFoundError("Company not found");
 
-    return this.toDto(record);
+    return this.toDto(record, membership);
   }
 
-  async updateProfile(companyId: string, dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto> {
-    const existing = await this.repo.findById(companyId);
+  async updateProfile(companyId: string, userId: string, dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto> {
+    const [existing, membership] = await Promise.all([
+      this.repo.findById(companyId),
+      this.repo.getMembership(userId, companyId),
+    ]);
     if (!existing) throw new NotFoundError("Company not found");
 
     const data = this.prepareUpdateData(dto);
@@ -29,33 +35,36 @@ export class CompanyProfileService implements ICompanyProfileService {
       "Company profile updated",
     );
 
-    return this.toDto(updated);
+    return this.toDto(updated, membership);
   }
 
-  private toDto(record: {
-    id: string;
-    name: string;
-    gstin: string | null;
-    phone1: string | null;
-    phone2: string | null;
-    email: string | null;
-    address: string | null;
-    pincode: string | null;
-    description: string | null;
-    signature: string | null;
-    state: string | null;
-    businessType: string | null;
-    businessCategory: string | null;
-    logo: string | null;
-    showOnCard: unknown;
-    createdAt: Date;
-  }): CompanyProfileDto {
+  private toDto(
+    record: {
+      id: string;
+      name: string;
+      gstin: string | null;
+      phone1: string | null;
+      phone2: string | null;
+      email: string | null;
+      address: string | null;
+      pincode: string | null;
+      description: string | null;
+      signature: string | null;
+      state: string | null;
+      businessType: string | null;
+      businessCategory: string | null;
+      logo: string | null;
+      showOnCard: unknown;
+      createdAt: Date;
+    },
+    membership: { role: string; isDefault: boolean } | null,
+  ): CompanyProfileDto {
     const showOnCard: string[] = Array.isArray(record.showOnCard) ? record.showOnCard : [];
     return {
       id: record.id,
       name: record.name,
-      role: "OWNER",
-      isDefault: true,
+      role: (membership?.role ?? "MEMBER") as "OWNER" | "ADMIN" | "MEMBER",
+      isDefault: membership?.isDefault ?? false,
       createdAt: record.createdAt.toISOString(),
       gstin: record.gstin,
       phone1: record.phone1,

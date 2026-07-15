@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory } from "backend-p";
+import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
 import type { UpdateCompanyProfileDto } from "shared";
 import type { ICompanyProfileService } from "./company-profile.service.port";
 
@@ -18,7 +18,8 @@ export class CompanyProfileController extends BaseController {
 
   readonly get: RequestHandler = this.asyncHandler(async (req, res) => {
     const companyId = getCompanyId(res.locals);
-    const profile = await this.service.getProfile(companyId);
+    const { id: userId } = getAuthenticatedUser(res.locals);
+    const profile = await this.service.getProfile(companyId, userId);
 
     this.v1.success(res, {
       request: req,
@@ -29,8 +30,9 @@ export class CompanyProfileController extends BaseController {
 
   readonly update: RequestHandler = this.asyncHandler(async (req, res) => {
     const companyId = getCompanyId(res.locals);
+    const { id: userId } = getAuthenticatedUser(res.locals);
     const dto = req.body as UpdateCompanyProfileDto;
-    const profile = await this.service.updateProfile(companyId, dto);
+    const profile = await this.service.updateProfile(companyId, userId, dto);
 
     this.v1.success(res, {
       request: req,
