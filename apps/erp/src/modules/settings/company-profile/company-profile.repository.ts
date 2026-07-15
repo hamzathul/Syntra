@@ -1,5 +1,5 @@
 import type { PrismaClient } from "../../../generated/prisma";
-import type { ICompanyProfileRepository } from "./company-profile.repository.port";
+import type { CompanyMembership, ICompanyProfileRepository } from "./company-profile.repository.port";
 import type { CompanyProfileRecord } from "./company-profile.types";
 
 export class CompanyProfileRepository implements ICompanyProfileRepository {
@@ -11,6 +11,14 @@ export class CompanyProfileRepository implements ICompanyProfileRepository {
     });
     if (!company) return null;
     return this.mapRecord(company);
+  }
+
+  async getMembership(userId: string, companyId: string): Promise<CompanyMembership | null> {
+    const member = await this.prisma.companyMember.findUnique({
+      where: { userId_companyId: { userId, companyId } },
+      select: { role: true, isDefault: true },
+    });
+    return member;
   }
 
   async update(companyId: string, data: Record<string, unknown>): Promise<CompanyProfileRecord> {

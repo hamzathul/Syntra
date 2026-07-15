@@ -12,7 +12,3 @@ ALTER TABLE "Company" ADD COLUMN "businessType" TEXT;
 ALTER TABLE "Company" ADD COLUMN "businessCategory" TEXT;
 ALTER TABLE "Company" ADD COLUMN "logo" TEXT;
 ALTER TABLE "Company" ADD COLUMN "showOnCard" JSONB DEFAULT '[]'::jsonb;
-ALTER TABLE "Company" ADD COLUMN "shareToken" TEXT;
-
--- CreateIndex
-CREATE UNIQUE INDEX "Company_shareToken_key" ON "Company"("shareToken");

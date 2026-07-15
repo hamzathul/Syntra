@@ -1,6 +1,6 @@
 import type { CompanyProfileDto, UpdateCompanyProfileDto } from "shared";
 
 export interface ICompanyProfileService {
-  getProfile(companyId: string): Promise<CompanyProfileDto>;
-  updateProfile(companyId: string, dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto>;
+  getProfile(companyId: string, userId: string): Promise<CompanyProfileDto>;
+  updateProfile(companyId: string, userId: string, dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto>;
 }
