@@ -4,7 +4,7 @@
   "globalEnv": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "REFRESH_TOKEN_EXPIRES_IN", "CORS_ORIGINS", "LOG_LEVEL", "PORT", "CORE_API_URL", "ERP_API_URL", "NEXT_PUBLIC_CORE_API_URL", "NEXT_PUBLIC_ERP_API_URL", "NEXT_PUBLIC_ERP_DATABASE_URL"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
