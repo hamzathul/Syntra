@@ -65,11 +65,11 @@ export const updateCompanyProfileSchema = z.object({
   address: z.string().max(500, "Address too long").nullable().optional(),
   pincode: z.string().regex(pincodeRegex, "Pincode must be exactly 6 digits").nullable().optional(),
   description: z.string().max(1000, "Description too long").nullable().optional(),
-  signature: z.string().max(500_000, "Signature image too large").nullable().optional(),
+  signature: z.string().max(800_000, "Signature image too large").nullable().optional(),
   state: z.string().max(100).nullable().optional(),
   businessType: z.string().max(100).nullable().optional(),
   businessCategory: z.string().max(100).nullable().optional(),
-  logo: z.string().max(500_000, "Logo image too large").nullable().optional(),
+  logo: z.string().max(800_000, "Logo image too large").nullable().optional()
   showOnCard: z.array(z.string()).optional(),
 });
 
