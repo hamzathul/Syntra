@@ -88,11 +88,14 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
 
   const watchedValues = watch();
   const prevJsonRef = useRef("");
-  const json = JSON.stringify(watchedValues);
-  if (json !== prevJsonRef.current) {
-    prevJsonRef.current = json;
-    onLiveValuesChange?.(watchedValues);
-  }
+
+  useEffect(() => {
+    const json = JSON.stringify(watchedValues);
+    if (json !== prevJsonRef.current) {
+      prevJsonRef.current = json;
+      onLiveValuesChange?.(watchedValues);
+    }
+  }, [watchedValues, onLiveValuesChange]);
 
   const toggleShowOnCard = useCallback(
     (key: string, show: boolean) => {
