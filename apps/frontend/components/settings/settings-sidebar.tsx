@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboardIcon, Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SettingsIcon } from "lucide-react";
+import { LayoutDashboardIcon, Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SettingsIcon, SlidersHorizontalIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,6 +18,13 @@ const navItems = [
     href: "/settings/company-profile",
     label: "Company Profile",
     icon: Building2Icon,
+    disabled: false,
+    exact: false,
+  },
+  {
+    href: "/settings/general",
+    label: "General",
+    icon: SlidersHorizontalIcon,
     disabled: false,
     exact: false,
   },

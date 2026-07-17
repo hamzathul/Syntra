@@ -12,4 +12,5 @@ export const companyKeys = {
 export const settingsKeys = {
   all: ["settings"] as const,
   companyProfile: () => [...settingsKeys.all, "company-profile"] as const,
+  general: () => [...settingsKeys.all, "general"] as const,
 };

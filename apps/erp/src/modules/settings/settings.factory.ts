@@ -1,5 +1,6 @@
 import type { Router } from "express";
 import { CompanyProfileFactory } from "./company-profile/company-profile.factory";
+import { GeneralSettingsFactory } from "./general-settings/general-settings.factory";
 import { createSettingsRouter } from "./settings.routes";
 
 export class SettingsModuleFactory {
@@ -7,8 +8,9 @@ export class SettingsModuleFactory {
 
   static createRouter(): Router {
     if (SettingsModuleFactory.router === null) {
-      const ctrl = CompanyProfileFactory.getController();
-      SettingsModuleFactory.router = createSettingsRouter(ctrl);
+      const companyProfileCtrl = CompanyProfileFactory.getController();
+      const generalSettingsCtrl = GeneralSettingsFactory.getController();
+      SettingsModuleFactory.router = createSettingsRouter(companyProfileCtrl, generalSettingsCtrl);
     }
     return SettingsModuleFactory.router!;
   }

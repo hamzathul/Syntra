@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2Icon, CreditCardIcon, BellIcon, UsersIcon } from "lucide-react";
+import { Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SlidersHorizontalIcon } from "lucide-react";
 import {
   Card,
   CardDescription,
@@ -10,6 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 const settingsCategories = [
+  {
+    href: "/settings/general",
+    title: "General",
+    description: "Set business currency, decimal places, and date format used across your company.",
+    icon: SlidersHorizontalIcon,
+    disabled: false,
+  },
   {
     href: "/settings/company-profile",
     title: "Company Profile",
