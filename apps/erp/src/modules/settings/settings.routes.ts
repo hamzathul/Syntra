@@ -1,9 +1,13 @@
 import { Router } from "express";
 import { validateRequest } from "backend-p";
-import { updateCompanyProfileSchema } from "shared";
+import { updateCompanyProfileSchema, updateGeneralSettingsSchema } from "shared";
 import type { CompanyProfileController } from "./company-profile/company-profile.controller";
+import type { GeneralSettingsController } from "./general-settings/general-settings.controller";
 
-export function createSettingsRouter(companyProfileCtrl: CompanyProfileController): Router {
+export function createSettingsRouter(
+  companyProfileCtrl: CompanyProfileController,
+  generalSettingsCtrl: GeneralSettingsController,
+): Router {
   const router = Router();
 
   router.get("/company-profile", companyProfileCtrl.get);
@@ -11,6 +15,13 @@ export function createSettingsRouter(companyProfileCtrl: CompanyProfileControlle
     "/company-profile",
     validateRequest({ body: updateCompanyProfileSchema }),
     companyProfileCtrl.update,
+  );
+
+  router.get("/general", generalSettingsCtrl.get);
+  router.patch(
+    "/general",
+    validateRequest({ body: updateGeneralSettingsSchema }),
+    generalSettingsCtrl.update,
   );
 
   return router;

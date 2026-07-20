@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { CompanyDto, CreateCompanyDto, CompanyProfileDto, UpdateCompanyProfileDto } from "shared";
+import type { CompanyDto, CreateCompanyDto, CompanyProfileDto, UpdateCompanyProfileDto, GeneralSettingsDto, UpdateGeneralSettingsDto } from "shared";
 import { getActiveCompany } from "@/lib/auth";
 
 export const erpApi = axios.create({
@@ -36,4 +36,9 @@ export const settingsApi = {
   updateCompanyProfile: (dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto> =>
     erpApi.patch<CompanyProfileDto>("/settings/company-profile", dto).then((r) => r.data),
 
+  getGeneral: (): Promise<GeneralSettingsDto> =>
+    erpApi.get<GeneralSettingsDto>("/settings/general").then((r) => r.data),
+
+  updateGeneral: (dto: UpdateGeneralSettingsDto): Promise<GeneralSettingsDto> =>
+    erpApi.patch<GeneralSettingsDto>("/settings/general", dto).then((r) => r.data),
 };

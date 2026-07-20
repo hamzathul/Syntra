@@ -32,7 +32,20 @@ model Company {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  members CompanyMember[]
+  members  CompanyMember[]
+  settings CompanySettings?
+}
+
+model CompanySettings {
+  id               String   @id @default(cuid())
+  companyId        String   @unique
+  businessCurrency String   @default("INR")
+  decimalPlaces    Int      @default(2)
+  dateFormat       String   @default("DD/MM/YYYY")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model CompanyMember {
