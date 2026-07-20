@@ -35,7 +35,7 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm<FormValues>({
     resolver: zodResolver(generalSettingsFormSchema),
     defaultValues: {
@@ -48,9 +48,15 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
   const onSubmit = useCallback(
     async (data: FormValues) => {
       const dto: UpdateGeneralSettingsDto = {
-        businessCurrency: data.businessCurrency || undefined,
-        decimalPlaces: data.decimalPlaces || undefined,
-        dateFormat: data.dateFormat || undefined,
+        ...(dirtyFields.businessCurrency && {
+          businessCurrency: data.businessCurrency,
+        }),
+        ...(dirtyFields.decimalPlaces && {
+          decimalPlaces: data.decimalPlaces,
+        }),
+        ...(dirtyFields.dateFormat && {
+          dateFormat: data.dateFormat,
+        }),
       };
 
       try {

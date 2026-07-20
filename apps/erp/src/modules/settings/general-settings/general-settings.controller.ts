@@ -17,8 +17,8 @@ export class GeneralSettingsController extends BaseController {
   }
 
   readonly get: RequestHandler = this.asyncHandler(async (req, res) => {
-    const companyId = getCompanyId(res.locals);
     getAuthenticatedUser(res.locals);
+    const companyId = getCompanyId(res.locals);
     const settings = await this.service.getSettings(companyId);
 
     this.v1.success(res, {
@@ -29,8 +29,8 @@ export class GeneralSettingsController extends BaseController {
   });
 
   readonly update: RequestHandler = this.asyncHandler(async (req, res) => {
-    const companyId = getCompanyId(res.locals);
     getAuthenticatedUser(res.locals);
+    const companyId = getCompanyId(res.locals);
     const dto = req.body as UpdateGeneralSettingsDto;
     const settings = await this.service.updateSettings(companyId, dto);
 
