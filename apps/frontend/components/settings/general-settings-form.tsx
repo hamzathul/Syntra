@@ -85,7 +85,7 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
         }
       }
     },
-    [updateMutation, setError],
+    [updateMutation, setError, dirtyFields],
   );
 
   return (
