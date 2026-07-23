@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboardIcon, Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SettingsIcon, SlidersHorizontalIcon } from "lucide-react";
+import { LayoutDashboardIcon, Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SettingsIcon, SlidersHorizontalIcon, ReceiptIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -25,6 +25,13 @@ const navItems = [
     href: "/settings/general",
     label: "General",
     icon: SlidersHorizontalIcon,
+    disabled: false,
+    exact: false,
+  },
+  {
+    href: "/settings/taxes",
+    label: "Taxes & GST",
+    icon: ReceiptIcon,
     disabled: false,
     exact: false,
   },

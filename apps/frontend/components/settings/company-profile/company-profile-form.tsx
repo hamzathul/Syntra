@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { FieldToggle } from "./field-toggle";
 import { LogoUpload } from "./logo-upload";
 import { SignatureInput } from "./signature-input";
-import { useUpdateCompanyProfileMutation } from "@/hooks/use-company-profile-query";
+import { useUpdateCompanyProfileMutation } from "@/hooks/settings/use-company-profile-query";
 import { toast } from "sonner";
 
 const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;

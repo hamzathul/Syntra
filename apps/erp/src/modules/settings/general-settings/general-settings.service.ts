@@ -7,6 +7,7 @@ const DEFAULTS = {
   businessCurrency: "INR",
   decimalPlaces: 2,
   dateFormat: "DD/MM/YYYY",
+  stateOfSupplyEnabled: false,
 } as const;
 
 export class GeneralSettingsService implements IGeneralSettingsService {
@@ -47,6 +48,7 @@ export class GeneralSettingsService implements IGeneralSettingsService {
     businessCurrency: string;
     decimalPlaces: number;
     dateFormat: string;
+    stateOfSupplyEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
   }): GeneralSettingsDto {
@@ -56,6 +58,7 @@ export class GeneralSettingsService implements IGeneralSettingsService {
       businessCurrency: record.businessCurrency,
       decimalPlaces: record.decimalPlaces,
       dateFormat: record.dateFormat,
+      stateOfSupplyEnabled: record.stateOfSupplyEnabled,
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     };
@@ -67,6 +70,7 @@ export class GeneralSettingsService implements IGeneralSettingsService {
       "businessCurrency",
       "decimalPlaces",
       "dateFormat",
+      "stateOfSupplyEnabled",
     ];
     for (const key of keys) {
       if (key in dto) {

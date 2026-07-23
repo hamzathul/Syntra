@@ -28,6 +28,7 @@ export class GeneralSettingsRepository implements IGeneralSettingsRepository {
     businessCurrency: string;
     decimalPlaces: number;
     dateFormat: string;
+    stateOfSupplyEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
   }): GeneralSettingsRecord {
@@ -37,6 +38,7 @@ export class GeneralSettingsRepository implements IGeneralSettingsRepository {
       businessCurrency: r.businessCurrency,
       decimalPlaces: r.decimalPlaces,
       dateFormat: r.dateFormat,
+      stateOfSupplyEnabled: r.stateOfSupplyEnabled,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
     };

@@ -11,7 +11,7 @@ import type { GeneralSettingsDto, UpdateGeneralSettingsDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { useUpdateGeneralSettingsMutation } from "@/hooks/use-general-settings-query";
+import { useUpdateGeneralSettingsMutation } from "@/hooks/settings/use-general-settings-query";
 import { toast } from "sonner";
 
 const decimalPlacesSchema = z.number().int().min(1).max(5);

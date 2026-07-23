@@ -1,6 +1,7 @@
 import type { Router } from "express";
 import { CompanyProfileFactory } from "./company-profile/company-profile.factory";
 import { GeneralSettingsFactory } from "./general-settings/general-settings.factory";
+import { TaxesModuleFactory } from "./taxes/taxes.factory";
 import { createSettingsRouter } from "./settings.routes";
 
 export class SettingsModuleFactory {
@@ -10,7 +11,8 @@ export class SettingsModuleFactory {
     if (SettingsModuleFactory.router === null) {
       const companyProfileCtrl = CompanyProfileFactory.getController();
       const generalSettingsCtrl = GeneralSettingsFactory.getController();
-      SettingsModuleFactory.router = createSettingsRouter(companyProfileCtrl, generalSettingsCtrl);
+      const taxesRouter = TaxesModuleFactory.getRouter();
+      SettingsModuleFactory.router = createSettingsRouter(companyProfileCtrl, generalSettingsCtrl, taxesRouter);
     }
     return SettingsModuleFactory.router!;
   }

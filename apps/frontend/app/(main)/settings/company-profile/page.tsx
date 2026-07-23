@@ -2,9 +2,9 @@
 
 import { useRef, useState, useMemo, useCallback } from "react";
 import { Loader2Icon, AlertCircleIcon, DownloadIcon } from "lucide-react";
-import { useCompanyProfile } from "@/hooks/use-company-profile-query";
-import { CompanyProfileForm } from "@/components/settings/company-profile-form";
-import { BusinessCard } from "@/components/settings/business-card";
+import { useCompanyProfile } from "@/hooks/settings/use-company-profile-query";
+import { CompanyProfileForm } from "@/components/settings/company-profile/company-profile-form";
+import { BusinessCard } from "@/components/settings/company-profile/business-card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
