@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
+import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
 import { setUser } from "@/lib/auth";
 
 export function RegisterForm() {

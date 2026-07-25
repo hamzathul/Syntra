@@ -3,6 +3,8 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { PencilIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { readImageFileAsDataUrl } from "@/lib/file-utils";
+import { toast } from "sonner";
 
 interface SignatureInputProps {
   value: string | null;
@@ -12,8 +14,17 @@ interface SignatureInputProps {
 export function SignatureInput({ value, onChange }: SignatureInputProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const sourceRef = useRef<"draw" | "upload">("draw");
   const [isDrawing, setIsDrawing] = useState(false);
-  const [mode, setMode] = useState<"draw" | "upload">(value?.startsWith("data:") && !value.includes("image/svg") ? "upload" : "draw");
+  const [mode, setMode] = useState<"draw" | "upload">("draw");
+
+  useEffect(() => {
+    if (!value) {
+      setMode("draw");
+    } else if (sourceRef.current === "upload") {
+      setMode("upload");
+    }
+  }, [value]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,15 +52,17 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
   const getPos = (e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     if ("touches" in e) {
       return {
-        x: e.touches[0]!.clientX - rect.left,
-        y: e.touches[0]!.clientY - rect.top,
+        x: (e.touches[0]!.clientX - rect.left) * scaleX,
+        y: (e.touches[0]!.clientY - rect.top) * scaleY,
       };
     }
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
     };
   };
 
@@ -76,6 +89,7 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
   const stopDraw = useCallback(() => {
     setIsDrawing(false);
     const canvas = canvasRef.current!;
+    sourceRef.current = "draw";
     onChange(canvas.toDataURL("image/png"));
   }, [onChange]);
 
@@ -86,16 +100,19 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     onChange(null);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      onChange(ev.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-    setMode("upload");
-  };
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      sourceRef.current = "upload";
+      onChange(dataUrl);
+      setMode("upload");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to upload image");
+    }
+    e.target.value = "";
+  }, [onChange]);
 
   return (
     <div className="space-y-2">

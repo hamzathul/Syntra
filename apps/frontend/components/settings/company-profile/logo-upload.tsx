@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import Image from "next/image";
 import { CameraIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { readImageFileAsDataUrl } from "@/lib/file-utils";
+import { toast } from "sonner";
 
 interface LogoUploadProps {
   value: string | null;
@@ -16,20 +18,17 @@ export function LogoUpload({ value, onChange, size = 96 }: LogoUploadProps) {
 
   const handleClick = () => fileRef.current?.click();
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) return;
-    if (file.size > 500_000) {
-      alert("Image too large. Maximum 500KB.");
-      return;
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      onChange(dataUrl);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to upload image");
     }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      onChange(ev.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
+    e.target.value = "";
+  }, [onChange]);
 
   const initials = "BS";
 

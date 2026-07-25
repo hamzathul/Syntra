@@ -14,3 +14,9 @@ export const settingsKeys = {
   companyProfile: () => [...settingsKeys.all, "company-profile"] as const,
   general: () => [...settingsKeys.all, "general"] as const,
 };
+
+export const taxKeys = {
+  all: ["taxes"] as const,
+  rates: () => [...taxKeys.all, "rates"] as const,
+  groups: () => [...taxKeys.all, "groups"] as const,
+};

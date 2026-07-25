@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { companyApi } from "@/lib/api/erp-client";
+import { companyService } from "@/lib/api/services/company.service";
 import {
   getActiveCompany,
   setActiveCompany,
@@ -26,7 +26,7 @@ export function CompanySwitcher() {
 
   useEffect(() => {
     setActive(getActiveCompany());
-    companyApi
+    companyService
       .list()
       .then(setCompanies)
       .catch(() => undefined)

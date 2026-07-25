@@ -60,6 +60,7 @@ export interface GeneralSettingsDto {
   readonly businessCurrency: string;
   readonly decimalPlaces: number;
   readonly dateFormat: string;
+  readonly stateOfSupplyEnabled: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -79,6 +80,7 @@ export const updateGeneralSettingsSchema = z.object({
     .string()
     .refine((v) => (dateFormats as readonly string[]).includes(v), { message: "Invalid date format" })
     .optional(),
+  stateOfSupplyEnabled: z.boolean().optional(),
 });
 
 export type UpdateGeneralSettingsDto = z.infer<typeof updateGeneralSettingsSchema>;

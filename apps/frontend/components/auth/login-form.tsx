@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
-import { companyApi } from "@/lib/api/erp-client";
+import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
+import { companyService } from "@/lib/api/services/company.service";
 import { setUser, setActiveCompany } from "@/lib/auth";
 
 export function LoginForm() {
@@ -24,7 +24,7 @@ export function LoginForm() {
       const { user } = response.data.data;
       setUser(user);
 
-      const companies = await companyApi.list();
+      const companies = await companyService.list();
       if (companies.length === 0) {
         toast.success("Welcome back! Let's set up your company.");
         window.location.href = "/onboarding";

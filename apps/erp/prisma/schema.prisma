@@ -32,20 +32,60 @@ model Company {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  members  CompanyMember[]
-  settings CompanySettings?
+  members   CompanyMember[]
+  settings  CompanySettings?
+  taxRates  TaxRate[]
+  taxGroups TaxGroup[]
 }
 
 model CompanySettings {
-  id               String   @id @default(cuid())
-  companyId        String   @unique
-  businessCurrency String   @default("INR")
-  decimalPlaces    Int      @default(2)
-  dateFormat       String   @default("DD/MM/YYYY")
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  companyId           String   @unique
+  businessCurrency    String   @default("INR")
+  decimalPlaces       Int      @default(2)
+  dateFormat          String   @default("DD/MM/YYYY")
+  stateOfSupplyEnabled Boolean @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model TaxRate {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  rate      Decimal  @db.Decimal(5, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company          Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  groupRates       TaxGroupRate[]
+
+  @@unique([companyId, name])
+}
+
+model TaxGroup {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company    Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  groupRates TaxGroupRate[]
+
+  @@unique([companyId, name])
+}
+
+model TaxGroupRate {
+  taxGroupId String
+  taxRateId  String
+
+  taxGroup TaxGroup @relation(fields: [taxGroupId], references: [id], onDelete: Cascade)
+  taxRate  TaxRate  @relation(fields: [taxRateId], references: [id], onDelete: Cascade)
+
+  @@id([taxGroupId, taxRateId])
 }
 
 model CompanyMember {

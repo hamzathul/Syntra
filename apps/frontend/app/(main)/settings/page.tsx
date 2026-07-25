@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SlidersHorizontalIcon } from "lucide-react";
+import { Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SlidersHorizontalIcon, ReceiptIcon } from "lucide-react";
 import {
   Card,
   CardDescription,
@@ -22,6 +22,13 @@ const settingsCategories = [
     title: "Company Profile",
     description: "Manage your business name, contact details, logo, and create a digital business card to share.",
     icon: Building2Icon,
+    disabled: false,
+  },
+  {
+    href: "/settings/taxes",
+    title: "Taxes & GST",
+    description: "Configure tax rates, create tax groups, and manage state of supply settings.",
+    icon: ReceiptIcon,
     disabled: false,
   },
   {

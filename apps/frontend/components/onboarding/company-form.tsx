@@ -5,9 +5,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { companyApi } from "@/lib/api/erp-client";
+import { companyService } from "@/lib/api/services/company.service";
 import { setActiveCompany } from "@/lib/auth";
-import { getApiErrorMessage } from "@/lib/api/core-client";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
 
 export function CompanyForm() {
   const [pending, setPending] = useState(false);
@@ -19,7 +19,7 @@ export function CompanyForm() {
 
     setPending(true);
     try {
-      const company = await companyApi.create({ name });
+      const company = await     companyService.create({ name });
       setActiveCompany({ id: company.id, name: company.name, role: company.role });
       toast.success(`${company.name} is ready!`);
       window.location.href = "/dashboard";

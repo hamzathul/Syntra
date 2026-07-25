@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { authApi, getApiErrorMessage } from "@/lib/api/core-client";
+import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
 import { setUser, clearSession } from "@/lib/auth";
 import { authKeys } from "./query-keys";
 
