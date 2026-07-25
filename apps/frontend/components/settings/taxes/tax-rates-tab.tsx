@@ -51,7 +51,8 @@ export function TaxRatesTab() {
       toast.success("Tax rate added");
       resetAddForm();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to add tax rate";
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const msg = axiosError?.response?.data?.message ?? "Failed to add tax rate";
       toast.error(msg);
     }
   }, [newName, newRate, createMutation, resetAddForm]);
@@ -78,7 +79,8 @@ export function TaxRatesTab() {
       toast.success("Tax rate updated");
       cancelEdit();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to update tax rate";
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const msg = axiosError?.response?.data?.message ?? "Failed to update tax rate";
       toast.error(msg);
     }
   }, [editName, editRate, updateMutation, cancelEdit]);

@@ -13,9 +13,9 @@ export const coreApi = axios.create({
 
 export const authApi = {
   login: (data: { email: string; password: string }) =>
-    axios.post<ApiSuccessResponse<{ user: AuthUserDto }>>("/api/auth/login", data),
+    coreApi.post<ApiSuccessResponse<{ user: AuthUserDto }>>("/auth/login", data),
   register: (data: { name: string; email: string; password: string }) =>
-    axios.post<ApiSuccessResponse<{ user: AuthUserDto }>>("/api/auth/register", data),
+    coreApi.post<ApiSuccessResponse<{ user: AuthUserDto }>>("/auth/register", data),
   me: () => coreApi.get<ApiSuccessResponse<AuthUserDto>>("/auth/me"),
 };
 

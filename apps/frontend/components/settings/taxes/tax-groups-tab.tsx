@@ -91,7 +91,8 @@ export function TaxGroupsTab() {
       }
       closeDialog();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to save tax group";
+      const axiosError = err as AxiosError<{ message?: string }>;
+      const msg = axiosError?.response?.data?.message ?? "Failed to save tax group";
       toast.error(msg);
     }
   }, [groupName, selectedRateIds, editingGroup, createMutation, updateMutation, closeDialog]);

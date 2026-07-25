@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +18,10 @@ export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
   const updateGeneralMutation = useUpdateGeneralSettingsMutation();
   const [activeTab, setActiveTab] = useState<"rates" | "groups">("rates");
   const [stateOfSupply, setStateOfSupply] = useState(settings.stateOfSupplyEnabled);
+
+  useEffect(() => {
+    setStateOfSupply(settings.stateOfSupplyEnabled);
+  }, [settings.stateOfSupplyEnabled]);
 
   const handleToggle = useCallback(async (checked: boolean) => {
     setStateOfSupply(checked);

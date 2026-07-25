@@ -32,12 +32,13 @@ export class TaxGroupRepository implements ITaxGroupRepository {
   }
 
   async create(companyId: string, data: { name: string; taxRateIds: string[] }): Promise<TaxGroupRecord> {
+    const ids = [...new Set(data.taxRateIds)];
     const group = await this.prisma.taxGroup.create({
       data: {
         companyId,
         name: data.name,
         groupRates: {
-          create: data.taxRateIds.map((taxRateId) => ({ taxRateId })),
+          create: ids.map((taxRateId) => ({ taxRateId })),
         },
       },
       include: {
@@ -52,9 +53,10 @@ export class TaxGroupRepository implements ITaxGroupRepository {
   async update(id: string, companyId: string, data: { name?: string; taxRateIds?: string[] }): Promise<TaxGroupRecord> {
     const group = await this.prisma.$transaction(async (tx) => {
       if (data.taxRateIds) {
+        const ids = [...new Set(data.taxRateIds)];
         await tx.taxGroupRate.deleteMany({ where: { taxGroupId: id } });
         await tx.taxGroupRate.createMany({
-          data: data.taxRateIds.map((taxRateId) => ({ taxGroupId: id, taxRateId })),
+          data: ids.map((taxRateId) => ({ taxGroupId: id, taxRateId })),
         });
       }
 
