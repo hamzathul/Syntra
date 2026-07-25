@@ -21,6 +21,8 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
   useEffect(() => {
     if (!value) {
       setMode("draw");
+    } else if (sourceRef.current === "upload") {
+      setMode("upload");
     }
   }, [value]);
 
