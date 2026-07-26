@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/lib/api/services/auth.service";
 import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
 import { setUser, clearSession, getUser } from "@/lib/auth";
-import { authKeys } from "./query-keys";
+import { authKeys, companyKeys } from "./query-keys";
 
 export function useAuthUser() {
   return useQuery({
@@ -27,6 +27,7 @@ export function useLoginMutation() {
     onSuccess: (data) => {
       setUser(data.user);
       queryClient.setQueryData(authKeys.me(), data.user);
+      queryClient.invalidateQueries({ queryKey: companyKeys.list() });
     },
   });
 }

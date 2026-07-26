@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Building2, Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,34 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { companyService } from "@/lib/api/services/company.service";
-import {
-  getActiveCompany,
-  setActiveCompany,
-  type ActiveCompany,
-  type CompanyDto,
-} from "@/lib/auth";
+import { useCompany } from "@/lib/company-context";
 
 export function CompanySwitcher() {
-  const [active, setActive] = useState<ActiveCompany | null>(null);
-  const [companies, setCompanies] = useState<CompanyDto[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setActive(getActiveCompany());
-    companyService
-      .list()
-      .then(setCompanies)
-      .catch(() => undefined)
-      .finally(() => setLoading(false));
-  }, []);
-
-  const switchTo = (company: CompanyDto) => {
-    const next: ActiveCompany = { id: company.id, name: company.name, role: company.role };
-    setActiveCompany(next);
-    setActive(next);
-    window.location.reload();
-  };
+  const { activeCompany, companies, isLoading, switchCompany } = useCompany();
 
   return (
     <DropdownMenu>
@@ -47,7 +22,7 @@ export function CompanySwitcher() {
           variant="ghost"
           className="h-9 gap-2 px-2.5 max-w-55 font-normal hover:bg-accent"
         >
-          {loading ? (
+          {isLoading ? (
             <>
               <div className="h-5 w-5 shrink-0 rounded bg-muted animate-pulse" />
               <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
@@ -58,7 +33,7 @@ export function CompanySwitcher() {
                 <Building2 className="h-3 w-3 text-primary" />
               </div>
               <span className="truncate text-sm font-medium">
-                {active?.name ?? "Select company"}
+                {activeCompany?.name ?? "Select company"}
               </span>
               <ChevronsUpDown className="ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             </>
@@ -72,7 +47,7 @@ export function CompanySwitcher() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center gap-2 px-2 py-2 text-sm text-muted-foreground">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             Loading…
@@ -83,7 +58,7 @@ export function CompanySwitcher() {
           companies.map((company) => (
             <DropdownMenuItem
               key={company.id}
-              onClick={() => switchTo(company)}
+              onClick={() => switchCompany(company)}
               className="gap-2.5 cursor-pointer"
             >
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-primary/10 text-primary text-xs font-semibold">
@@ -93,7 +68,7 @@ export function CompanySwitcher() {
                 <p className="truncate text-sm font-medium">{company.name}</p>
                 <p className="text-xs text-muted-foreground capitalize">{company.role.toLowerCase()}</p>
               </div>
-              {active?.id === company.id && (
+              {activeCompany?.id === company.id && (
                 <Check className="h-4 w-4 shrink-0 text-primary" />
               )}
             </DropdownMenuItem>

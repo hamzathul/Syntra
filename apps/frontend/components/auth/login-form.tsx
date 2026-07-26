@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { companyService } from "@/lib/api/services/company.service";
-import { setActiveCompany } from "@/lib/auth";
 import { useAuth } from "@/lib/auth-context";
 
 export function LoginForm() {
@@ -22,16 +21,8 @@ export function LoginForm() {
       await login({ email, password });
 
       const companies = await companyService.list();
-      if (companies.length === 0) {
-        toast.success("Welcome back! Let's set up your company.");
-        window.location.href = "/onboarding";
-        return;
-      }
-
-      const defaultCompany = companies.find((c) => c.isDefault) ?? companies[0]!;
-      setActiveCompany({ id: defaultCompany.id, name: defaultCompany.name, role: defaultCompany.role });
       toast.success("Welcome back!");
-      window.location.href = "/dashboard";
+      window.location.href = companies.length === 0 ? "/onboarding" : "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }

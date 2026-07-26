@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { companyService } from "@/lib/api/services/company.service";
-import { setActiveCompany } from "@/lib/auth";
 import { companyKeys } from "../query-keys";
 
 export function useCompanies() {
@@ -18,9 +17,8 @@ export function useCreateCompanyMutation() {
 
   return useMutation({
     mutationFn: (data: { name: string }) => companyService.create(data),
-    onSuccess: (company) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.list() });
-      setActiveCompany({ id: company.id, name: company.name, role: company.role });
     },
   });
 }
