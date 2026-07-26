@@ -1,6 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import type { ApiErrorResponse } from "shared";
-import type { AuthUserDto } from "shared";
+import type { ApiErrorResponse, AuthUserDto } from "shared";
 
 export const coreApi = axios.create({
   baseURL: "/api/proxy/core",
@@ -8,8 +7,15 @@ export const coreApi = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+coreApi.interceptors.response.use((response) => {
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    response.data = response.data.data;
+  }
+  return response;
+});
+
 export const authApi = {
-  me: () => coreApi.get<{ data: AuthUserDto }>("/auth/me"),
+  me: () => coreApi.get<AuthUserDto>("/auth/me"),
 };
 
 export const getApiErrorMessage = (error: unknown): string => {

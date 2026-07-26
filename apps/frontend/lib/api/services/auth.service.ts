@@ -1,29 +1,17 @@
 import type { AuthUserDto } from "shared";
+import { coreApi } from "../client/core-client";
 
 export interface AuthResponse {
   user: AuthUserDto;
 }
 
-const BASE = "/api/auth";
-
-async function request<T>(url: string, body: unknown): Promise<T> {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const json = await res.json();
-  if (!res.ok) throw json;
-  return json.data as T;
-}
-
 export const authService = {
   login: (data: { email: string; password: string }) =>
-    request<AuthResponse>(`${BASE}/login`, data),
+    coreApi.post<AuthResponse>("/auth/login", data).then((r) => r.data),
 
   register: (data: { name: string; email: string; password: string }) =>
-    request<AuthResponse>(`${BASE}/register`, data),
+    coreApi.post<AuthResponse>("/auth/register", data).then((r) => r.data),
 
   logout: () =>
-    fetch(`${BASE}/logout`, { method: "POST" }).then((r) => r.json()),
+    coreApi.post("/auth/logout").then(() => undefined),
 };

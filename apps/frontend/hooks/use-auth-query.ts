@@ -11,7 +11,7 @@ export function useAuthUser() {
     queryKey: authKeys.me(),
     queryFn: async () => {
       const res = await authApi.me();
-      return res.data.data;
+      return res.data;
     },
     retry: false,
     staleTime: 30_000,
