@@ -6,6 +6,7 @@ export * from "./auth/auth-context";
 export * from "./auth/token-signer.port";
 export * from "./auth/token-verifier.port";
 export * from "./database/transaction-manager";
+export * from "./database/prisma-factory";
 export * from "./errors/app-error";
 export * from "./errors/http-errors";
 export * from "./logger/logger.port";
