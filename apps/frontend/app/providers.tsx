@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
 import { useState, type ReactNode } from "react";
+import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -25,11 +26,13 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={200}>
-          {children}
-          <Toaster richColors position="bottom-right" />
-        </TooltipProvider>
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+        <AuthProvider>
+          <TooltipProvider delayDuration={200}>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </TooltipProvider>
+          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

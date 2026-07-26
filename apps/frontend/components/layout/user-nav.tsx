@@ -14,8 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { getUser, type AuthUser } from "@/lib/auth";
-import { useLogoutMutation } from "@/hooks/use-auth-query";
+import { useAuth } from "@/lib/auth-context";
 
 function getInitials(name: string): string {
   return name
@@ -28,19 +27,16 @@ function getInitials(name: string): string {
 }
 
 export function UserNav() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const { user, logout } = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setUser(getUser());
     setMounted(true);
   }, []);
 
-  const logoutMutation = useLogoutMutation();
-
   const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
+    await logout();
     window.location.href = "/login";
   };
 

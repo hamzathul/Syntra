@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { companyService } from "@/lib/api/services/company.service";
 import { setActiveCompany } from "@/lib/auth";
-import { useLoginMutation } from "@/hooks/use-auth-query";
+import { useAuth } from "@/lib/auth-context";
 
 export function LoginForm() {
-  const loginMutation = useLoginMutation();
+  const { login, isLoggingIn } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,7 +19,7 @@ export function LoginForm() {
     const password = formData.get("password") as string;
 
     try {
-      await loginMutation.mutateAsync({ email, password });
+      await login({ email, password });
 
       const companies = await companyService.list();
       if (companies.length === 0) {
@@ -71,9 +71,9 @@ export function LoginForm() {
       <Button
         type="submit"
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
-        disabled={loginMutation.isPending}
+        disabled={isLoggingIn}
       >
-        {loginMutation.isPending ? "Signing in…" : "Sign in"}
+        {isLoggingIn ? "Signing in…" : "Sign in"}
       </Button>
     </form>
   );

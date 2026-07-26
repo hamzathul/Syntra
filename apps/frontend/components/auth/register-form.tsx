@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
-import { useRegisterMutation } from "@/hooks/use-auth-query";
+import { useAuth } from "@/lib/auth-context";
 
 export function RegisterForm() {
-  const registerMutation = useRegisterMutation();
+  const { register, isRegistering } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,7 +18,7 @@ export function RegisterForm() {
     const password = formData.get("password") as string;
 
     try {
-      await registerMutation.mutateAsync({ name, email, password });
+      await register({ name, email, password });
       toast.success("Account created! Let's set up your company.");
       window.location.href = "/onboarding";
     } catch (error) {
@@ -75,9 +75,9 @@ export function RegisterForm() {
       <Button
         type="submit"
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
-        disabled={registerMutation.isPending}
+        disabled={isRegistering}
       >
-        {registerMutation.isPending ? "Creating account…" : "Create account"}
+        {isRegistering ? "Creating account…" : "Create account"}
       </Button>
     </form>
   );

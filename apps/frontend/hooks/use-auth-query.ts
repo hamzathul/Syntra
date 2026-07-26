@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/lib/api/services/auth.service";
 import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
-import { setUser, clearSession } from "@/lib/auth";
+import { setUser, clearSession, getUser } from "@/lib/auth";
 import { authKeys } from "./query-keys";
 
 export function useAuthUser() {
@@ -15,6 +15,7 @@ export function useAuthUser() {
     },
     retry: false,
     staleTime: 30_000,
+    placeholderData: () => getUser() ?? undefined,
   });
 }
 
