@@ -25,6 +25,7 @@ export class AuthModuleFactory {
     if (AuthModuleFactory.authMiddleware === null) {
       AuthModuleFactory.authMiddleware = createAuthenticationMiddleware(
         new JoseTokenVerifier(env.JWT_SECRET),
+        logger,
       );
     }
     return AuthModuleFactory.authMiddleware!;

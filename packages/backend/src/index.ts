@@ -10,6 +10,7 @@ export * from "./database/prisma-factory";
 export * from "./errors/app-error";
 export * from "./errors/http-errors";
 export * from "./logger/logger.port";
+export * from "./logger/logger-factory";
 export * from "./middlewares/global-error.middleware";
 export * from "./middlewares/request-log.middleware";
 export * from "./middlewares/authentication.middleware";

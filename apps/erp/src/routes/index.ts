@@ -1,15 +1,16 @@
 import { Router } from "express";
-import { erpAuthMiddleware } from "../middlewares/erp-auth.middleware";
+import { createErpAuthMiddleware } from "../middlewares/erp-auth.middleware";
 import { CompanyModuleFactory } from "../modules/company/company.factory";
 import { SettingsModuleFactory } from "../modules/settings/settings.factory";
 import itemsRoutes from "../modules/items/items.routes";
 import purchasesRoutes from "../modules/purchases/purchases.routes";
 import salesRoutes from "../modules/sales/sales.routes";
+import logger from "../utils/logger";
 
 const router: Router = Router();
 
 // Auth validation on every request
-router.use(erpAuthMiddleware);
+router.use(createErpAuthMiddleware(logger));
 
 // Company management (no company context required — users may have none yet)
 router.use("/v1/companies", CompanyModuleFactory.createRouter());
