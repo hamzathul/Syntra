@@ -14,7 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { clearSession, getUser, type AuthUser } from "@/lib/auth";
+import { getUser, type AuthUser } from "@/lib/auth";
+import { useLogoutMutation } from "@/hooks/use-auth-query";
 
 function getInitials(name: string): string {
   return name
@@ -36,8 +37,10 @@ export function UserNav() {
     setMounted(true);
   }, []);
 
+  const logoutMutation = useLogoutMutation();
+
   const handleLogout = async () => {
-    await clearSession();
+    await logoutMutation.mutateAsync();
     window.location.href = "/login";
   };
 

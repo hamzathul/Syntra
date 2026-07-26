@@ -52,6 +52,7 @@ export class V1Response {
   }
 
   error(response: Response<ApiErrorResponse>, options: ErrorOptions): void {
+    const isProduction = process.env["NODE_ENV"] === "production";
     response.status(options.statusCode).json({
       status: "error",
       message: options.message,
@@ -60,7 +61,7 @@ export class V1Response {
         details: options.details,
       },
       meta: this.createMeta(options.request),
-      ...(options.debug !== undefined && { debug: options.debug }),
+      ...(options.debug !== undefined && !isProduction && { debug: options.debug }),
     });
   }
 

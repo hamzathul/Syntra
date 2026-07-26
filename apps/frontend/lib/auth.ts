@@ -26,8 +26,7 @@ export const setUser = (user: AuthUser): void => {
   Cookies.set(USER_KEY, JSON.stringify(user), { expires: 1, sameSite: "strict" });
 };
 
-export const clearSession = async (): Promise<void> => {
-  await fetch("/api/auth/logout", { method: "POST" });
+export const clearSession = (): void => {
   Cookies.remove(USER_KEY);
   Cookies.remove(ACTIVE_COMPANY_KEY);
 };

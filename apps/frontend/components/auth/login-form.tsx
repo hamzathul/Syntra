@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { companyService } from "@/lib/api/services/company.service";
-import { setUser, setActiveCompany } from "@/lib/auth";
+import { setActiveCompany } from "@/lib/auth";
+import { useLoginMutation } from "@/hooks/use-auth-query";
 
 export function LoginForm() {
-  const [pending, setPending] = useState(false);
+  const loginMutation = useLoginMutation();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,11 +18,8 @@ export function LoginForm() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    setPending(true);
     try {
-      const response = await authApi.login({ email, password });
-      const { user } = response.data.data;
-      setUser(user);
+      await loginMutation.mutateAsync({ email, password });
 
       const companies = await companyService.list();
       if (companies.length === 0) {
@@ -37,8 +34,6 @@ export function LoginForm() {
       window.location.href = "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
-    } finally {
-      setPending(false);
     }
   };
 
@@ -76,9 +71,9 @@ export function LoginForm() {
       <Button
         type="submit"
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
-        disabled={pending}
+        disabled={loginMutation.isPending}
       >
-        {pending ? "Signing in…" : "Sign in"}
+        {loginMutation.isPending ? "Signing in…" : "Sign in"}
       </Button>
     </form>
   );

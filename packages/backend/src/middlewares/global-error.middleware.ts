@@ -5,15 +5,20 @@ import type { LoggerPort } from "../logger/logger.port";
 import { ResponseFactory } from "../patterns/factory/response.factory";
 import { parseStack } from "../utils/parse-stack";
 
-const isDev = process.env["NODE_ENV"] !== "production";
+const shouldExposeDebug = (): boolean =>
+  process.env["NODE_ENV"] !== "production";
+
+const normalizeError = (error: unknown): AppError => {
+  if (error instanceof AppError) return error;
+  return new InternalServerError("Something went wrong");
+};
 
 export const createGlobalErrorHandler =
   (logger: LoggerPort): ErrorRequestHandler =>
   (error, request, response, _next) => {
     void _next;
 
-    const isAppError = error instanceof AppError;
-    const normalizedError = isAppError ? error : new InternalServerError("Something went wrong");
+    const normalizedError = normalizeError(error);
 
     logger.error(
       {
@@ -21,7 +26,7 @@ export const createGlobalErrorHandler =
         method: request.method,
         path: request.originalUrl,
         errorName: (error as Error).name,
-        stack: (error as Error).stack,
+        ...(shouldExposeDebug() && { stack: (error as Error).stack }),
       },
       normalizedError.message,
     );
@@ -32,6 +37,6 @@ export const createGlobalErrorHandler =
       code: normalizedError.code,
       message: normalizedError.message,
       details: normalizedError.details,
-      debug: isDev ? parseStack(isAppError ? error : (error as Error)) : undefined,
+      debug: shouldExposeDebug() ? parseStack(error as Error) : undefined,
     });
   };

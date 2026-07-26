@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { authService } from "@/lib/api/services/auth.service";
 import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
 import { setUser, clearSession } from "@/lib/auth";
 import { authKeys } from "./query-keys";
@@ -21,21 +22,19 @@ export function useLoginMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { email: string; password: string }) => authApi.login(data),
-    onSuccess: (res) => {
-      const user = res.data.data.user;
-      setUser(user);
-      queryClient.setQueryData(authKeys.me(), user);
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      setUser(data.user);
+      queryClient.setQueryData(authKeys.me(), data.user);
     },
   });
 }
 
 export function useRegisterMutation() {
   return useMutation({
-    mutationFn: (data: { name: string; email: string; password: string }) =>
-      authApi.register(data),
-    onSuccess: (res) => {
-      setUser(res.data.data.user);
+    mutationFn: authService.register,
+    onSuccess: (data) => {
+      setUser(data.user);
     },
   });
 }
@@ -44,7 +43,10 @@ export function useLogoutMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: clearSession,
+    mutationFn: async () => {
+      await authService.logout();
+      clearSession();
+    },
     onSuccess: () => {
       queryClient.clear();
     },
