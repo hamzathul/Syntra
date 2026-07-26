@@ -73,7 +73,7 @@ app/
   api/proxy/*     — Proxy routes with auto token refresh
   layout.tsx      — Root layout: ThemeProvider, QueryClient, Toaster
   globals.css     — Tailwind v4 + shadcn CSS variables (light + dark)
-proxy.ts          — Route protection middleware (redirects unauthenticated → /login)
+proxy.ts          — Next.js 16 middleware file (not middleware.ts). Route protection — redirects unauthenticated → /login.
 
 Dark/light mode: next-themes with `attribute="class"` and `defaultTheme="system"`. Toggle is in the user dropdown nav.
 

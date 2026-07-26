@@ -82,6 +82,10 @@ To target a single workspace, use `--filter <package-name>`:
 - **Always import types from `shared`** — never redefine `AuthUserDto`, `AuthTokenDto`, `ApiSuccessResponse`, `ApiErrorResponse` locally.
 - React Query hooks go in `apps/frontend/hooks/` with query key factory pattern.
 
+### Next.js 16 Middleware
+- This project uses Next.js 16 where the middleware file is named **`proxy.ts`** (at the repo root `apps/frontend/proxy.ts`), **not** `middleware.ts`.
+- Never suggest renaming `proxy.ts` to `middleware.ts` — that is the old Next.js convention and does not apply here.
+
 ## 5. Test Conventions
 - Tests use **Vitest** and are co-located with source files as `*.test.ts`.
 - Test files are excluded from production builds via `**/*.test.ts` in tsconfig `exclude`.
