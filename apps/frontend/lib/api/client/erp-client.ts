@@ -8,7 +8,11 @@ export const erpApi = axios.create({
 });
 
 erpApi.interceptors.response.use((response) => {
-  if (response.data && typeof response.data === "object" && "data" in response.data) {
+  if (
+    response.data &&
+    typeof response.data === "object" &&
+    "data" in response.data
+  ) {
     response.data = response.data.data;
   }
   return response;

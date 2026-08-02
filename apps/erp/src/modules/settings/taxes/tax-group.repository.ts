@@ -18,7 +18,10 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return groups.map((g) => this.mapRecord(g));
   }
 
-  async findById(id: string, companyId: string): Promise<TaxGroupRecord | null> {
+  async findById(
+    id: string,
+    companyId: string,
+  ): Promise<TaxGroupRecord | null> {
     const group = await this.prisma.taxGroup.findUnique({
       where: { id },
       include: {
@@ -31,7 +34,10 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return this.mapRecord(group);
   }
 
-  async create(companyId: string, data: { name: string; taxRateIds: string[] }): Promise<TaxGroupRecord> {
+  async create(
+    companyId: string,
+    data: { name: string; taxRateIds: string[] },
+  ): Promise<TaxGroupRecord> {
     const ids = [...new Set(data.taxRateIds)];
     const group = await this.prisma.taxGroup.create({
       data: {
@@ -50,7 +56,11 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return this.mapRecord(group);
   }
 
-  async update(id: string, companyId: string, data: { name?: string; taxRateIds?: string[] }): Promise<TaxGroupRecord> {
+  async update(
+    id: string,
+    companyId: string,
+    data: { name?: string; taxRateIds?: string[] },
+  ): Promise<TaxGroupRecord> {
     const group = await this.prisma.$transaction(async (tx) => {
       if (data.taxRateIds) {
         const ids = [...new Set(data.taxRateIds)];

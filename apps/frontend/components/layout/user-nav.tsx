@@ -60,7 +60,9 @@ export function UserNav() {
             </div>
             <div className="flex flex-col min-w-0">
               <p className="truncate text-sm font-medium">{user?.name ?? ""}</p>
-              <p className="truncate text-xs text-muted-foreground">{user?.email ?? ""}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user?.email ?? ""}
+              </p>
             </div>
           </div>
         </DropdownMenuLabel>

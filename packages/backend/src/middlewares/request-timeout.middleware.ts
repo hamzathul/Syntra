@@ -1,9 +1,8 @@
 import type { RequestHandler } from "express";
 import { V1Response } from "../responses/v1-response";
 
-export const createRequestTimeoutMiddleware = (
-  timeoutMs: number,
-): RequestHandler =>
+export const createRequestTimeoutMiddleware =
+  (timeoutMs: number): RequestHandler =>
   (request, response, next) => {
     const timer = setTimeout(() => {
       if (response.headersSent) {

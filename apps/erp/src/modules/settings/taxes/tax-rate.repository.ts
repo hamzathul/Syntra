@@ -21,14 +21,20 @@ export class TaxRateRepository implements ITaxRateRepository {
     return this.mapRecord(rate);
   }
 
-  async create(companyId: string, data: { name: string; rate: number }): Promise<TaxRateRecord> {
+  async create(
+    companyId: string,
+    data: { name: string; rate: number },
+  ): Promise<TaxRateRecord> {
     const rate = await this.prisma.taxRate.create({
       data: { companyId, ...data },
     });
     return this.mapRecord(rate);
   }
 
-  async update(id: string, data: { name?: string; rate?: number }): Promise<TaxRateRecord> {
+  async update(
+    id: string,
+    data: { name?: string; rate?: number },
+  ): Promise<TaxRateRecord> {
     const rate = await this.prisma.taxRate.update({
       where: { id },
       data,

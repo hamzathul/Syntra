@@ -7,7 +7,11 @@ export function createCompanyRouter(controller: CompanyController): Router {
   const router = Router();
 
   router.get("/", controller.list);
-  router.post("/", validateRequest({ body: createCompanySchema }), controller.create);
+  router.post(
+    "/",
+    validateRequest({ body: createCompanySchema }),
+    controller.create,
+  );
 
   return router;
 }

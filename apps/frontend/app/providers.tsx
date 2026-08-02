@@ -25,7 +25,12 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
   );
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <CompanyProvider>
@@ -33,7 +38,10 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
               {children}
               <Toaster richColors position="bottom-right" />
             </TooltipProvider>
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+            <ReactQueryDevtools
+              initialIsOpen={false}
+              buttonPosition="bottom-right"
+            />
           </CompanyProvider>
         </AuthProvider>
       </QueryClientProvider>

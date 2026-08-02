@@ -1,5 +1,8 @@
 import type { RequestHandler } from "express";
-import { createAuthenticationMiddleware, PrismaTransactionManager } from "backend-p";
+import {
+  createAuthenticationMiddleware,
+  PrismaTransactionManager,
+} from "backend-p";
 import { env } from "../../config/env";
 import { getPrismaClient } from "../../database/prisma.client";
 import { JoseTokenSigner } from "./jose-token-signer";

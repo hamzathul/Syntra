@@ -5,7 +5,9 @@ import type { GeneralSettingsRecord } from "./general-settings.types";
 export class GeneralSettingsRepository implements IGeneralSettingsRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findByCompanyId(companyId: string): Promise<GeneralSettingsRecord | null> {
+  async findByCompanyId(
+    companyId: string,
+  ): Promise<GeneralSettingsRecord | null> {
     const settings = await this.prisma.companySettings.findUnique({
       where: { companyId },
     });
@@ -13,10 +15,15 @@ export class GeneralSettingsRepository implements IGeneralSettingsRepository {
     return this.mapRecord(settings);
   }
 
-  async upsert(companyId: string, data: Record<string, unknown>): Promise<GeneralSettingsRecord> {
+  async upsert(
+    companyId: string,
+    data: Record<string, unknown>,
+  ): Promise<GeneralSettingsRecord> {
     const settings = await this.prisma.companySettings.upsert({
       where: { companyId },
-      create: { companyId, ...data } as Record<string, unknown> & { companyId: string },
+      create: { companyId, ...data } as Record<string, unknown> & {
+        companyId: string;
+      },
       update: data,
     });
     return this.mapRecord(settings);

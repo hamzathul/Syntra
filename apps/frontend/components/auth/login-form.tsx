@@ -22,7 +22,8 @@ export function LoginForm() {
 
       const companies = await companyService.list();
       toast.success("Welcome back!");
-      window.location.href = companies.length === 0 ? "/onboarding" : "/dashboard";
+      window.location.href =
+        companies.length === 0 ? "/onboarding" : "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }

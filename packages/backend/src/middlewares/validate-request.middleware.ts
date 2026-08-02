@@ -29,7 +29,11 @@ export const validateRequest =
         value: request.params,
         location: "params" as const,
       },
-      { schema: schemas.query, value: request.query, location: "query" as const },
+      {
+        schema: schemas.query,
+        value: request.query,
+        location: "query" as const,
+      },
     ];
 
     const details = validations.flatMap((validation) => {

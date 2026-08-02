@@ -71,4 +71,6 @@ export type AuthTokenDto = z.infer<typeof authTokenSchema>;
 export type AuthSessionDto = z.infer<typeof authSessionSchema>;
 export type RefreshRequestDto = z.infer<typeof refreshRequestSchema>;
 export type LogoutRequestDto = z.infer<typeof logoutRequestSchema>;
-export type ChangePasswordRequestDto = z.infer<typeof changePasswordRequestSchema>;
+export type ChangePasswordRequestDto = z.infer<
+  typeof changePasswordRequestSchema
+>;

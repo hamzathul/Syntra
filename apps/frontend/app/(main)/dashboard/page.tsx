@@ -52,8 +52,12 @@ export default function DashboardOverviewPage() {
             className="rounded-2xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
           >
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-muted-foreground">{label}</span>
-              <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${bg}`}>
+              <span className="text-sm font-medium text-muted-foreground">
+                {label}
+              </span>
+              <div
+                className={`flex h-9 w-9 items-center justify-center rounded-xl ${bg}`}
+              >
                 <Icon className={`h-4 w-4 ${color}`} />
               </div>
             </div>

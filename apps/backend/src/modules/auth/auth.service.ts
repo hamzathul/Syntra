@@ -59,13 +59,16 @@ export class AuthService implements AuthServicePort {
       tokenHash: refreshHash,
       userId: user.id,
       family: randomUUID(),
-      expiresAt: new Date(
-        Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000,
-      ),
+      expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000),
     });
 
     this.logger.info(
-      { category: "audit", action: "user.registered", userId: user.id, email: user.email },
+      {
+        category: "audit",
+        action: "user.registered",
+        userId: user.id,
+        email: user.email,
+      },
       "User registered",
     );
 
@@ -82,7 +85,12 @@ export class AuthService implements AuthServicePort {
 
     if (user === null || !user.isActive) {
       this.logger.info(
-        { category: "audit", action: "login.failed", reason: "user_not_found", email: dto.email },
+        {
+          category: "audit",
+          action: "login.failed",
+          reason: "user_not_found",
+          email: dto.email,
+        },
         "Login failed",
       );
       throw new UnauthorizedError("Invalid credentials");
@@ -91,7 +99,12 @@ export class AuthService implements AuthServicePort {
     const isPasswordValid = await compare(dto.password, user.passwordHash);
     if (!isPasswordValid) {
       this.logger.info(
-        { category: "audit", action: "login.failed", reason: "invalid_password", userId: user.id },
+        {
+          category: "audit",
+          action: "login.failed",
+          reason: "invalid_password",
+          userId: user.id,
+        },
         "Login failed",
       );
       throw new UnauthorizedError("Invalid credentials");
@@ -112,13 +125,16 @@ export class AuthService implements AuthServicePort {
       tokenHash: refreshHash,
       userId: user.id,
       family: randomUUID(),
-      expiresAt: new Date(
-        Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000,
-      ),
+      expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000),
     });
 
     this.logger.info(
-      { category: "audit", action: "login.success", userId: user.id, email: user.email },
+      {
+        category: "audit",
+        action: "login.success",
+        userId: user.id,
+        email: user.email,
+      },
       "Login successful",
     );
 
@@ -134,8 +150,7 @@ export class AuthService implements AuthServicePort {
     const hashInput = createHash("sha256")
       .update(dto.refreshToken)
       .digest("hex");
-    const stored =
-      await this.refreshTokenRepository.findByTokenHash(hashInput);
+    const stored = await this.refreshTokenRepository.findByTokenHash(hashInput);
 
     if (stored === null) {
       throw new UnauthorizedError("Invalid refresh token");
@@ -144,7 +159,12 @@ export class AuthService implements AuthServicePort {
     if (stored.revokedAt !== null) {
       await this.refreshTokenRepository.revokeAllByFamily(stored.family);
       this.logger.info(
-        { category: "audit", action: "token.reuse", family: stored.family, userId: stored.userId },
+        {
+          category: "audit",
+          action: "token.reuse",
+          family: stored.family,
+          userId: stored.userId,
+        },
         "Token reuse detected — revoked token presented",
       );
       throw new UnauthorizedError("Invalid refresh token");
@@ -154,13 +174,19 @@ export class AuthService implements AuthServicePort {
       throw new UnauthorizedError("Invalid refresh token");
     }
 
-    const wasRevoked =
-      await this.refreshTokenRepository.revokeIfUnrevoked(stored.id);
+    const wasRevoked = await this.refreshTokenRepository.revokeIfUnrevoked(
+      stored.id,
+    );
 
     if (!wasRevoked) {
       await this.refreshTokenRepository.revokeAllByFamily(stored.family);
       this.logger.info(
-        { category: "audit", action: "token.reuse", family: stored.family, userId: stored.userId },
+        {
+          category: "audit",
+          action: "token.reuse",
+          family: stored.family,
+          userId: stored.userId,
+        },
         "Token reuse detected — concurrent rotation conflict",
       );
       throw new UnauthorizedError("Invalid refresh token");
@@ -179,22 +205,23 @@ export class AuthService implements AuthServicePort {
     };
 
     const token = await this.tokenSigner.sign(authUser);
-    const {
-      raw: newRefreshToken,
-      hash: newHash,
-    } = await this.tokenSigner.generateRefreshToken();
+    const { raw: newRefreshToken, hash: newHash } =
+      await this.tokenSigner.generateRefreshToken();
 
     await this.refreshTokenRepository.create({
       tokenHash: newHash,
       userId: user.id,
       family: stored.family,
-      expiresAt: new Date(
-        Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000,
-      ),
+      expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_IN * 1000),
     });
 
     this.logger.info(
-      { category: "audit", action: "token.refreshed", userId: user.id, family: stored.family },
+      {
+        category: "audit",
+        action: "token.refreshed",
+        userId: user.id,
+        family: stored.family,
+      },
       "Token refreshed",
     );
 
@@ -210,8 +237,7 @@ export class AuthService implements AuthServicePort {
     const hashInput = createHash("sha256")
       .update(dto.refreshToken)
       .digest("hex");
-    const stored =
-      await this.refreshTokenRepository.findByTokenHash(hashInput);
+    const stored = await this.refreshTokenRepository.findByTokenHash(hashInput);
     if (stored !== null) {
       await this.refreshTokenRepository.revoke(stored.id);
       this.logger.info(

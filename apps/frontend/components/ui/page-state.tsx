@@ -30,7 +30,9 @@ export function PageState<T>({
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
         <AlertCircleIcon className="h-8 w-8 mb-2" />
         <p>{errorTitle ?? "Failed to load data"}</p>
-        <p className="text-sm">{(error as Error)?.message ?? "Unknown error"}</p>
+        <p className="text-sm">
+          {(error as Error)?.message ?? "Unknown error"}
+        </p>
       </div>
     );
   }

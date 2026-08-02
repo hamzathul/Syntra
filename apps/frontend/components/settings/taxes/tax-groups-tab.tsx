@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { PlusIcon, PencilIcon, Trash2Icon, Loader2Icon, AlertTriangleIcon } from "lucide-react";
+import {
+  PlusIcon,
+  PencilIcon,
+  Trash2Icon,
+  Loader2Icon,
+  AlertTriangleIcon,
+} from "lucide-react";
 import type { TaxGroupDto } from "shared";
 import type { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
@@ -34,7 +40,9 @@ export function TaxGroupsTab() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<TaxGroupDto | null>(null);
   const [groupName, setGroupName] = useState("");
-  const [selectedRateIds, setSelectedRateIds] = useState<Set<string>>(new Set());
+  const [selectedRateIds, setSelectedRateIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [deleteTarget, setDeleteTarget] = useState<TaxGroupDto | null>(null);
 
   const openAddDialog = useCallback(() => {
@@ -86,16 +94,27 @@ export function TaxGroupsTab() {
         });
         toast.success("Tax group updated");
       } else {
-        await createMutation.mutateAsync({ name: groupName.trim(), taxRateIds: rateIds });
+        await createMutation.mutateAsync({
+          name: groupName.trim(),
+          taxRateIds: rateIds,
+        });
         toast.success("Tax group created");
       }
       closeDialog();
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
-      const msg = axiosError?.response?.data?.message ?? "Failed to save tax group";
+      const msg =
+        axiosError?.response?.data?.message ?? "Failed to save tax group";
       toast.error(msg);
     }
-  }, [groupName, selectedRateIds, editingGroup, createMutation, updateMutation, closeDialog]);
+  }, [
+    groupName,
+    selectedRateIds,
+    editingGroup,
+    createMutation,
+    updateMutation,
+    closeDialog,
+  ]);
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!deleteTarget) return;
@@ -105,7 +124,8 @@ export function TaxGroupsTab() {
       setDeleteTarget(null);
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
-      const msg = axiosError?.response?.data?.message ?? "Failed to delete tax group";
+      const msg =
+        axiosError?.response?.data?.message ?? "Failed to delete tax group";
       toast.error(msg);
       setDeleteTarget(null);
     }
@@ -123,9 +143,15 @@ export function TaxGroupsTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {groups?.length ?? 0} tax group{(groups?.length ?? 0) !== 1 ? "s" : ""} configured
+          {groups?.length ?? 0} tax group
+          {(groups?.length ?? 0) !== 1 ? "s" : ""} configured
         </p>
-        <Button variant="outline" size="sm" onClick={openAddDialog} className="gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={openAddDialog}
+          className="gap-1"
+        >
           <PlusIcon className="h-4 w-4" />
           Add Tax Group
         </Button>
@@ -142,11 +168,21 @@ export function TaxGroupsTab() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold tabular-nums">{group.totalRate}%</span>
-                <Button size="icon" variant="ghost" onClick={() => openEditDialog(group)}>
+                <span className="text-sm font-semibold tabular-nums">
+                  {group.totalRate}%
+                </span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => openEditDialog(group)}
+                >
                   <PencilIcon className="h-4 w-4" />
                 </Button>
-                <Button size="icon" variant="ghost" onClick={() => setDeleteTarget(group)}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setDeleteTarget(group)}
+                >
                   <Trash2Icon className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
@@ -162,7 +198,9 @@ export function TaxGroupsTab() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingGroup ? "Edit Tax Group" : "Add Tax Group"}</DialogTitle>
+            <DialogTitle>
+              {editingGroup ? "Edit Tax Group" : "Add Tax Group"}
+            </DialogTitle>
             <DialogDescription>
               {editingGroup
                 ? "Update the group name and selected tax rates."
@@ -197,7 +235,9 @@ export function TaxGroupsTab() {
                         className="h-4 w-4 rounded border-gray-300"
                       />
                       <span className="flex-1">{rate.name}</span>
-                      <span className="text-muted-foreground">{rate.rate}%</span>
+                      <span className="text-muted-foreground">
+                        {rate.rate}%
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -219,15 +259,23 @@ export function TaxGroupsTab() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!groupName.trim() || selectedRateIds.size === 0}>
+            <Button variant="outline" onClick={closeDialog}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={!groupName.trim() || selectedRateIds.size === 0}
+            >
               {editingGroup ? "Update" : "Create"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -237,13 +285,18 @@ export function TaxGroupsTab() {
               <div>
                 <DialogTitle>Delete Tax Group</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete <span className="font-medium text-foreground">{deleteTarget?.name}</span>?
+                  Are you sure you want to delete{" "}
+                  <span className="font-medium text-foreground">
+                    {deleteTarget?.name}
+                  </span>
+                  ?
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
           <div className="text-sm text-muted-foreground px-13">
-            This action cannot be undone. The tax rates within the group will not be affected.
+            This action cannot be undone. The tax rates within the group will
+            not be affected.
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>

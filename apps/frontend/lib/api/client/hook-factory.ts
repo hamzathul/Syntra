@@ -18,7 +18,8 @@ export function createMutationHook<TVariables, TResult>(
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn,
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: keyFactory() }),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: keyFactory() }),
     });
   };
 }
@@ -30,8 +31,10 @@ export function createUpdateMutationHook<TDto, TResult>(
   return (): UseMutationResult<TResult, Error, { id: string; dto: TDto }> => {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: (vars: { id: string; dto: TDto }) => mutationFn(vars.id, vars.dto),
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: keyFactory() }),
+      mutationFn: (vars: { id: string; dto: TDto }) =>
+        mutationFn(vars.id, vars.dto),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: keyFactory() }),
     });
   };
 }

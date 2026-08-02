@@ -9,7 +9,9 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async create(data: CreateRefreshTokenInput): Promise<RefreshTokenRecord> {
-    return this.prisma.refreshToken.create({ data }) as Promise<RefreshTokenRecord>;
+    return this.prisma.refreshToken.create({
+      data,
+    }) as Promise<RefreshTokenRecord>;
   }
 
   async findByTokenHash(tokenHash: string): Promise<RefreshTokenRecord | null> {

@@ -23,7 +23,10 @@ export const getUser = (): AuthUser | null => {
 };
 
 export const setUser = (user: AuthUser): void => {
-  Cookies.set(USER_KEY, JSON.stringify(user), { expires: 1, sameSite: "strict" });
+  Cookies.set(USER_KEY, JSON.stringify(user), {
+    expires: 1,
+    sameSite: "strict",
+  });
 };
 
 export const clearSession = (): void => {

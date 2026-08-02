@@ -5,10 +5,7 @@ import type { TokenVerifier } from "../auth/token-verifier.port";
 import type { LoggerPort } from "../logger/logger.port";
 
 export const createAuthenticationMiddleware =
-  (
-    tokenVerifier: TokenVerifier,
-    logger?: LoggerPort,
-  ): RequestHandler =>
+  (tokenVerifier: TokenVerifier, logger?: LoggerPort): RequestHandler =>
   async (request, response: Response<unknown, AuthLocals>, next) => {
     try {
       const token = extractBearerToken(request.header("authorization"));

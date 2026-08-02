@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboardIcon, Building2Icon, CreditCardIcon, BellIcon, UsersIcon, SettingsIcon, SlidersHorizontalIcon, ReceiptIcon } from "lucide-react";
+import {
+  LayoutDashboardIcon,
+  Building2Icon,
+  CreditCardIcon,
+  BellIcon,
+  UsersIcon,
+  SettingsIcon,
+  SlidersHorizontalIcon,
+  ReceiptIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -65,11 +74,15 @@ export function SettingsSidebar() {
     <aside className="w-56 shrink-0">
       <div className="flex items-center gap-2 mb-6">
         <SettingsIcon className="h-5 w-5 text-muted-foreground" />
-        <h2 className="text-sm font-semibold text-muted-foreground">Settings</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground">
+          Settings
+        </h2>
       </div>
       <nav className="space-y-1">
         {navItems.map((item) => {
-          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+          const active = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
             <Link
@@ -86,7 +99,11 @@ export function SettingsSidebar() {
             >
               <Icon className="h-4 w-4" />
               <span className="flex-1">{item.label}</span>
-              {item.disabled && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Soon</Badge>}
+              {item.disabled && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  Soon
+                </Badge>
+              )}
             </Link>
           );
         })}

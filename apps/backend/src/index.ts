@@ -33,7 +33,11 @@ app.use(createRequestLogMiddleware(logger));
 app.use(express.json({ limit: "10kb" }));
 app.use(sanitizeRequestBody);
 
-app.use(createHealthRouter({ checkDatabase: () => getPrismaClient().$queryRaw`SELECT 1` }));
+app.use(
+  createHealthRouter({
+    checkDatabase: () => getPrismaClient().$queryRaw`SELECT 1`,
+  }),
+);
 
 app.use("/api", routes);
 

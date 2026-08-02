@@ -5,34 +5,25 @@ export function createGetUpdate<TGet, TUpdate>(
   path: string,
 ) {
   return {
-    get: (): Promise<TGet> =>
-      api.get<TGet>(path).then((r) => r.data),
+    get: (): Promise<TGet> => api.get<TGet>(path).then((r) => r.data),
 
     update: (dto: TUpdate): Promise<TGet> =>
       api.patch<TGet>(path, dto).then((r) => r.data),
   };
 }
 
-export function createListCreate<T>(
-  api: AxiosInstance,
-  path: string,
-) {
+export function createListCreate<T>(api: AxiosInstance, path: string) {
   return {
-    list: (): Promise<T[]> =>
-      api.get<T[]>(path).then((r) => r.data),
+    list: (): Promise<T[]> => api.get<T[]>(path).then((r) => r.data),
 
     create: (dto: unknown): Promise<T> =>
       api.post<T>(path, dto).then((r) => r.data),
   };
 }
 
-export function createCrud<T>(
-  api: AxiosInstance,
-  path: string,
-) {
+export function createCrud<T>(api: AxiosInstance, path: string) {
   return {
-    list: (): Promise<T[]> =>
-      api.get<T[]>(path).then((r) => r.data),
+    list: (): Promise<T[]> => api.get<T[]>(path).then((r) => r.data),
 
     create: (dto: unknown): Promise<T> =>
       api.post<T>(path, dto).then((r) => r.data),

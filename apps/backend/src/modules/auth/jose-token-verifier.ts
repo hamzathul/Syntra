@@ -1,4 +1,8 @@
-import { UnauthorizedError, type AuthenticatedUser, type TokenVerifier } from "backend-p";
+import {
+  UnauthorizedError,
+  type AuthenticatedUser,
+  type TokenVerifier,
+} from "backend-p";
 import type { UserRoleDto } from "shared";
 
 interface JwtClaims {

@@ -1,7 +1,14 @@
 import "dotenv/config";
 import { z } from "zod";
 
-const LOG_LEVELS = ["trace", "debug", "info", "warn", "error", "fatal"] as const;
+const LOG_LEVELS = [
+  "trace",
+  "debug",
+  "info",
+  "warn",
+  "error",
+  "fatal",
+] as const;
 
 export interface BaseEnv {
   NODE_ENV: "development" | "production" | "test";
@@ -17,7 +24,9 @@ export function loadEnv<TExtras extends z.ZodRawShape>(
   extras?: TExtras,
 ): BaseEnv & z.infer<z.ZodObject<TExtras>> {
   const envSchema = z.object({
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("development"),
     PORT: z.coerce.number().int().positive().default(portDefault),
     DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
     LOG_LEVEL: z.enum(LOG_LEVELS).default("info"),

@@ -19,7 +19,10 @@ export class TaxesModuleFactory {
       const taxGroupRepo = new TaxGroupRepository(prisma);
       const taxRateService = new TaxRateService(taxRateRepo, logger);
       const taxGroupService = new TaxGroupService(taxGroupRepo, logger);
-      TaxesModuleFactory.controller = new TaxesController(taxRateService, taxGroupService);
+      TaxesModuleFactory.controller = new TaxesController(
+        taxRateService,
+        taxGroupService,
+      );
     }
     return TaxesModuleFactory.controller;
   }

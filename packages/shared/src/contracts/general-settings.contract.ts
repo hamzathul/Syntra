@@ -25,9 +25,8 @@ export const currencies = [
 
 export type CurrencyInfo = (typeof currencies)[number];
 
-export const currencyMap: Record<string, (typeof currencies)[number]> = Object.fromEntries(
-  currencies.map((c) => [c.code, c]),
-);
+export const currencyMap: Record<string, (typeof currencies)[number]> =
+  Object.fromEntries(currencies.map((c) => [c.code, c]));
 
 export const currencyCodes: readonly string[] = currencies.map((c) => c.code);
 
@@ -68,7 +67,9 @@ export interface GeneralSettingsDto {
 export const updateGeneralSettingsSchema = z.object({
   businessCurrency: z
     .string()
-    .refine((v) => currencyCodes.includes(v), { message: "Invalid currency code" })
+    .refine((v) => currencyCodes.includes(v), {
+      message: "Invalid currency code",
+    })
     .optional(),
   decimalPlaces: z
     .number()
@@ -78,9 +79,13 @@ export const updateGeneralSettingsSchema = z.object({
     .optional(),
   dateFormat: z
     .string()
-    .refine((v) => (dateFormats as readonly string[]).includes(v), { message: "Invalid date format" })
+    .refine((v) => (dateFormats as readonly string[]).includes(v), {
+      message: "Invalid date format",
+    })
     .optional(),
   stateOfSupplyEnabled: z.boolean().optional(),
 });
 
-export type UpdateGeneralSettingsDto = z.infer<typeof updateGeneralSettingsSchema>;
+export type UpdateGeneralSettingsDto = z.infer<
+  typeof updateGeneralSettingsSchema
+>;

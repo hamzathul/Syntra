@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { PlusIcon, PencilIcon, Trash2Icon, XIcon, CheckIcon, Loader2Icon, AlertTriangleIcon } from "lucide-react";
+import {
+  PlusIcon,
+  PencilIcon,
+  Trash2Icon,
+  XIcon,
+  CheckIcon,
+  Loader2Icon,
+  AlertTriangleIcon,
+} from "lucide-react";
 import type { TaxRateDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,12 +55,16 @@ export function TaxRatesTab() {
   const handleAdd = useCallback(async () => {
     if (!newName.trim() || !newRate) return;
     try {
-      await createMutation.mutateAsync({ name: newName.trim(), rate: parseFloat(newRate) });
+      await createMutation.mutateAsync({
+        name: newName.trim(),
+        rate: parseFloat(newRate),
+      });
       toast.success("Tax rate added");
       resetAddForm();
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
-      const msg = axiosError?.response?.data?.message ?? "Failed to add tax rate";
+      const msg =
+        axiosError?.response?.data?.message ?? "Failed to add tax rate";
       toast.error(msg);
     }
   }, [newName, newRate, createMutation, resetAddForm]);
@@ -69,21 +81,25 @@ export function TaxRatesTab() {
     setEditRate("");
   }, []);
 
-  const handleUpdate = useCallback(async (id: string) => {
-    if (!editName.trim() || !editRate) return;
-    try {
-      await updateMutation.mutateAsync({
-        id,
-        dto: { name: editName.trim(), rate: parseFloat(editRate) },
-      });
-      toast.success("Tax rate updated");
-      cancelEdit();
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message?: string }>;
-      const msg = axiosError?.response?.data?.message ?? "Failed to update tax rate";
-      toast.error(msg);
-    }
-  }, [editName, editRate, updateMutation, cancelEdit]);
+  const handleUpdate = useCallback(
+    async (id: string) => {
+      if (!editName.trim() || !editRate) return;
+      try {
+        await updateMutation.mutateAsync({
+          id,
+          dto: { name: editName.trim(), rate: parseFloat(editRate) },
+        });
+        toast.success("Tax rate updated");
+        cancelEdit();
+      } catch (err: unknown) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        const msg =
+          axiosError?.response?.data?.message ?? "Failed to update tax rate";
+        toast.error(msg);
+      }
+    },
+    [editName, editRate, updateMutation, cancelEdit],
+  );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -93,7 +109,9 @@ export function TaxRatesTab() {
       setDeleteTarget(null);
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
-      const msg = axiosError?.response?.data?.message ?? "Cannot delete tax rate used in a group";
+      const msg =
+        axiosError?.response?.data?.message ??
+        "Cannot delete tax rate used in a group";
       toast.error(msg);
       setDeleteTarget(null);
     }
@@ -111,10 +129,16 @@ export function TaxRatesTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {rates?.length ?? 0} tax rate{(rates?.length ?? 0) !== 1 ? "s" : ""} configured
+          {rates?.length ?? 0} tax rate{(rates?.length ?? 0) !== 1 ? "s" : ""}{" "}
+          configured
         </p>
         {!isAdding && (
-          <Button variant="outline" size="sm" onClick={() => setIsAdding(true)} className="gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsAdding(true)}
+            className="gap-1"
+          >
             <PlusIcon className="h-4 w-4" />
             Add Tax Rate
           </Button>
@@ -124,7 +148,9 @@ export function TaxRatesTab() {
       {isAdding && (
         <div className="flex items-end gap-3 p-3 border rounded-lg bg-muted/30">
           <div className="grid gap-1.5 flex-1">
-            <Label htmlFor="new-name" className="text-xs">Name</Label>
+            <Label htmlFor="new-name" className="text-xs">
+              Name
+            </Label>
             <Input
               id="new-name"
               placeholder="e.g. CGST"
@@ -133,7 +159,9 @@ export function TaxRatesTab() {
             />
           </div>
           <div className="grid gap-1.5 w-24">
-            <Label htmlFor="new-rate" className="text-xs">Rate (%)</Label>
+            <Label htmlFor="new-rate" className="text-xs">
+              Rate (%)
+            </Label>
             <Input
               id="new-rate"
               type="number"
@@ -145,7 +173,12 @@ export function TaxRatesTab() {
             />
           </div>
           <div className="flex gap-1">
-            <Button size="icon" variant="ghost" onClick={handleAdd} disabled={!newName.trim() || !newRate}>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleAdd}
+              disabled={!newName.trim() || !newRate}
+            >
               <CheckIcon className="h-4 w-4 text-green-600" />
             </Button>
             <Button size="icon" variant="ghost" onClick={resetAddForm}>
@@ -179,7 +212,11 @@ export function TaxRatesTab() {
                     />
                   </div>
                   <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => handleUpdate(rate.id)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleUpdate(rate.id)}
+                    >
                       <CheckIcon className="h-4 w-4 text-green-600" />
                     </Button>
                     <Button size="icon" variant="ghost" onClick={cancelEdit}>
@@ -189,13 +226,25 @@ export function TaxRatesTab() {
                 </>
               ) : (
                 <>
-                  <span className="flex-1 text-sm font-medium">{rate.name}</span>
-                  <span className="w-24 text-sm text-muted-foreground">{rate.rate}%</span>
+                  <span className="flex-1 text-sm font-medium">
+                    {rate.name}
+                  </span>
+                  <span className="w-24 text-sm text-muted-foreground">
+                    {rate.rate}%
+                  </span>
                   <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => startEdit(rate)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => startEdit(rate)}
+                    >
                       <PencilIcon className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" onClick={() => setDeleteTarget(rate)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setDeleteTarget(rate)}
+                    >
                       <Trash2Icon className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
@@ -210,7 +259,10 @@ export function TaxRatesTab() {
         )}
       </div>
 
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -220,13 +272,18 @@ export function TaxRatesTab() {
               <div>
                 <DialogTitle>Delete Tax Rate</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete <span className="font-medium text-foreground">{deleteTarget?.name}</span>?
+                  Are you sure you want to delete{" "}
+                  <span className="font-medium text-foreground">
+                    {deleteTarget?.name}
+                  </span>
+                  ?
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
           <div className="text-sm text-muted-foreground px-13">
-            This action cannot be undone. If this tax rate is used in any tax group, the deletion will be blocked.
+            This action cannot be undone. If this tax rate is used in any tax
+            group, the deletion will be blocked.
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>

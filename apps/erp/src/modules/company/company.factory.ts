@@ -18,7 +18,10 @@ export class CompanyModuleFactory {
       const repo = new CompanyRepository(prisma);
       const service = new CompanyService(repo, logger);
       CompanyModuleFactory.controller = new CompanyController(service);
-      CompanyModuleFactory.companyContextMw = createCompanyContextMiddleware(repo, logger);
+      CompanyModuleFactory.companyContextMw = createCompanyContextMiddleware(
+        repo,
+        logger,
+      );
     }
     return CompanyModuleFactory.controller;
   }

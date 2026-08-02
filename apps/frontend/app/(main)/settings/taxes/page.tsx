@@ -18,7 +18,9 @@ export default function TaxesSettingsPage() {
       {(data) => (
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Taxes &amp; GST</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Taxes &amp; GST
+            </h1>
             <p className="text-muted-foreground">
               Manage tax rates, create tax groups, and configure supply settings
             </p>

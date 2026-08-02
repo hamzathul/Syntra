@@ -1,6 +1,17 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getAuthenticatedUser, getCompanyId, getParamId } from "backend-p";
-import type { CreateTaxRateDto, UpdateTaxRateDto, CreateTaxGroupDto, UpdateTaxGroupDto } from "shared";
+import {
+  BaseController,
+  V1Response,
+  getAuthenticatedUser,
+  getCompanyId,
+  getParamId,
+} from "backend-p";
+import type {
+  CreateTaxRateDto,
+  UpdateTaxRateDto,
+  CreateTaxGroupDto,
+  UpdateTaxGroupDto,
+} from "shared";
 import type { ITaxRateService } from "./tax-rate.service.port";
 import type { ITaxGroupService } from "./tax-group.service.port";
 

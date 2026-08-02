@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export default function RegisterPage() {
   return (
@@ -10,8 +16,12 @@ export default function RegisterPage() {
           S
         </div>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Get started with Syntra ERP for free</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Create your account
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Get started with Syntra ERP for free
+          </p>
         </div>
       </div>
 

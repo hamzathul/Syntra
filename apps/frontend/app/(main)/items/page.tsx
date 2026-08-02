@@ -6,7 +6,9 @@ export default function ItemsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Items</h1>
-        <p className="text-muted-foreground">Manage your product and inventory catalog</p>
+        <p className="text-muted-foreground">
+          Manage your product and inventory catalog
+        </p>
       </div>
 
       <Card>

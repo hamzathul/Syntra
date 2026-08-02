@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getAuthenticatedUser, getCompanyId } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getAuthenticatedUser,
+  getCompanyId,
+} from "backend-p";
 import type { UpdateGeneralSettingsDto } from "shared";
 import type { IGeneralSettingsService } from "./general-settings.service.port";
 

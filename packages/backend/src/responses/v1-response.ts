@@ -61,7 +61,8 @@ export class V1Response {
         details: options.details,
       },
       meta: this.createMeta(options.request),
-      ...(options.debug !== undefined && !isProduction && { debug: options.debug }),
+      ...(options.debug !== undefined &&
+        !isProduction && { debug: options.debug }),
     });
   }
 

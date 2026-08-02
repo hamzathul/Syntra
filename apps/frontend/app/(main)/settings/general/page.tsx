@@ -18,9 +18,12 @@ export default function GeneralSettingsPage() {
       {(data) => (
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">General Settings</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              General Settings
+            </h1>
             <p className="text-muted-foreground">
-              Configure business currency, decimal places, and date format for your company
+              Configure business currency, decimal places, and date format for
+              your company
             </p>
           </div>
 

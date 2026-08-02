@@ -15,7 +15,10 @@ export default function CompanyProfilePage() {
   const { data: profile, isLoading, error } = useCompanyProfile();
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
-  const [liveValues, setLiveValues] = useState<Record<string, string | string[]> | null>(null);
+  const [liveValues, setLiveValues] = useState<Record<
+    string,
+    string | string[]
+  > | null>(null);
 
   const cardProfile = useMemo(() => {
     if (!liveValues || !profile) return profile;
@@ -30,9 +33,10 @@ export default function CompanyProfilePage() {
       address: (liveValues.address as string) || null,
       pincode: (liveValues.pincode as string) || null,
       state: (liveValues.state as string) || null,
-      businessType: liveValues.businessType === "__other__"
-        ? (liveValues.otherBusinessType as string) || null
-        : ((liveValues.businessType as string) || null),
+      businessType:
+        liveValues.businessType === "__other__"
+          ? (liveValues.otherBusinessType as string) || null
+          : (liveValues.businessType as string) || null,
       businessCategory: (liveValues.businessCategory as string) || null,
       logo: (liveValues.logo as string) || null,
       signature: (liveValues.signature as string) || null,
@@ -76,9 +80,12 @@ export default function CompanyProfilePage() {
       {(data) => (
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Company Profile</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Company Profile
+            </h1>
             <p className="text-muted-foreground">
-              Manage your business information and create a digital business card
+              Manage your business information and create a digital business
+              card
             </p>
           </div>
 
@@ -87,14 +94,23 @@ export default function CompanyProfilePage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
             {/* Form */}
             <div>
-              <CompanyProfileForm profile={data} onLiveValuesChange={setLiveValues} />
+              <CompanyProfileForm
+                profile={data}
+                onLiveValuesChange={setLiveValues}
+              />
             </div>
 
             {/* Card Preview */}
             <div className="space-y-4 lg:sticky lg:top-8 lg:self-start">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Card Preview</h2>
-                <Button variant="outline" size="sm" className="gap-2" onClick={handleDownload} disabled={downloading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleDownload}
+                  disabled={downloading}
+                >
                   {downloading ? (
                     <Loader2Icon className="h-4 w-4 animate-spin" />
                   ) : (
@@ -107,7 +123,8 @@ export default function CompanyProfilePage() {
               <BusinessCard ref={cardRef} profile={cardProfile ?? data} />
 
               <p className="text-xs text-center text-muted-foreground">
-                Toggle &quot;Show on card&quot; switches in the form to customize what appears here.
+                Toggle &quot;Show on card&quot; switches in the form to
+                customize what appears here.
               </p>
             </div>
           </div>

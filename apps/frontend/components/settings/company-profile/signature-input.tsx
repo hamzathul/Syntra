@@ -76,15 +76,18 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     setIsDrawing(true);
   }, []);
 
-  const draw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    if (!isDrawing) return;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const pos = getPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-  }, [isDrawing]);
+  const draw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      if (!isDrawing) return;
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d")!;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    },
+    [isDrawing],
+  );
 
   const stopDraw = useCallback(() => {
     setIsDrawing(false);
@@ -100,19 +103,24 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     onChange(null);
   };
 
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const dataUrl = await readImageFileAsDataUrl(file);
-      sourceRef.current = "upload";
-      onChange(dataUrl);
-      setMode("upload");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to upload image");
-    }
-    e.target.value = "";
-  }, [onChange]);
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await readImageFileAsDataUrl(file);
+        sourceRef.current = "upload";
+        onChange(dataUrl);
+        setMode("upload");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to upload image",
+        );
+      }
+      e.target.value = "";
+    },
+    [onChange],
+  );
 
   return (
     <div className="space-y-2">

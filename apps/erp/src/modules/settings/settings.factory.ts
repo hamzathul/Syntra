@@ -12,7 +12,11 @@ export class SettingsModuleFactory {
       const companyProfileCtrl = CompanyProfileFactory.getController();
       const generalSettingsCtrl = GeneralSettingsFactory.getController();
       const taxesRouter = TaxesModuleFactory.getRouter();
-      SettingsModuleFactory.router = createSettingsRouter(companyProfileCtrl, generalSettingsCtrl, taxesRouter);
+      SettingsModuleFactory.router = createSettingsRouter(
+        companyProfileCtrl,
+        generalSettingsCtrl,
+        taxesRouter,
+      );
     }
     return SettingsModuleFactory.router!;
   }

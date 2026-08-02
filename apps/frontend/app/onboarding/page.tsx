@@ -7,7 +7,10 @@ export default function OnboardingPage() {
       {/* Background blob */}
       <div
         className="pointer-events-none absolute -top-40 -right-40 h-125 w-125 rounded-full opacity-10"
-        style={{ background: "radial-gradient(circle, hsl(258 88% 63%), transparent 70%)" }}
+        style={{
+          background:
+            "radial-gradient(circle, hsl(258 88% 63%), transparent 70%)",
+        }}
       />
 
       <div className="relative z-10 w-full max-w-lg">
@@ -16,7 +19,9 @@ export default function OnboardingPage() {
           <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-2xl font-bold shadow-lg shadow-primary/25">
             S
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight">Set up your company</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Set up your company
+          </h1>
           <p className="mt-2 text-muted-foreground">
             You&apos;re one step away from your ERP dashboard.
           </p>
@@ -30,7 +35,9 @@ export default function OnboardingPage() {
             </div>
             <div>
               <p className="font-medium">Company details</p>
-              <p className="text-sm text-muted-foreground">This can be changed later in settings</p>
+              <p className="text-sm text-muted-foreground">
+                This can be changed later in settings
+              </p>
             </div>
           </div>
           <CompanyForm />

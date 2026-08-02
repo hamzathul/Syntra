@@ -53,7 +53,9 @@ export function CompanySwitcher() {
             Loading…
           </div>
         ) : companies.length === 0 ? (
-          <div className="px-2 py-2 text-sm text-muted-foreground">No companies found</div>
+          <div className="px-2 py-2 text-sm text-muted-foreground">
+            No companies found
+          </div>
         ) : (
           companies.map((company) => (
             <DropdownMenuItem
@@ -66,7 +68,9 @@ export function CompanySwitcher() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium">{company.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{company.role.toLowerCase()}</p>
+                <p className="text-xs text-muted-foreground capitalize">
+                  {company.role.toLowerCase()}
+                </p>
               </div>
               {activeCompany?.id === company.id && (
                 <Check className="h-4 w-4 shrink-0 text-primary" />

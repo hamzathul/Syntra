@@ -21,9 +21,9 @@ export interface PaginationStrategy<TItem> {
   ): CursorPaginationResult<TItem>;
 }
 
-export class CursorPaginationStrategy<TItem extends CursorIdentifiable>
-  implements PaginationStrategy<TItem>
-{
+export class CursorPaginationStrategy<
+  TItem extends CursorIdentifiable,
+> implements PaginationStrategy<TItem> {
   paginate(
     items: readonly TItem[],
     options: CursorPaginationOptions,
@@ -38,7 +38,7 @@ export class CursorPaginationStrategy<TItem extends CursorIdentifiable>
     const paginatedItems = items.slice(startIndex, startIndex + options.limit);
     const nextCursor =
       paginatedItems.length === options.limit
-        ? paginatedItems[paginatedItems.length - 1]?.id ?? null
+        ? (paginatedItems[paginatedItems.length - 1]?.id ?? null)
         : null;
 
     return {

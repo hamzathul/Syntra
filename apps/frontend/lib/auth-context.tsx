@@ -42,12 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [registerMutation],
   );
 
-  const logout = useCallback(
-    async (): Promise<void> => {
-      await logoutMutation.mutateAsync();
-    },
-    [logoutMutation],
-  );
+  const logout = useCallback(async (): Promise<void> => {
+    await logoutMutation.mutateAsync();
+  }, [logoutMutation]);
 
   return (
     <AuthContext.Provider

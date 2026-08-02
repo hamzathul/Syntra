@@ -12,6 +12,5 @@ export const authService = {
   register: (data: { name: string; email: string; password: string }) =>
     coreApi.post<AuthResponse>("/auth/register", data).then((r) => r.data),
 
-  logout: () =>
-    coreApi.post("/auth/logout").then(() => undefined),
+  logout: () => coreApi.post("/auth/logout").then(() => undefined),
 };

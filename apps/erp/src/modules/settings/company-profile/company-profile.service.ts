@@ -2,6 +2,7 @@ import type { CompanyProfileDto, UpdateCompanyProfileDto } from "shared";
 import type { LoggerPort } from "backend-p";
 import type { ICompanyProfileRepository } from "./company-profile.repository.port";
 import type { ICompanyProfileService } from "./company-profile.service.port";
+import { toCompanyProfileDto } from "./company-profile.mapper";
 import { NotFoundError } from "backend-p";
 
 export class CompanyProfileService implements ICompanyProfileService {
@@ -10,17 +11,24 @@ export class CompanyProfileService implements ICompanyProfileService {
     private readonly logger: LoggerPort,
   ) {}
 
-  async getProfile(companyId: string, userId: string): Promise<CompanyProfileDto> {
+  async getProfile(
+    companyId: string,
+    userId: string,
+  ): Promise<CompanyProfileDto> {
     const [record, membership] = await Promise.all([
       this.repo.findById(companyId),
       this.repo.getMembership(userId, companyId),
     ]);
     if (!record) throw new NotFoundError("Company not found");
 
-    return this.toDto(record, membership);
+    return toCompanyProfileDto(record, membership);
   }
 
-  async updateProfile(companyId: string, userId: string, dto: UpdateCompanyProfileDto): Promise<CompanyProfileDto> {
+  async updateProfile(
+    companyId: string,
+    userId: string,
+    dto: UpdateCompanyProfileDto,
+  ): Promise<CompanyProfileDto> {
     const [existing, membership] = await Promise.all([
       this.repo.findById(companyId),
       this.repo.getMembership(userId, companyId),
@@ -35,59 +43,28 @@ export class CompanyProfileService implements ICompanyProfileService {
       "Company profile updated",
     );
 
-    return this.toDto(updated, membership);
+    return toCompanyProfileDto(updated, membership);
   }
 
-  private toDto(
-    record: {
-      id: string;
-      name: string;
-      gstin: string | null;
-      phone1: string | null;
-      phone2: string | null;
-      email: string | null;
-      address: string | null;
-      pincode: string | null;
-      description: string | null;
-      signature: string | null;
-      state: string | null;
-      businessType: string | null;
-      businessCategory: string | null;
-      logo: string | null;
-      showOnCard: unknown;
-      createdAt: Date;
-    },
-    membership: { role: string; isDefault: boolean } | null,
-  ): CompanyProfileDto {
-    const showOnCard: string[] = Array.isArray(record.showOnCard) ? record.showOnCard : [];
-    return {
-      id: record.id,
-      name: record.name,
-      role: (membership?.role ?? "MEMBER") as "OWNER" | "ADMIN" | "MEMBER",
-      isDefault: membership?.isDefault ?? false,
-      createdAt: record.createdAt.toISOString(),
-      gstin: record.gstin,
-      phone1: record.phone1,
-      phone2: record.phone2,
-      email: record.email,
-      address: record.address,
-      pincode: record.pincode,
-      description: record.description,
-      signature: record.signature,
-      state: record.state,
-      businessType: record.businessType,
-      businessCategory: record.businessCategory,
-      logo: record.logo,
-      showOnCard,
-    };
-  }
-
-  private prepareUpdateData(dto: UpdateCompanyProfileDto): Record<string, unknown> {
+  private prepareUpdateData(
+    dto: UpdateCompanyProfileDto,
+  ): Record<string, unknown> {
     const data: Record<string, unknown> = {};
     const keys: (keyof UpdateCompanyProfileDto)[] = [
-      "name", "gstin", "phone1", "phone2", "email", "address", "pincode",
-      "description", "signature", "state", "businessType", "businessCategory",
-      "logo", "showOnCard",
+      "name",
+      "gstin",
+      "phone1",
+      "phone2",
+      "email",
+      "address",
+      "pincode",
+      "description",
+      "signature",
+      "state",
+      "businessType",
+      "businessCategory",
+      "logo",
+      "showOnCard",
     ];
     for (const key of keys) {
       if (key in dto) {

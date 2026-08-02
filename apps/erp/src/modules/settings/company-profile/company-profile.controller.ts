@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getAuthenticatedUser, getCompanyId } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getAuthenticatedUser,
+  getCompanyId,
+} from "backend-p";
 import type { UpdateCompanyProfileDto } from "shared";
 import type { ICompanyProfileService } from "./company-profile.service.port";
 
