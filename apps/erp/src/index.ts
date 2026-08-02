@@ -7,6 +7,7 @@ import {
   createGlobalErrorHandler,
   createHealthRouter,
   createRequestLogMiddleware,
+  createRequestTimeoutMiddleware,
   notFoundHandler,
   requestIdMiddleware,
   sanitizeRequestBody,
@@ -27,6 +28,7 @@ app.use(
   }),
 );
 app.use(requestIdMiddleware);
+app.use(createRequestTimeoutMiddleware(10_000));
 app.use(createRequestLogMiddleware(logger));
 app.use(express.json({ limit: "3mb" }));
 app.use(sanitizeRequestBody);

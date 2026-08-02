@@ -18,6 +18,7 @@ export * from "./middlewares/authentication.middleware";
 export * from "./middlewares/authorization.middleware";
 export * from "./middlewares/not-found.middleware";
 export * from "./middlewares/request-id.middleware";
+export * from "./middlewares/request-timeout.middleware";
 export * from "./middlewares/sanitize.middleware";
 export * from "./middlewares/validate-request.middleware";
 export * from "./patterns/adapter/pino-logger.adapter";
