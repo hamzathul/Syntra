@@ -24,7 +24,12 @@ function buildFindManyArgs(options?: { limit?: number; cursor?: string }) {
 }
 
 /**
- * Prisma-specific CRUD base. Extend this inside apps/backend and apps/erp.
+ * Prisma-specific CRUD base for standard full-CRUD entities (entity has a
+ * plain `id`, created/updated timestamps, and no company scoping).
+ *
+ * NOT for every repository: repos with company-scoped queries, nested
+ * relations, or non-CRUD operations (e.g. taxes, companies, refresh tokens)
+ * should implement their port directly instead.
  *
  * To swap to another ORM, create a parallel file (e.g. typeorm-crud.repository.ts)
  * with the same abstract class signature — nothing outside this infrastructure
