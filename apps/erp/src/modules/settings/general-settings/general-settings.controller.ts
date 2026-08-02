@@ -1,13 +1,7 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getAuthenticatedUser } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser, getCompanyId } from "backend-p";
 import type { UpdateGeneralSettingsDto } from "shared";
 import type { IGeneralSettingsService } from "./general-settings.service.port";
-
-function getCompanyId(locals: Record<string, unknown>): string {
-  const id = locals.companyId as string | undefined;
-  if (!id) throw new Error("Company ID not found in request context");
-  return id;
-}
 
 export class GeneralSettingsController extends BaseController {
   private readonly v1 = V1Response.getInstance();

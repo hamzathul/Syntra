@@ -1,20 +1,8 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getAuthenticatedUser, BadRequestError } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser, getCompanyId, getParamId } from "backend-p";
 import type { CreateTaxRateDto, UpdateTaxRateDto, CreateTaxGroupDto, UpdateTaxGroupDto } from "shared";
 import type { ITaxRateService } from "./tax-rate.service.port";
 import type { ITaxGroupService } from "./tax-group.service.port";
-
-function getCompanyId(locals: Record<string, unknown>): string {
-  const id = locals.companyId as string | undefined;
-  if (!id) throw new BadRequestError("Company ID not found in request context");
-  return id;
-}
-
-function getParamId(req: { params: Record<string, string | undefined> }, name: string): string {
-  const id = req.params[name];
-  if (!id) throw new BadRequestError(`${name} parameter is required`);
-  return id;
-}
 
 export class TaxesController extends BaseController {
   private readonly v1 = V1Response.getInstance();
