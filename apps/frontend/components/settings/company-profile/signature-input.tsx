@@ -49,7 +49,7 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     }
   }, [value]);
 
-  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+  const getPos = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -64,17 +64,20 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
       x: (e.clientX - rect.left) * scaleX,
       y: (e.clientY - rect.top) * scaleY,
     };
-  };
-
-  const startDraw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const pos = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-    setIsDrawing(true);
   }, []);
+
+  const startDraw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d")!;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      setIsDrawing(true);
+    },
+    [getPos],
+  );
 
   const draw = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
@@ -86,7 +89,7 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
     },
-    [isDrawing],
+    [isDrawing, getPos],
   );
 
   const stopDraw = useCallback(() => {

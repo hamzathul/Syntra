@@ -3,15 +3,10 @@ import {
   type AuthenticatedUser,
   type TokenVerifier,
 } from "backend-p";
-import type { UserRoleDto } from "shared";
+import { authUserSchema } from "shared";
 
-interface JwtClaims {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRoleDto;
-  [key: string]: unknown;
-}
+const TOKEN_ISSUER = "syntra-core";
+const TOKEN_AUDIENCE = "syntra-services";
 
 export class JoseTokenVerifier implements TokenVerifier {
   private readonly secretKey: Uint8Array;
@@ -23,14 +18,17 @@ export class JoseTokenVerifier implements TokenVerifier {
   async verify(token: string): Promise<AuthenticatedUser> {
     try {
       const { jwtVerify } = await import("jose");
-      const { payload } = await jwtVerify(token, this.secretKey);
-      const claims = payload as unknown as JwtClaims;
-      return {
-        id: claims.id,
-        name: claims.name,
-        email: claims.email,
-        role: claims.role,
-      };
+      const { payload } = await jwtVerify(token, this.secretKey, {
+        issuer: TOKEN_ISSUER,
+        audience: TOKEN_AUDIENCE,
+      });
+
+      const result = authUserSchema.safeParse(payload);
+      if (!result.success) {
+        throw new UnauthorizedError("Invalid or expired token");
+      }
+
+      return result.data;
     } catch {
       throw new UnauthorizedError("Invalid or expired token");
     }

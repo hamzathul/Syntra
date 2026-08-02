@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut, Moon, User } from "lucide-react";
+import { LogOut, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -66,15 +65,6 @@ export function UserNav() {
             </div>
           </div>
         </DropdownMenuLabel>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="gap-2 cursor-pointer">
-            <User className="h-4 w-4 text-muted-foreground" />
-            Profile
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 

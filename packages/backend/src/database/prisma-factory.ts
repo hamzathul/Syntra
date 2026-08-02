@@ -8,12 +8,26 @@ export interface Disconnectable {
 function buildPoolConfig(databaseUrl: string): PoolConfig {
   try {
     const url = new URL(databaseUrl);
-    const hasSsl = url.searchParams.has("sslmode");
+    const sslMode = url.searchParams.get("sslmode") ?? "prefer";
     url.searchParams.delete("sslmode");
     url.searchParams.delete("uselibpqcompat");
+
+    const requireTls =
+      sslMode === "require" ||
+      sslMode === "verify-ca" ||
+      sslMode === "verify-full";
+
+    // verify-full/verify-ca still validate the server cert; require/prefer do not.
+    const ssl =
+      sslMode === "verify-full" || sslMode === "verify-ca"
+        ? { rejectUnauthorized: true }
+        : requireTls
+          ? { rejectUnauthorized: false }
+          : undefined;
+
     return {
       connectionString: url.toString(),
-      ssl: hasSsl ? { rejectUnauthorized: false } : undefined,
+      ssl,
     };
   } catch {
     return { connectionString: databaseUrl };

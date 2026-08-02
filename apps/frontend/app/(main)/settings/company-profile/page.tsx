@@ -4,6 +4,7 @@ import { useRef, useState, useMemo, useCallback } from "react";
 import { Loader2Icon, DownloadIcon } from "lucide-react";
 import { useCompanyProfile } from "@/hooks/settings/use-company-profile-query";
 import { CompanyProfileForm } from "@/components/settings/company-profile/company-profile-form";
+import type { CompanyProfileFormValues } from "@/components/settings/company-profile/company-profile-form";
 import { BusinessCard } from "@/components/settings/company-profile/business-card";
 import { PageState } from "@/components/ui/page-state";
 import { Separator } from "@/components/ui/separator";
@@ -15,32 +16,31 @@ export default function CompanyProfilePage() {
   const { data: profile, isLoading, error } = useCompanyProfile();
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
-  const [liveValues, setLiveValues] = useState<Record<
-    string,
-    string | string[]
-  > | null>(null);
+  const [liveValues, setLiveValues] = useState<CompanyProfileFormValues | null>(
+    null,
+  );
 
   const cardProfile = useMemo(() => {
     if (!liveValues || !profile) return profile;
 
     const merged: CompanyProfileDto = {
       ...profile,
-      name: (liveValues.name as string) || profile.name,
-      gstin: (liveValues.gstin as string) || null,
-      phone1: (liveValues.phone1 as string) || null,
-      phone2: (liveValues.phone2 as string) || null,
-      email: (liveValues.email as string) || null,
-      address: (liveValues.address as string) || null,
-      pincode: (liveValues.pincode as string) || null,
-      state: (liveValues.state as string) || null,
+      name: liveValues.name || profile.name,
+      gstin: liveValues.gstin || null,
+      phone1: liveValues.phone1 || null,
+      phone2: liveValues.phone2 || null,
+      email: liveValues.email || null,
+      address: liveValues.address || null,
+      pincode: liveValues.pincode || null,
+      state: liveValues.state || null,
       businessType:
         liveValues.businessType === "__other__"
-          ? (liveValues.otherBusinessType as string) || null
-          : (liveValues.businessType as string) || null,
-      businessCategory: (liveValues.businessCategory as string) || null,
-      logo: (liveValues.logo as string) || null,
-      signature: (liveValues.signature as string) || null,
-      showOnCard: (liveValues.showOnCard as string[]) ?? [],
+          ? liveValues.otherBusinessType || null
+          : liveValues.businessType || null,
+      businessCategory: liveValues.businessCategory || null,
+      logo: liveValues.logo || null,
+      signature: liveValues.signature || null,
+      showOnCard: liveValues.showOnCard,
     };
 
     return merged;

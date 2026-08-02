@@ -1,6 +1,7 @@
 import type { PrismaClient } from "../../../generated/prisma";
 import type { ITaxRateRepository } from "./tax-rate.repository.port";
 import type { TaxRateRecord } from "./taxes.types";
+import { toTaxRateRecord } from "./tax-rate.record";
 
 export class TaxRateRepository implements ITaxRateRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -10,7 +11,7 @@ export class TaxRateRepository implements ITaxRateRepository {
       where: { companyId },
       orderBy: { name: "asc" },
     });
-    return rates.map((r) => this.mapRecord(r));
+    return rates.map(toTaxRateRecord);
   }
 
   async findById(id: string, companyId: string): Promise<TaxRateRecord | null> {
@@ -18,7 +19,7 @@ export class TaxRateRepository implements ITaxRateRepository {
       where: { id },
     });
     if (!rate || rate.companyId !== companyId) return null;
-    return this.mapRecord(rate);
+    return toTaxRateRecord(rate);
   }
 
   async create(
@@ -28,7 +29,7 @@ export class TaxRateRepository implements ITaxRateRepository {
     const rate = await this.prisma.taxRate.create({
       data: { companyId, ...data },
     });
-    return this.mapRecord(rate);
+    return toTaxRateRecord(rate);
   }
 
   async update(
@@ -39,14 +40,14 @@ export class TaxRateRepository implements ITaxRateRepository {
       where: { id },
       data,
     });
-    return this.mapRecord(rate);
+    return toTaxRateRecord(rate);
   }
 
   async delete(id: string): Promise<TaxRateRecord> {
     const rate = await this.prisma.taxRate.delete({
       where: { id },
     });
-    return this.mapRecord(rate);
+    return toTaxRateRecord(rate);
   }
 
   async isUsedInAnyGroup(id: string, companyId: string): Promise<boolean> {
@@ -56,21 +57,9 @@ export class TaxRateRepository implements ITaxRateRepository {
     return count > 0;
   }
 
-  private mapRecord(r: {
-    id: string;
-    companyId: string;
-    name: string;
-    rate: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }): TaxRateRecord {
-    return {
-      id: r.id,
-      companyId: r.companyId,
-      name: r.name,
-      rate: Number(r.rate),
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
-    };
+  async countByIds(ids: string[], companyId: string): Promise<number> {
+    return this.prisma.taxRate.count({
+      where: { id: { in: ids }, companyId },
+    });
   }
 }

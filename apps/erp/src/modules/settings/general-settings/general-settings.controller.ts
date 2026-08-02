@@ -1,10 +1,5 @@
 import type { RequestHandler } from "express";
-import {
-  BaseController,
-  V1Response,
-  getAuthenticatedUser,
-  getCompanyId,
-} from "backend-p";
+import { BaseController, V1Response, getCompanyId } from "backend-p";
 import type { UpdateGeneralSettingsDto } from "shared";
 import type { IGeneralSettingsService } from "./general-settings.service.port";
 
@@ -16,7 +11,6 @@ export class GeneralSettingsController extends BaseController {
   }
 
   readonly get: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const settings = await this.service.getSettings(companyId);
 
@@ -28,7 +22,6 @@ export class GeneralSettingsController extends BaseController {
   });
 
   readonly update: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const dto = req.body as UpdateGeneralSettingsDto;
     const settings = await this.service.updateSettings(companyId, dto);

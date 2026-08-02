@@ -13,4 +13,5 @@ export interface ITaxRateRepository {
   ): Promise<TaxRateRecord>;
   delete(id: string): Promise<TaxRateRecord>;
   isUsedInAnyGroup(id: string, companyId: string): Promise<boolean>;
+  countByIds(ids: string[], companyId: string): Promise<number>;
 }

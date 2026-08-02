@@ -42,20 +42,3 @@ export class InternalServerError extends AppError {
     super(500, "INTERNAL_SERVER_ERROR", message);
   }
 }
-
-export const createBadRequestError = (
-  message?: string,
-  details?: readonly ApiErrorDetail[],
-) => new BadRequestError(message, details);
-
-export const createUnauthorizedError = (message?: string) =>
-  new UnauthorizedError(message);
-
-export const createForbiddenError = (message?: string) =>
-  new ForbiddenError(message);
-
-export const createConflictError = (message?: string) =>
-  new ConflictError(message);
-
-export const createNotFoundError = (resource?: string) =>
-  new NotFoundError(resource);

@@ -1,6 +1,7 @@
 import type { PrismaClient } from "../../../generated/prisma";
 import type { ITaxGroupRepository } from "./tax-group.repository.port";
 import type { TaxGroupRecord } from "./taxes.types";
+import { toTaxRateRecord } from "./tax-rate.record";
 
 export class TaxGroupRepository implements ITaxGroupRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -112,14 +113,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
       groupRates: r.groupRates.map((gr) => ({
-        taxRate: {
-          id: gr.taxRate.id,
-          companyId: gr.taxRate.companyId,
-          name: gr.taxRate.name,
-          rate: Number(gr.taxRate.rate),
-          createdAt: gr.taxRate.createdAt,
-          updatedAt: gr.taxRate.updatedAt,
-        },
+        taxRate: toTaxRateRecord(gr.taxRate),
       })),
     };
   }

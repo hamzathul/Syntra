@@ -117,6 +117,37 @@ To target a single workspace, use `--filter <package-name>`:
 - Loading/error/empty handling for async pages uses `PageState<T>` from `apps/frontend/components/ui/page-state.tsx` — a generic render-prop component (`children: (data: T) => React.ReactNode`). Do not duplicate inline `isLoading`/`error` blocks.
 - Error/loading boundaries: `app/error.tsx`, `app/(auth)/error.tsx` + `loading.tsx`, `app/onboarding/error.tsx` + `loading.tsx` — all reuse `PageError` from `components/ui/error-boundary.tsx`.
 
+### Page Data Flow — No Page-Scoped Context Providers
+
+- **Do not create per-page React context providers** to supply page data. Global providers (theme, query client, auth, company) live only in `app/providers.tsx`.
+- Page data comes from React Query hooks: the page calls `useX()` and passes values **down as props** to child components; each tab/child calls its own `useX()` directly (React Query dedupes/caches).
+- Only introduce a page-scoped context when many deeply-nested siblings share **mutable** state (e.g. a complex form/wizard). For read-only server data, props + hooks + query cache is the pattern.
+- New pages: `"use client"` + `PageState` + factory hooks. Never raw `useQuery`/`useMutation` outside `use-auth-query.ts`.
+
+### Frontend Auth Flow & Cookies (Critical)
+
+- **Login/register go through `coreApi` (baseURL `/api/proxy/core`)** → `app/api/proxy/core/[...path]/route.ts`. The proxy handler MUST set the httpOnly `access_token`/`refresh_token` cookies on login/register responses — that is the only place cookies are set. The old standalone `app/api/auth/*` routes have been removed.
+- The proxy handler also auto-refreshes on 401 (reads `refresh_token` cookie, calls Core `/auth/refresh`, re-sets cookies, retries once).
+- `proxy.ts` guards routes using the `access_token` cookie. After login the cookie must exist or users are looped back to `/login`.
+- **`setActiveCompany` (cookie) and `setActiveCompanyState` (React state) must BOTH be called** wherever the active company changes (`switchCompany`, `createCompany`, default-company effect) — missing the cookie write causes `/onboarding` ↔ `/dashboard` redirect loops.
+- `getApiErrorMessage(error)`: always check `axios.isAxiosError(error)` **before** the generic `"message" in error` branch, or server messages are lost.
+
+### Route Versioning
+
+- **Mount `/v1` exactly once** in `routes/index.ts` (`router.use("/v1", v1Routes)`), then use version-less paths inside `routes/v1/index.ts` (`/auth`, `/companies`, `/settings`, …). Never repeat `/v1` inline on every sub-route. Both `apps/backend` and `apps/erp` follow this.
+
+### Common Pitfalls to Avoid (from code review)
+
+- **Prisma P2002 duplicate-key → must become 409**: catch P2002 and throw `ConflictError`; a raw P2002 becomes a 500 via the global handler.
+- **Validate foreign-key refs before use**: e.g. tax-group `taxRateIds` must be checked to exist AND belong to the company (`count` + `in` + `companyId`), else FK errors → 500 and cross-company leaks.
+- **Never store `undefined` into `req.body`**: the `validateRequest` middleware currently doesn't write parsed results back, so `.trim()`/`.toLowerCase()` refinements don't apply — don't rely on them downstream.
+- **Prisma `orderBy` in `ListOptions` is ignored** by `PrismaCrudRepository.findAll` (hard-codes `createdAt: desc`) — don't pass custom ordering to it.
+- **Avoid circular barrel imports** in `backend-p`: internal files must import directly (e.g. `../abstractions/base.repository`), not via `../../index`.
+- **Response envelopes**: create endpoints should use `201`, not `200` (see `company.controller.ts`). Keep DELETE at 200 with `data: null`.
+- **Shared Express lib must not `console`/`process.exit`** (e.g. `env-factory`): throw instead so callers/tests can handle failures.
+- **`jose` verifier must check `iss`/`aud`** and validate the payload (not `as` cast) — otherwise any same-secret HS256 token passes.
+- **Register/login/refresh should be transactional** (or catch P2002 → 409) to avoid orphaned users/tokens.
+
 ### Shared Express Infrastructure (in `backend-p`)
 
 - **Env config**: `packages/backend/src/config/env-factory.ts` exports `loadEnv(portDefault, extras?)` and `BaseEnv`. Every app's `config/env.ts` calls it and adds app-specific keys via `extras`. `BaseEnv` must stay exported (avoid TS4023).

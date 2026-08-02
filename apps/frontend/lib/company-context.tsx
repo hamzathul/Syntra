@@ -14,6 +14,7 @@ import {
   useCompanies,
   useCreateCompanyMutation,
 } from "@/hooks/companies/use-companies-query";
+import { settingsKeys, taxKeys } from "@/hooks/query-keys";
 import {
   getActiveCompany,
   setActiveCompany as setActiveCompanyCookie,
@@ -62,8 +63,8 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
       };
       setActiveCompanyCookie(next);
       setActiveCompanyState(next);
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
-      queryClient.invalidateQueries({ queryKey: ["taxes"] });
+      queryClient.invalidateQueries({ queryKey: settingsKeys.all });
+      queryClient.invalidateQueries({ queryKey: taxKeys.all });
     },
     [queryClient],
   );
@@ -77,6 +78,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
         role: company.role,
       };
       setActiveCompanyState(next);
+      setActiveCompanyCookie(next);
       return company;
     },
     [createCompanyMutation],

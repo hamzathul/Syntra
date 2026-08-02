@@ -1,7 +1,12 @@
-import type { CursorPaginationResult } from "../patterns/strategy/cursor-pagination.strategy";
+import type { CursorPaginationMeta } from "shared";
 
 interface WithId {
   readonly id: string;
+}
+
+export interface CursorPaginationResult<TItem> {
+  readonly items: readonly TItem[];
+  readonly meta: CursorPaginationMeta;
 }
 
 /**

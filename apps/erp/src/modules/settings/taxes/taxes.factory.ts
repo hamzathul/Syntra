@@ -18,7 +18,11 @@ export class TaxesModuleFactory {
       const taxRateRepo = new TaxRateRepository(prisma);
       const taxGroupRepo = new TaxGroupRepository(prisma);
       const taxRateService = new TaxRateService(taxRateRepo, logger);
-      const taxGroupService = new TaxGroupService(taxGroupRepo, logger);
+      const taxGroupService = new TaxGroupService(
+        taxGroupRepo,
+        taxRateRepo,
+        logger,
+      );
       TaxesModuleFactory.controller = new TaxesController(
         taxRateService,
         taxGroupService,

@@ -2,7 +2,6 @@ import type { RequestHandler } from "express";
 import {
   BaseController,
   V1Response,
-  getAuthenticatedUser,
   getCompanyId,
   getParamId,
 } from "backend-p";
@@ -26,7 +25,6 @@ export class TaxesController extends BaseController {
   }
 
   readonly listRates: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const rates = await this.taxRateService.list(companyId);
 
@@ -38,20 +36,19 @@ export class TaxesController extends BaseController {
   });
 
   readonly createRate: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const dto = req.body as CreateTaxRateDto;
     const rate = await this.taxRateService.create(companyId, dto);
 
     this.v1.success(res, {
       request: req,
+      statusCode: 201,
       message: "Tax rate created successfully",
       data: rate,
     });
   });
 
   readonly updateRate: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const id = getParamId(req, "id");
     const dto = req.body as UpdateTaxRateDto;
@@ -65,7 +62,6 @@ export class TaxesController extends BaseController {
   });
 
   readonly deleteRate: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const id = getParamId(req, "id");
     await this.taxRateService.remove(id, companyId);
@@ -78,7 +74,6 @@ export class TaxesController extends BaseController {
   });
 
   readonly listGroups: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const groups = await this.taxGroupService.list(companyId);
 
@@ -90,20 +85,19 @@ export class TaxesController extends BaseController {
   });
 
   readonly createGroup: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const dto = req.body as CreateTaxGroupDto;
     const group = await this.taxGroupService.create(companyId, dto);
 
     this.v1.success(res, {
       request: req,
+      statusCode: 201,
       message: "Tax group created successfully",
       data: group,
     });
   });
 
   readonly updateGroup: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const id = getParamId(req, "id");
     const dto = req.body as UpdateTaxGroupDto;
@@ -117,7 +111,6 @@ export class TaxesController extends BaseController {
   });
 
   readonly deleteGroup: RequestHandler = this.asyncHandler(async (req, res) => {
-    getAuthenticatedUser(res.locals);
     const companyId = getCompanyId(res.locals);
     const id = getParamId(req, "id");
     await this.taxGroupService.remove(id, companyId);

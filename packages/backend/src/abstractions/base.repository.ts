@@ -1,4 +1,4 @@
-import type { CursorPaginationResult } from "../patterns/strategy/cursor-pagination.strategy";
+import type { CursorPaginationResult } from "../utils/paginate";
 
 export abstract class BaseRepository<TEntity, TId = string> {
   abstract findById(id: TId): Promise<TEntity | null>;

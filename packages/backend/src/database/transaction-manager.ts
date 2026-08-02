@@ -8,14 +8,6 @@ export interface TransactionManager<TClient = TransactionClient> {
   ): Promise<TResult>;
 }
 
-export class NoopTransactionManager implements TransactionManager<TransactionClient> {
-  async runInTransaction<TResult>(
-    operation: (client: TransactionClient) => Promise<TResult>,
-  ): Promise<TResult> {
-    return operation({ id: "noop-transaction" });
-  }
-}
-
 export class PrismaTransactionManager implements TransactionManager {
   constructor(
     private readonly prisma: {

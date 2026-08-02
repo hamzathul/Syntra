@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 import type { ApiErrorResponse, AuthUserDto } from "shared";
 
 export const coreApi = axios.create({
@@ -23,9 +23,13 @@ export const authApi = {
 };
 
 export const getApiErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const message = (error.response?.data as ApiErrorResponse | undefined)
+      ?.message;
+    return message || error.message || "Something went wrong";
+  }
   if (error && typeof error === "object" && "message" in error) {
     return (error as { message: string }).message;
   }
-  const axiosError = error as AxiosError<ApiErrorResponse>;
-  return axiosError.response?.data?.message ?? "Something went wrong";
+  return "Something went wrong";
 };

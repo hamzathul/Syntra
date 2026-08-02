@@ -67,6 +67,8 @@ const companyProfileFormSchema = z.object({
 
 type FormValues = z.infer<typeof companyProfileFormSchema>;
 
+export type CompanyProfileFormValues = FormValues;
+
 interface CompanyProfileFormProps {
   profile: CompanyProfileDto;
   onLiveValuesChange?: (values: FormValues) => void;
@@ -205,6 +207,7 @@ export function CompanyProfileForm({
         </p>
         <LogoUpload
           value={currentLogo}
+          name={profile.name ?? undefined}
           onChange={(v) => setValue("logo", v ?? "", { shouldDirty: true })}
         />
       </div>

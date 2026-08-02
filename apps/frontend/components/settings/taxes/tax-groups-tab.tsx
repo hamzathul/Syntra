@@ -9,7 +9,6 @@ import {
   AlertTriangleIcon,
 } from "lucide-react";
 import type { TaxGroupDto } from "shared";
-import type { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,11 +27,12 @@ import {
   useUpdateTaxGroupMutation,
   useDeleteTaxGroupMutation,
 } from "@/hooks/settings/use-tax-settings-query";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
 export function TaxGroupsTab() {
-  const { data: groups, isLoading: groupsLoading } = useTaxGroups();
-  const { data: rates } = useTaxRates();
+  const { data: groups, isLoading: groupsLoading, error } = useTaxGroups();
+  const { data: rates, error: ratesError } = useTaxRates();
   const createMutation = useCreateTaxGroupMutation();
   const updateMutation = useUpdateTaxGroupMutation();
   const deleteMutation = useDeleteTaxGroupMutation();
@@ -102,10 +102,7 @@ export function TaxGroupsTab() {
       }
       closeDialog();
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message?: string }>;
-      const msg =
-        axiosError?.response?.data?.message ?? "Failed to save tax group";
-      toast.error(msg);
+      toast.error(getApiErrorMessage(err));
     }
   }, [
     groupName,
@@ -123,10 +120,7 @@ export function TaxGroupsTab() {
       toast.success("Tax group deleted");
       setDeleteTarget(null);
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message?: string }>;
-      const msg =
-        axiosError?.response?.data?.message ?? "Failed to delete tax group";
-      toast.error(msg);
+      toast.error(getApiErrorMessage(err));
       setDeleteTarget(null);
     }
   }, [deleteTarget, deleteMutation]);
@@ -135,6 +129,17 @@ export function TaxGroupsTab() {
     return (
       <div className="flex items-center justify-center py-10">
         <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+        <AlertTriangleIcon className="h-6 w-6 text-destructive" />
+        <p className="text-sm text-muted-foreground">
+          {getApiErrorMessage(error)}
+        </p>
       </div>
     );
   }
@@ -221,7 +226,11 @@ export function TaxGroupsTab() {
 
             <div className="grid gap-2">
               <Label>Applicable Tax Rates</Label>
-              {rates && rates.length > 0 ? (
+              {ratesError ? (
+                <p className="text-sm text-destructive">
+                  {getApiErrorMessage(ratesError)}
+                </p>
+              ) : rates && rates.length > 0 ? (
                 <div className="border rounded-lg divide-y max-h-48 overflow-y-auto">
                   {rates.map((rate) => (
                     <label

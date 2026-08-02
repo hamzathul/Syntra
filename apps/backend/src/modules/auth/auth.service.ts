@@ -4,6 +4,7 @@ import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
+  isPrismaUniqueViolation,
   type LoggerPort,
   type TokenSigner,
   type TransactionManager,
@@ -16,6 +17,7 @@ import type {
 } from "shared";
 import type { IUserRepository } from "./user.repository.port";
 import type { IRefreshTokenRepository } from "./refresh-token.repository.port";
+import { toAuthUserDto } from "./user.mapper";
 import { env } from "../../config/env";
 
 const BCRYPT_SALT_ROUNDS = 12;
@@ -38,18 +40,21 @@ export class AuthService implements AuthServicePort {
     }
 
     const passwordHash = await hash(dto.password, BCRYPT_SALT_ROUNDS);
-    const user = await this.userRepository.create({
-      name: dto.name,
-      email: dto.email,
-      passwordHash,
-    });
+    let user;
+    try {
+      user = await this.userRepository.create({
+        name: dto.name,
+        email: dto.email,
+        passwordHash,
+      });
+    } catch (error) {
+      if (isPrismaUniqueViolation(error)) {
+        throw new ConflictError("A user with this email already exists");
+      }
+      throw error;
+    }
 
-    const authUser: AuthUserDto = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+    const authUser = toAuthUserDto(user);
 
     const token = await this.tokenSigner.sign(authUser);
     const { raw: refreshToken, hash: refreshHash } =
@@ -110,12 +115,7 @@ export class AuthService implements AuthServicePort {
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    const authUser: AuthUserDto = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+    const authUser = toAuthUserDto(user);
 
     const token = await this.tokenSigner.sign(authUser);
     const { raw: refreshToken, hash: refreshHash } =
@@ -179,7 +179,6 @@ export class AuthService implements AuthServicePort {
     );
 
     if (!wasRevoked) {
-      await this.refreshTokenRepository.revokeAllByFamily(stored.family);
       this.logger.info(
         {
           category: "audit",
@@ -197,12 +196,7 @@ export class AuthService implements AuthServicePort {
       throw new UnauthorizedError("User not found");
     }
 
-    const authUser: AuthUserDto = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+    const authUser = toAuthUserDto(user);
 
     const token = await this.tokenSigner.sign(authUser);
     const { raw: newRefreshToken, hash: newHash } =
@@ -279,11 +273,6 @@ export class AuthService implements AuthServicePort {
       throw new NotFoundError("User");
     }
 
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+    return toAuthUserDto(user);
   }
 }

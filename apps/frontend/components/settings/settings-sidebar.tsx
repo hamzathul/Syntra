@@ -2,70 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboardIcon,
-  Building2Icon,
-  CreditCardIcon,
-  BellIcon,
-  UsersIcon,
-  SettingsIcon,
-  SlidersHorizontalIcon,
-  ReceiptIcon,
-} from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-
-const navItems = [
-  {
-    href: "/settings",
-    label: "Overview",
-    icon: LayoutDashboardIcon,
-    disabled: false,
-    exact: true,
-  },
-  {
-    href: "/settings/company-profile",
-    label: "Company Profile",
-    icon: Building2Icon,
-    disabled: false,
-    exact: false,
-  },
-  {
-    href: "/settings/general",
-    label: "General",
-    icon: SlidersHorizontalIcon,
-    disabled: false,
-    exact: false,
-  },
-  {
-    href: "/settings/taxes",
-    label: "Taxes & GST",
-    icon: ReceiptIcon,
-    disabled: false,
-    exact: false,
-  },
-  {
-    href: "#",
-    label: "Billing",
-    icon: CreditCardIcon,
-    disabled: true,
-    exact: false,
-  },
-  {
-    href: "#",
-    label: "Notifications",
-    icon: BellIcon,
-    disabled: true,
-    exact: false,
-  },
-  {
-    href: "#",
-    label: "Team",
-    icon: UsersIcon,
-    disabled: true,
-    exact: false,
-  },
-] as const;
+import { settingsNavItems } from "@/lib/settings-nav";
 
 export function SettingsSidebar() {
   const pathname = usePathname();
@@ -79,14 +19,14 @@ export function SettingsSidebar() {
         </h2>
       </div>
       <nav className="space-y-1">
-        {navItems.map((item) => {
+        {settingsNavItems.map((item) => {
           const active = item.exact
             ? pathname === item.href
             : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
             <Link
-              key={item.label}
+              key={item.title}
               href={item.disabled ? "#" : item.href}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
@@ -98,7 +38,7 @@ export function SettingsSidebar() {
               onClick={(e) => item.disabled && e.preventDefault()}
             >
               <Icon className="h-4 w-4" />
-              <span className="flex-1">{item.label}</span>
+              <span className="flex-1">{item.title}</span>
               {item.disabled && (
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                   Soon

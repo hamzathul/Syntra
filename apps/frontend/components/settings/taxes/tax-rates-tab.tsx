@@ -28,11 +28,11 @@ import {
   useUpdateTaxRateMutation,
   useDeleteTaxRateMutation,
 } from "@/hooks/settings/use-tax-settings-query";
-import type { AxiosError } from "axios";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
 export function TaxRatesTab() {
-  const { data: rates, isLoading } = useTaxRates();
+  const { data: rates, isLoading, error } = useTaxRates();
   const createMutation = useCreateTaxRateMutation();
   const updateMutation = useUpdateTaxRateMutation();
   const deleteMutation = useDeleteTaxRateMutation();
@@ -62,10 +62,7 @@ export function TaxRatesTab() {
       toast.success("Tax rate added");
       resetAddForm();
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message?: string }>;
-      const msg =
-        axiosError?.response?.data?.message ?? "Failed to add tax rate";
-      toast.error(msg);
+      toast.error(getApiErrorMessage(err));
     }
   }, [newName, newRate, createMutation, resetAddForm]);
 
@@ -92,10 +89,7 @@ export function TaxRatesTab() {
         toast.success("Tax rate updated");
         cancelEdit();
       } catch (err: unknown) {
-        const axiosError = err as AxiosError<{ message?: string }>;
-        const msg =
-          axiosError?.response?.data?.message ?? "Failed to update tax rate";
-        toast.error(msg);
+        toast.error(getApiErrorMessage(err));
       }
     },
     [editName, editRate, updateMutation, cancelEdit],
@@ -108,11 +102,7 @@ export function TaxRatesTab() {
       toast.success("Tax rate deleted");
       setDeleteTarget(null);
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message?: string }>;
-      const msg =
-        axiosError?.response?.data?.message ??
-        "Cannot delete tax rate used in a group";
-      toast.error(msg);
+      toast.error(getApiErrorMessage(err));
       setDeleteTarget(null);
     }
   }, [deleteTarget, deleteMutation]);
@@ -121,6 +111,17 @@ export function TaxRatesTab() {
     return (
       <div className="flex items-center justify-center py-10">
         <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+        <AlertTriangleIcon className="h-6 w-6 text-destructive" />
+        <p className="text-sm text-muted-foreground">
+          {getApiErrorMessage(error)}
+        </p>
       </div>
     );
   }

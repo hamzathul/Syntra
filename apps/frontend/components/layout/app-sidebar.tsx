@@ -43,10 +43,8 @@ export function AppSidebar() {
   }, []);
 
   const toggle = () => {
-    setCollapsed((prev) => {
-      localStorage.setItem(STORAGE_KEY, String(!prev));
-      return !prev;
-    });
+    setCollapsed((prev) => !prev);
+    localStorage.setItem(STORAGE_KEY, String(!collapsed));
   };
 
   return (

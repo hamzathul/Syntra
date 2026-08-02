@@ -38,10 +38,12 @@ export function AppProviders({ children }: { readonly children: ReactNode }) {
               {children}
               <Toaster richColors position="bottom-right" />
             </TooltipProvider>
-            <ReactQueryDevtools
-              initialIsOpen={false}
-              buttonPosition="bottom-right"
-            />
+            {process.env.NODE_ENV === "development" && (
+              <ReactQueryDevtools
+                initialIsOpen={false}
+                buttonPosition="bottom-right"
+              />
+            )}
           </CompanyProvider>
         </AuthProvider>
       </QueryClientProvider>

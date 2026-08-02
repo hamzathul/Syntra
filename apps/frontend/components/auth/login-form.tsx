@@ -1,15 +1,26 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
-import { companyService } from "@/lib/api/services/company.service";
+import { useCompanies } from "@/hooks/companies/use-companies-query";
 import { useAuth } from "@/lib/auth-context";
 
 export function LoginForm() {
   const { login, isLoggingIn } = useAuth();
+  const { data: companies = [], isLoading: isLoadingCompanies } =
+    useCompanies();
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (hasLoggedIn && !isLoadingCompanies) {
+      window.location.href =
+        companies.length === 0 ? "/onboarding" : "/dashboard";
+    }
+  }, [hasLoggedIn, isLoadingCompanies, companies]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,11 +30,8 @@ export function LoginForm() {
 
     try {
       await login({ email, password });
-
-      const companies = await companyService.list();
+      setHasLoggedIn(true);
       toast.success("Welcome back!");
-      window.location.href =
-        companies.length === 0 ? "/onboarding" : "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }

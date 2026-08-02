@@ -11,9 +11,15 @@ interface LogoUploadProps {
   value: string | null;
   onChange: (value: string | null) => void;
   size?: number;
+  name?: string;
 }
 
-export function LogoUpload({ value, onChange, size = 96 }: LogoUploadProps) {
+export function LogoUpload({
+  value,
+  onChange,
+  size = 96,
+  name,
+}: LogoUploadProps) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => fileRef.current?.click();
@@ -35,7 +41,13 @@ export function LogoUpload({ value, onChange, size = 96 }: LogoUploadProps) {
     [onChange],
   );
 
-  const initials = "BS";
+  const initials = (name ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]!.toUpperCase())
+    .join("")
+    .slice(0, 2);
 
   return (
     <div className="relative inline-block">

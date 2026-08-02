@@ -38,11 +38,11 @@ export function loadEnv<TExtras extends z.ZodRawShape>(
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {
-    console.error("Invalid environment variables:");
-    for (const issue of result.error.issues) {
-      console.error(`  ${issue.path.join(".")}: ${issue.message}`);
-    }
-    process.exit(1);
+    throw new Error(
+      `Invalid environment variables:\n${result.error.issues
+        .map((issue) => `  ${issue.path.join(".")}: ${issue.message}`)
+        .join("\n")}`,
+    );
   }
 
   return result.data as BaseEnv & z.infer<z.ZodObject<TExtras>>;

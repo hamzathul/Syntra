@@ -1,4 +1,8 @@
-import { ConflictError, NotFoundError } from "backend-p";
+import {
+  ConflictError,
+  NotFoundError,
+  isPrismaUniqueViolation,
+} from "backend-p";
 import type { LoggerPort } from "backend-p";
 import type { TaxRateDto, CreateTaxRateDto, UpdateTaxRateDto } from "shared";
 import type { ITaxRateRepository } from "./tax-rate.repository.port";
@@ -17,10 +21,18 @@ export class TaxRateService implements ITaxRateService {
   }
 
   async create(companyId: string, dto: CreateTaxRateDto): Promise<TaxRateDto> {
-    const record = await this.repo.create(companyId, {
-      name: dto.name,
-      rate: dto.rate,
-    });
+    let record;
+    try {
+      record = await this.repo.create(companyId, {
+        name: dto.name,
+        rate: dto.rate,
+      });
+    } catch (error) {
+      if (isPrismaUniqueViolation(error)) {
+        throw new ConflictError("A tax rate with this name already exists");
+      }
+      throw error;
+    }
 
     this.logger.info(
       {
@@ -43,7 +55,15 @@ export class TaxRateService implements ITaxRateService {
     const existing = await this.repo.findById(id, companyId);
     if (!existing) throw new NotFoundError("Tax rate");
 
-    const record = await this.repo.update(id, dto);
+    let record;
+    try {
+      record = await this.repo.update(id, dto);
+    } catch (error) {
+      if (isPrismaUniqueViolation(error)) {
+        throw new ConflictError("A tax rate with this name already exists");
+      }
+      throw error;
+    }
 
     this.logger.info(
       {

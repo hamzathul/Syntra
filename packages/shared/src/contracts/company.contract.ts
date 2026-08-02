@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-export const createCompanySchema = z.object({
-  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
-});
+export const createCompanySchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, "Name must be at least 2 characters")
+      .max(100),
+  })
+  .strict();
 
 export type CreateCompanyDto = z.infer<typeof createCompanySchema>;
 
@@ -108,7 +114,7 @@ export const updateCompanyProfileSchema = z.object({
     .max(15)
     .nullable()
     .optional(),
-  email: z.string().email("Invalid email").nullable().optional(),
+  email: z.email("Invalid email").nullable().optional(),
   address: z.string().max(500, "Address too long").nullable().optional(),
   pincode: z
     .string()
