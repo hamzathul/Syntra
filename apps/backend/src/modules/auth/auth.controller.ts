@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import {
   BaseController,
-  ResponseFactory,
+  V1Response,
   getAuthenticatedUser,
 } from "backend-p";
 import type {
@@ -11,7 +11,7 @@ import type {
 import type { AuthServicePort } from "./auth.service.port";
 
 export class AuthController extends BaseController {
-  private readonly v1Response = ResponseFactory.createV1Response();
+  private readonly v1Response = V1Response.getInstance();
 
   constructor(private readonly authService: AuthServicePort) {
     super();

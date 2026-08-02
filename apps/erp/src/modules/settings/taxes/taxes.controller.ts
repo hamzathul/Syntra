@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory, getAuthenticatedUser, BadRequestError } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser, BadRequestError } from "backend-p";
 import type { CreateTaxRateDto, UpdateTaxRateDto, CreateTaxGroupDto, UpdateTaxGroupDto } from "shared";
 import type { ITaxRateService } from "./tax-rate.service.port";
 import type { ITaxGroupService } from "./tax-group.service.port";
@@ -17,7 +17,7 @@ function getParamId(req: { params: Record<string, string | undefined> }, name: s
 }
 
 export class TaxesController extends BaseController {
-  private readonly v1 = ResponseFactory.createV1Response();
+  private readonly v1 = V1Response.getInstance();
 
   constructor(
     private readonly taxRateService: ITaxRateService,

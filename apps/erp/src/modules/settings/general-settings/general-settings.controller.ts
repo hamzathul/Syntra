@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser } from "backend-p";
 import type { UpdateGeneralSettingsDto } from "shared";
 import type { IGeneralSettingsService } from "./general-settings.service.port";
 
@@ -10,7 +10,7 @@ function getCompanyId(locals: Record<string, unknown>): string {
 }
 
 export class GeneralSettingsController extends BaseController {
-  private readonly v1 = ResponseFactory.createV1Response();
+  private readonly v1 = V1Response.getInstance();
 
   constructor(private readonly service: IGeneralSettingsService) {
     super();

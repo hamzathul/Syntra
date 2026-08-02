@@ -1,10 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser } from "backend-p";
 import type { CreateCompanyDto } from "shared";
 import type { ICompanyService } from "./company.service.port";
 
 export class CompanyController extends BaseController {
-  private readonly v1 = ResponseFactory.createV1Response();
+  private readonly v1 = V1Response.getInstance();
 
   constructor(private readonly companyService: ICompanyService) {
     super();

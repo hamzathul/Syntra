@@ -1,7 +1,6 @@
 import { randomUUID, createHash } from "node:crypto";
 import { hash, compare } from "bcryptjs";
 import {
-  BaseService,
   ConflictError,
   NotFoundError,
   UnauthorizedError,
@@ -24,20 +23,18 @@ const BCRYPT_SALT_ROUNDS = 12;
 
 import type { AuthServicePort } from "./auth.service.port";
 
-export class AuthService extends BaseService implements AuthServicePort {
+export class AuthService implements AuthServicePort {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly tokenSigner: TokenSigner,
     private readonly refreshTokenRepository: IRefreshTokenRepository,
     private readonly transactionManager: TransactionManager,
     private readonly logger: LoggerPort,
-  ) {
-    super("AuthService");
-  }
+  ) {}
 
   async register(dto: RegisterRequestDto): Promise<AuthSessionDto> {
     return withErrorLogging(
-      `${this.name}.register`,
+      `${"AuthService"}.register`,
       this.logger,
       async () => {
         const existing = await this.userRepository.findByEmail(dto.email);
@@ -89,7 +86,7 @@ export class AuthService extends BaseService implements AuthServicePort {
 
   async login(dto: LoginRequestDto): Promise<AuthSessionDto> {
     return withErrorLogging(
-      `${this.name}.login`,
+      `${"AuthService"}.login`,
       this.logger,
       async () => {
         const user = await this.userRepository.findByEmail(dto.email);
@@ -148,7 +145,7 @@ export class AuthService extends BaseService implements AuthServicePort {
 
   async refresh(dto: { refreshToken: string }): Promise<AuthSessionDto> {
     return withErrorLogging(
-      `${this.name}.refresh`,
+      `${"AuthService"}.refresh`,
       this.logger,
       async () => {
         const hashInput = createHash("sha256")
@@ -230,7 +227,7 @@ export class AuthService extends BaseService implements AuthServicePort {
 
   async logout(dto: { refreshToken: string }): Promise<void> {
     return withErrorLogging(
-      `${this.name}.logout`,
+      `${"AuthService"}.logout`,
       this.logger,
       async () => {
         const hashInput = createHash("sha256")
@@ -254,7 +251,7 @@ export class AuthService extends BaseService implements AuthServicePort {
     dto: { currentPassword: string; newPassword: string },
   ): Promise<void> {
     return withErrorLogging(
-      `${this.name}.changePassword`,
+      `${"AuthService"}.changePassword`,
       this.logger,
       async () => {
         const user = await this.userRepository.findById(userId);
@@ -282,7 +279,7 @@ export class AuthService extends BaseService implements AuthServicePort {
 
   async getMe(userId: string): Promise<AuthUserDto> {
     return withErrorLogging(
-      `${this.name}.getMe`,
+      `${"AuthService"}.getMe`,
       this.logger,
       async () => {
         const user = await this.userRepository.findById(userId);

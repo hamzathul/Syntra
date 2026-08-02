@@ -1,7 +1,6 @@
 export * from "./abstractions/base.controller";
 export * from "./abstractions/base.repository";
 export * from "./adapters/prisma/prisma-crud.repository";
-export * from "./abstractions/base.service";
 export * from "./auth/auth-context";
 export * from "./auth/token-signer.port";
 export * from "./auth/token-verifier.port";
@@ -21,7 +20,6 @@ export * from "./middlewares/sanitize.middleware";
 export * from "./middlewares/validate-request.middleware";
 export * from "./patterns/adapter/pino-logger.adapter";
 export * from "./patterns/decorator/with-error-logging.decorator";
-export * from "./patterns/factory/response.factory";
 export * from "./patterns/strategy/cursor-pagination.strategy";
 export * from "./responses/v1-response";
 export * from "./utils/bearer-token";

@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
+import { BaseController, V1Response, getAuthenticatedUser } from "backend-p";
 import type { UpdateCompanyProfileDto } from "shared";
 import type { ICompanyProfileService } from "./company-profile.service.port";
 
@@ -10,7 +10,7 @@ function getCompanyId(locals: Record<string, unknown>): string {
 }
 
 export class CompanyProfileController extends BaseController {
-  private readonly v1 = ResponseFactory.createV1Response();
+  private readonly v1 = V1Response.getInstance();
 
   constructor(private readonly service: ICompanyProfileService) {
     super();

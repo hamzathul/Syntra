@@ -2,7 +2,7 @@ import type { ErrorRequestHandler } from "express";
 import { AppError } from "../errors/app-error";
 import { InternalServerError } from "../errors/http-errors";
 import type { LoggerPort } from "../logger/logger.port";
-import { ResponseFactory } from "../patterns/factory/response.factory";
+import { V1Response } from "../responses/v1-response";
 import { parseStack } from "../utils/parse-stack";
 
 const shouldExposeDebug = (): boolean =>
@@ -31,7 +31,7 @@ export const createGlobalErrorHandler =
       normalizedError.message,
     );
 
-    ResponseFactory.createV1Response().error(response, {
+    V1Response.getInstance().error(response, {
       request,
       statusCode: normalizedError.statusCode,
       code: normalizedError.code,
