@@ -4,6 +4,7 @@ export * from "./adapters/prisma/prisma-crud.repository";
 export * from "./auth/auth-context";
 export * from "./auth/token-signer.port";
 export * from "./auth/token-verifier.port";
+export * from "./config/env-factory";
 export * from "./database/transaction-manager";
 export * from "./database/prisma-factory";
 export * from "./errors/app-error";
