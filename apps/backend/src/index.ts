@@ -4,12 +4,13 @@ import express from "express";
 import helmet from "helmet";
 import {
   createGlobalErrorHandler,
+  createHealthRouter,
   createRequestLogMiddleware,
   notFoundHandler,
   requestIdMiddleware,
   sanitizeRequestBody,
 } from "backend-p";
-import { disconnectPrisma } from "./database/prisma.client";
+import { disconnectPrisma, getPrismaClient } from "./database/prisma.client";
 import routes from "./routes";
 import logger from "./utils/logger";
 
@@ -29,6 +30,8 @@ app.use(requestIdMiddleware);
 app.use(createRequestLogMiddleware(logger));
 app.use(express.json({ limit: "10kb" }));
 app.use(sanitizeRequestBody);
+
+app.use(createHealthRouter({ checkDatabase: () => getPrismaClient().$queryRaw`SELECT 1` }));
 
 app.use("/api", routes);
 
