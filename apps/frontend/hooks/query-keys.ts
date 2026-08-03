@@ -21,4 +21,16 @@ export const taxKeys = {
   groups: () => [...taxKeys.all, "groups"] as const,
 };
 
-export const companyScopedQueryKeys = [settingsKeys.all, taxKeys.all] as const;
+export const itemKeys = {
+  all: ["items"] as const,
+  list: () => [...itemKeys.all, "list"] as const,
+  detail: (id: string) => [...itemKeys.all, "detail", id] as const,
+  categories: () => [...itemKeys.all, "categories"] as const,
+  units: () => [...itemKeys.all, "units"] as const,
+};
+
+export const companyScopedQueryKeys = [
+  settingsKeys.all,
+  taxKeys.all,
+  itemKeys.all,
+] as const;

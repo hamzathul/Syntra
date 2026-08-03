@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { CompanyModuleFactory } from "../../modules/company/company.factory";
 import { SettingsModuleFactory } from "../../modules/settings/settings.factory";
-import itemsRoutes from "../../modules/items/items.routes";
+import { ItemsModuleFactory } from "../../modules/items/items.factory";
 import purchasesRoutes from "../../modules/purchases/purchases.routes";
 import salesRoutes from "../../modules/sales/sales.routes";
 
@@ -12,7 +12,7 @@ router.use("/companies", CompanyModuleFactory.createRouter());
 
 // Company context required for all ERP business routes
 const companyCtx = CompanyModuleFactory.createCompanyContextMiddleware();
-router.use("/items", companyCtx, itemsRoutes);
+router.use("/items", companyCtx, ItemsModuleFactory.getRouter());
 router.use("/sales", companyCtx, salesRoutes);
 router.use("/purchases", companyCtx, purchasesRoutes);
 router.use("/settings", companyCtx, SettingsModuleFactory.createRouter());

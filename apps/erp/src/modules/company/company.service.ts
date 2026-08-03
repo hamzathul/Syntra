@@ -2,11 +2,13 @@ import type { CompanyDto, CreateCompanyDto } from "shared";
 import type { LoggerPort } from "backend-p";
 import type { ICompanyRepository } from "./company.repository.port";
 import type { ICompanyService } from "./company.service.port";
+import type { IUnitRepository } from "../items/unit.repository.port";
 import { toCompanyDto } from "./company.mapper";
 
 export class CompanyService implements ICompanyService {
   constructor(
     private readonly companyRepo: ICompanyRepository,
+    private readonly unitRepo: IUnitRepository,
     private readonly logger: LoggerPort,
   ) {}
 
@@ -15,6 +17,8 @@ export class CompanyService implements ICompanyService {
     userId: string,
   ): Promise<CompanyDto> {
     const company = await this.companyRepo.create({ name: dto.name, userId });
+
+    await this.unitRepo.seedDefaults(company.id);
 
     this.logger.info(
       {

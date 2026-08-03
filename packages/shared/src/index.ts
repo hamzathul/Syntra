@@ -5,3 +5,4 @@ export * from "./contracts/auth.contract";
 export * from "./contracts/company.contract";
 export * from "./contracts/general-settings.contract";
 export * from "./contracts/tax-settings.contract";
+export * from "./contracts/item.contract";

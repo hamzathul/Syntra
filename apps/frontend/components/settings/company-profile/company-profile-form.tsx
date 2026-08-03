@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AxiosError } from "axios";
 import { z } from "zod";
@@ -11,7 +11,13 @@ import type { CompanyProfileDto, UpdateCompanyProfileDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { FieldToggle } from "./field-toggle";
 import { LogoUpload } from "./logo-upload";
@@ -90,6 +96,7 @@ export function CompanyProfileForm({
     watch,
     setValue,
     setError,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(companyProfileFormSchema),
@@ -353,14 +360,24 @@ export function CompanyProfileForm({
           showOnCard={currentShowOnCard?.includes("state")}
           onToggleShow={(v) => toggleShowOnCard("state", v)}
         >
-          <Select id="state" {...register("state")}>
-            <option value="">Select state</option>
-            {indianStates.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </Select>
+          <Controller
+            control={control}
+            name="state"
+            render={({ field }) => (
+              <Select value={field.value || ""} onValueChange={field.onChange}>
+                <SelectTrigger id="state">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent>
+                  {indianStates.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
         </FieldToggle>
 
         <FieldToggle
@@ -369,15 +386,25 @@ export function CompanyProfileForm({
           showOnCard={currentShowOnCard?.includes("businessType")}
           onToggleShow={(v) => toggleShowOnCard("businessType", v)}
         >
-          <Select id="businessType" {...register("businessType")}>
-            <option value="">Select type</option>
-            {businessTypes.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-            <option value="__other__">Other</option>
-          </Select>
+          <Controller
+            control={control}
+            name="businessType"
+            render={({ field }) => (
+              <Select value={field.value || ""} onValueChange={field.onChange}>
+                <SelectTrigger id="businessType">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {businessTypes.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="__other__">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {currentBusinessType === "__other__" && (
             <Input
               {...register("otherBusinessType")}
