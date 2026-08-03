@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { LogOut, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/lib/theme-provider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -46,7 +46,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-transparent transition-all hover:ring-primary/30">
           <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-            {user ? getInitials(user.name) : ""}
+            {mounted && user ? getInitials(user.name) : ""}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -55,12 +55,14 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-semibold">
-              {user ? getInitials(user.name) : ""}
+              {mounted && user ? getInitials(user.name) : ""}
             </div>
             <div className="flex flex-col min-w-0">
-              <p className="truncate text-sm font-medium">{user?.name ?? ""}</p>
+              <p className="truncate text-sm font-medium">
+                {mounted && user ? user.name : ""}
+              </p>
               <p className="truncate text-xs text-muted-foreground">
-                {user?.email ?? ""}
+                {mounted && user ? user.email : ""}
               </p>
             </div>
           </div>

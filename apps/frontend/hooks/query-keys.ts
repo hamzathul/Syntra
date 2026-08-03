@@ -20,3 +20,5 @@ export const taxKeys = {
   rates: () => [...taxKeys.all, "rates"] as const,
   groups: () => [...taxKeys.all, "groups"] as const,
 };
+
+export const companyScopedQueryKeys = [settingsKeys.all, taxKeys.all] as const;
