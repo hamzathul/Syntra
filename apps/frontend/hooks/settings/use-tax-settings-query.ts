@@ -1,91 +1,49 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { taxesService } from "@/lib/api/services/settings/taxes.service";
-import type { CreateTaxRateDto, UpdateTaxRateDto, CreateTaxGroupDto, UpdateTaxGroupDto } from "shared";
+import {
+  createGetQueryHook,
+  createMutationHook,
+  createUpdateMutationHook,
+} from "@/lib/api/client/hook-factory";
 import { taxKeys } from "../query-keys";
 
-export function useTaxRates() {
-  return useQuery({
-    queryKey: taxKeys.rates(),
-    queryFn: taxesService.listRates,
-    staleTime: 60_000,
-  });
-}
+export const useTaxRates = createGetQueryHook(
+  taxKeys.rates,
+  taxesService.rates.list,
+);
 
-export function useCreateTaxRateMutation() {
-  const queryClient = useQueryClient();
+export const useCreateTaxRateMutation = createMutationHook(
+  taxKeys.rates,
+  taxesService.rates.create,
+);
 
-  return useMutation({
-    mutationFn: (dto: CreateTaxRateDto) => taxesService.createRate(dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.rates() });
-    },
-  });
-}
+export const useUpdateTaxRateMutation = createUpdateMutationHook(
+  taxKeys.rates,
+  taxesService.rates.update,
+);
 
-export function useUpdateTaxRateMutation() {
-  const queryClient = useQueryClient();
+export const useDeleteTaxRateMutation = createMutationHook(
+  taxKeys.rates,
+  taxesService.rates.remove,
+);
 
-  return useMutation({
-    mutationFn: ({ id, dto }: { id: string; dto: UpdateTaxRateDto }) => taxesService.updateRate(id, dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.rates() });
-    },
-  });
-}
+export const useTaxGroups = createGetQueryHook(
+  taxKeys.groups,
+  taxesService.groups.list,
+);
 
-export function useDeleteTaxRateMutation() {
-  const queryClient = useQueryClient();
+export const useCreateTaxGroupMutation = createMutationHook(
+  taxKeys.groups,
+  taxesService.groups.create,
+);
 
-  return useMutation({
-    mutationFn: (id: string) => taxesService.deleteRate(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.rates() });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.rates() });
-    },
-  });
-}
+export const useUpdateTaxGroupMutation = createUpdateMutationHook(
+  taxKeys.groups,
+  taxesService.groups.update,
+);
 
-export function useTaxGroups() {
-  return useQuery({
-    queryKey: taxKeys.groups(),
-    queryFn: taxesService.listGroups,
-    staleTime: 60_000,
-  });
-}
-
-export function useCreateTaxGroupMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (dto: CreateTaxGroupDto) => taxesService.createGroup(dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.groups() });
-    },
-  });
-}
-
-export function useUpdateTaxGroupMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, dto }: { id: string; dto: UpdateTaxGroupDto }) => taxesService.updateGroup(id, dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.groups() });
-    },
-  });
-}
-
-export function useDeleteTaxGroupMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => taxesService.deleteGroup(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: taxKeys.groups() });
-    },
-  });
-}
+export const useDeleteTaxGroupMutation = createMutationHook(
+  taxKeys.groups,
+  taxesService.groups.remove,
+);

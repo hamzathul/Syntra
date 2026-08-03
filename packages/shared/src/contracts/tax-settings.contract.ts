@@ -13,12 +13,7 @@ export const createTaxRateSchema = z.object({
 
 export const updateTaxRateSchema = z.object({
   name: trimmedString.min(1).optional(),
-  rate: z
-    .number()
-    .positive()
-    .max(999.99)
-    .multipleOf(0.01)
-    .optional(),
+  rate: z.number().positive().max(999.99).multipleOf(0.01).optional(),
 });
 
 export const taxRateResponseSchema = z.object({
@@ -37,7 +32,10 @@ export const createTaxGroupSchema = z.object({
   taxRateIds: z
     .array(z.string())
     .min(1, "At least one tax rate must be selected")
-    .refine((ids) => new Set(ids).size === ids.length, "Duplicate tax rate IDs are not allowed"),
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "Duplicate tax rate IDs are not allowed",
+    ),
 });
 
 export const updateTaxGroupSchema = z.object({
@@ -45,7 +43,10 @@ export const updateTaxGroupSchema = z.object({
   taxRateIds: z
     .array(z.string())
     .min(1)
-    .refine((ids) => new Set(ids).size === ids.length, "Duplicate tax rate IDs are not allowed")
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "Duplicate tax rate IDs are not allowed",
+    )
     .optional(),
 });
 

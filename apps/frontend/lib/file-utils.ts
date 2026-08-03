@@ -2,7 +2,9 @@ const MAX_IMAGE_SIZE = 500_000;
 
 export async function readImageFileAsDataUrl(file: File): Promise<string> {
   if (!file.type.startsWith("image/")) {
-    throw new Error(`"${file.name}" is not an image. Please select a valid image file.`);
+    throw new Error(
+      `"${file.name}" is not an image. Please select a valid image file.`,
+    );
   }
   if (file.size > MAX_IMAGE_SIZE) {
     throw new Error(`"${file.name}" exceeds the 500KB limit.`);

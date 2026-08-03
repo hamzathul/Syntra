@@ -1,7 +1,8 @@
 import type { RequestHandler } from "express";
 import type { LoggerPort } from "../logger/logger.port";
 
-export const createRequestLogMiddleware = (logger: LoggerPort): RequestHandler =>
+export const createRequestLogMiddleware =
+  (logger: LoggerPort): RequestHandler =>
   (request, response, next) => {
     const startAt = process.hrtime();
 

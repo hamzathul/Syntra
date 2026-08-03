@@ -12,7 +12,9 @@ export class GeneralSettingsFactory {
       const prisma = getPrismaClient();
       const repo = new GeneralSettingsRepository(prisma);
       const service = new GeneralSettingsService(repo, logger);
-      GeneralSettingsFactory.controller = new GeneralSettingsController(service);
+      GeneralSettingsFactory.controller = new GeneralSettingsController(
+        service,
+      );
     }
     return GeneralSettingsFactory.controller;
   }

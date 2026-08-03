@@ -1,17 +1,10 @@
 import type { RequestHandler } from "express";
-import {
-  BaseController,
-  ResponseFactory,
-  getAuthenticatedUser,
-} from "backend-p";
-import type {
-  LoginRequestDto,
-  RegisterRequestDto,
-} from "shared";
+import { BaseController, V1Response, getAuthenticatedUser } from "backend-p";
+import type { LoginRequestDto, RegisterRequestDto } from "shared";
 import type { AuthServicePort } from "./auth.service.port";
 
 export class AuthController extends BaseController {
-  private readonly v1Response = ResponseFactory.createV1Response();
+  private readonly v1Response = V1Response.getInstance();
 
   constructor(private readonly authService: AuthServicePort) {
     super();
@@ -73,7 +66,10 @@ export class AuthController extends BaseController {
   readonly changePassword: RequestHandler = this.asyncHandler(
     async (request, response) => {
       const { id } = getAuthenticatedUser(response.locals);
-      const dto = request.body as { currentPassword: string; newPassword: string };
+      const dto = request.body as {
+        currentPassword: string;
+        newPassword: string;
+      };
       await this.authService.changePassword(id, dto);
 
       this.v1Response.success(response, {

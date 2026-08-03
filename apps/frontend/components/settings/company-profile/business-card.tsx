@@ -21,8 +21,17 @@ export const BusinessCard = forwardRef<HTMLDivElement, BusinessCardProps>(
     const hasAddress = profile.address && showOnCard.includes("address");
     const hasPincode = profile.pincode && showOnCard.includes("pincode");
     const hasState = profile.state && showOnCard.includes("state");
-    const hasBizType = profile.businessType && showOnCard.includes("businessType");
-    const hasFields = hasGstin || hasPhone1 || hasPhone2 || hasEmail || hasAddress || hasPincode || hasState || hasBizType;
+    const hasBizType =
+      profile.businessType && showOnCard.includes("businessType");
+    const hasFields =
+      hasGstin ||
+      hasPhone1 ||
+      hasPhone2 ||
+      hasEmail ||
+      hasAddress ||
+      hasPincode ||
+      hasState ||
+      hasBizType;
 
     return (
       <div ref={ref} className={cn("w-full", className)}>

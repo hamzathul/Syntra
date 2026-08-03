@@ -8,7 +8,9 @@ describe("extractBearerToken", () => {
   });
 
   it("throws for empty header", () => {
-    expect(() => extractBearerToken()).toThrow("A valid bearer token is required");
+    expect(() => extractBearerToken()).toThrow(
+      "A valid bearer token is required",
+    );
     expect(() => extractBearerToken("")).toThrow();
   });
 

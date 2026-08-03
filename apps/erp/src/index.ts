@@ -1,11 +1,13 @@
 import { env } from "./config/env";
-import { disconnectPrisma } from "./database/prisma.client";
+import { disconnectPrisma, getPrismaClient } from "./database/prisma.client";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import {
   createGlobalErrorHandler,
+  createHealthRouter,
   createRequestLogMiddleware,
+  createRequestTimeoutMiddleware,
   notFoundHandler,
   requestIdMiddleware,
   sanitizeRequestBody,
@@ -26,9 +28,16 @@ app.use(
   }),
 );
 app.use(requestIdMiddleware);
+app.use(createRequestTimeoutMiddleware(10_000));
 app.use(createRequestLogMiddleware(logger));
 app.use(express.json({ limit: "3mb" }));
 app.use(sanitizeRequestBody);
+
+app.use(
+  createHealthRouter({
+    checkDatabase: () => getPrismaClient().$queryRaw`SELECT 1`,
+  }),
+);
 
 app.use("/api", routes);
 

@@ -2,6 +2,7 @@ import type { GeneralSettingsDto, UpdateGeneralSettingsDto } from "shared";
 import type { LoggerPort } from "backend-p";
 import type { IGeneralSettingsRepository } from "./general-settings.repository.port";
 import type { IGeneralSettingsService } from "./general-settings.service.port";
+import { toGeneralSettingsDto } from "./general-settings.mapper";
 
 const DEFAULTS = {
   businessCurrency: "INR",
@@ -18,7 +19,7 @@ export class GeneralSettingsService implements IGeneralSettingsService {
 
   async getSettings(companyId: string): Promise<GeneralSettingsDto> {
     const existing = await this.repo.findByCompanyId(companyId);
-    if (existing) return this.toDto(existing);
+    if (existing) return toGeneralSettingsDto(existing);
 
     const created = await this.repo.upsert(companyId, DEFAULTS);
 
@@ -27,10 +28,13 @@ export class GeneralSettingsService implements IGeneralSettingsService {
       "General settings created with defaults",
     );
 
-    return this.toDto(created);
+    return toGeneralSettingsDto(created);
   }
 
-  async updateSettings(companyId: string, dto: UpdateGeneralSettingsDto): Promise<GeneralSettingsDto> {
+  async updateSettings(
+    companyId: string,
+    dto: UpdateGeneralSettingsDto,
+  ): Promise<GeneralSettingsDto> {
     const data = this.prepareUpdateData(dto);
     const updated = await this.repo.upsert(companyId, data);
 
@@ -39,32 +43,12 @@ export class GeneralSettingsService implements IGeneralSettingsService {
       "General settings updated",
     );
 
-    return this.toDto(updated);
+    return toGeneralSettingsDto(updated);
   }
 
-  private toDto(record: {
-    id: string;
-    companyId: string;
-    businessCurrency: string;
-    decimalPlaces: number;
-    dateFormat: string;
-    stateOfSupplyEnabled: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }): GeneralSettingsDto {
-    return {
-      id: record.id,
-      companyId: record.companyId,
-      businessCurrency: record.businessCurrency,
-      decimalPlaces: record.decimalPlaces,
-      dateFormat: record.dateFormat,
-      stateOfSupplyEnabled: record.stateOfSupplyEnabled,
-      createdAt: record.createdAt.toISOString(),
-      updatedAt: record.updatedAt.toISOString(),
-    };
-  }
-
-  private prepareUpdateData(dto: UpdateGeneralSettingsDto): Record<string, unknown> {
+  private prepareUpdateData(
+    dto: UpdateGeneralSettingsDto,
+  ): Record<string, unknown> {
     const data: Record<string, unknown> = {};
     const keys: (keyof UpdateGeneralSettingsDto)[] = [
       "businessCurrency",

@@ -49,7 +49,7 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     }
   }, [value]);
 
-  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
+  const getPos = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -64,27 +64,33 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
       x: (e.clientX - rect.left) * scaleX,
       y: (e.clientY - rect.top) * scaleY,
     };
-  };
-
-  const startDraw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const pos = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-    setIsDrawing(true);
   }, []);
 
-  const draw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    if (!isDrawing) return;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    const pos = getPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-  }, [isDrawing]);
+  const startDraw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d")!;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      setIsDrawing(true);
+    },
+    [getPos],
+  );
+
+  const draw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      if (!isDrawing) return;
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d")!;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    },
+    [isDrawing, getPos],
+  );
 
   const stopDraw = useCallback(() => {
     setIsDrawing(false);
@@ -100,19 +106,24 @@ export function SignatureInput({ value, onChange }: SignatureInputProps) {
     onChange(null);
   };
 
-  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const dataUrl = await readImageFileAsDataUrl(file);
-      sourceRef.current = "upload";
-      onChange(dataUrl);
-      setMode("upload");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to upload image");
-    }
-    e.target.value = "";
-  }, [onChange]);
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await readImageFileAsDataUrl(file);
+        sourceRef.current = "upload";
+        onChange(dataUrl);
+        setMode("upload");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Failed to upload image",
+        );
+      }
+      e.target.value = "";
+    },
+    [onChange],
+  );
 
   return (
     <div className="space-y-2">

@@ -3,7 +3,10 @@ import { sanitizeUnknown } from "./sanitize.js";
 
 describe("sanitizeUnknown", () => {
   it("trims string values", () => {
-    const result = sanitizeUnknown({ name: "  John  ", email: "  test@test.com  " });
+    const result = sanitizeUnknown({
+      name: "  John  ",
+      email: "  test@test.com  ",
+    });
     expect(result).toEqual({ name: "John", email: "test@test.com" });
   });
 

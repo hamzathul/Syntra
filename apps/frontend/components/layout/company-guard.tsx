@@ -2,16 +2,17 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getActiveCompany } from "@/lib/auth";
+import { useCompany } from "@/lib/company-context";
 
 export function CompanyGuard({ children }: { children: React.ReactNode }) {
+  const { activeCompany, isLoading } = useCompany();
   const router = useRouter();
 
   useEffect(() => {
-    if (!getActiveCompany()) {
+    if (!isLoading && !activeCompany) {
       router.replace("/onboarding");
     }
-  }, [router]);
+  }, [activeCompany, isLoading, router]);
 
   return <>{children}</>;
 }

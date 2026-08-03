@@ -1,20 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut, Moon, User } from "lucide-react";
+import { LogOut, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import { clearSession, getUser, type AuthUser } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 
 function getInitials(name: string): string {
   return name
@@ -27,17 +26,16 @@ function getInitials(name: string): string {
 }
 
 export function UserNav() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const { user, logout } = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setUser(getUser());
     setMounted(true);
   }, []);
 
   const handleLogout = async () => {
-    await clearSession();
+    await logout();
     window.location.href = "/login";
   };
 
@@ -61,19 +59,12 @@ export function UserNav() {
             </div>
             <div className="flex flex-col min-w-0">
               <p className="truncate text-sm font-medium">{user?.name ?? ""}</p>
-              <p className="truncate text-xs text-muted-foreground">{user?.email ?? ""}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user?.email ?? ""}
+              </p>
             </div>
           </div>
         </DropdownMenuLabel>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="gap-2 cursor-pointer">
-            <User className="h-4 w-4 text-muted-foreground" />
-            Profile
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 

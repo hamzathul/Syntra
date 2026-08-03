@@ -1,9 +1,13 @@
-import { ConflictError, NotFoundError } from "backend-p";
+import {
+  ConflictError,
+  NotFoundError,
+  isPrismaUniqueViolation,
+} from "backend-p";
 import type { LoggerPort } from "backend-p";
 import type { TaxRateDto, CreateTaxRateDto, UpdateTaxRateDto } from "shared";
 import type { ITaxRateRepository } from "./tax-rate.repository.port";
 import type { ITaxRateService } from "./tax-rate.service.port";
-import type { TaxRateRecord } from "./taxes.types";
+import { toTaxRateDto } from "./tax-rate.mapper";
 
 export class TaxRateService implements ITaxRateService {
   constructor(
@@ -13,32 +17,65 @@ export class TaxRateService implements ITaxRateService {
 
   async list(companyId: string): Promise<TaxRateDto[]> {
     const records = await this.repo.findAll(companyId);
-    return records.map((r) => this.toDto(r));
+    return records.map(toTaxRateDto);
   }
 
   async create(companyId: string, dto: CreateTaxRateDto): Promise<TaxRateDto> {
-    const record = await this.repo.create(companyId, { name: dto.name, rate: dto.rate });
+    let record;
+    try {
+      record = await this.repo.create(companyId, {
+        name: dto.name,
+        rate: dto.rate,
+      });
+    } catch (error) {
+      if (isPrismaUniqueViolation(error)) {
+        throw new ConflictError("A tax rate with this name already exists");
+      }
+      throw error;
+    }
 
     this.logger.info(
-      { category: "audit", action: "tax-rate.created", companyId, taxRateId: record.id },
+      {
+        category: "audit",
+        action: "tax-rate.created",
+        companyId,
+        taxRateId: record.id,
+      },
       "Tax rate created",
     );
 
-    return this.toDto(record);
+    return toTaxRateDto(record);
   }
 
-  async update(id: string, companyId: string, dto: UpdateTaxRateDto): Promise<TaxRateDto> {
+  async update(
+    id: string,
+    companyId: string,
+    dto: UpdateTaxRateDto,
+  ): Promise<TaxRateDto> {
     const existing = await this.repo.findById(id, companyId);
     if (!existing) throw new NotFoundError("Tax rate");
 
-    const record = await this.repo.update(id, dto);
+    let record;
+    try {
+      record = await this.repo.update(id, dto);
+    } catch (error) {
+      if (isPrismaUniqueViolation(error)) {
+        throw new ConflictError("A tax rate with this name already exists");
+      }
+      throw error;
+    }
 
     this.logger.info(
-      { category: "audit", action: "tax-rate.updated", companyId, taxRateId: id },
+      {
+        category: "audit",
+        action: "tax-rate.updated",
+        companyId,
+        taxRateId: id,
+      },
       "Tax rate updated",
     );
 
-    return this.toDto(record);
+    return toTaxRateDto(record);
   }
 
   async remove(id: string, companyId: string): Promise<void> {
@@ -46,24 +83,21 @@ export class TaxRateService implements ITaxRateService {
     if (!existing) throw new NotFoundError("Tax rate");
 
     const used = await this.repo.isUsedInAnyGroup(id, companyId);
-    if (used) throw new ConflictError("Cannot delete tax rate that is used in a tax group");
+    if (used)
+      throw new ConflictError(
+        "Cannot delete tax rate that is used in a tax group",
+      );
 
     await this.repo.delete(id);
 
     this.logger.info(
-      { category: "audit", action: "tax-rate.deleted", companyId, taxRateId: id },
+      {
+        category: "audit",
+        action: "tax-rate.deleted",
+        companyId,
+        taxRateId: id,
+      },
       "Tax rate deleted",
     );
-  }
-
-  private toDto(record: TaxRateRecord): TaxRateDto {
-    return {
-      id: record.id,
-      companyId: record.companyId,
-      name: record.name,
-      rate: record.rate,
-      createdAt: record.createdAt.toISOString(),
-      updatedAt: record.updatedAt.toISOString(),
-    };
   }
 }

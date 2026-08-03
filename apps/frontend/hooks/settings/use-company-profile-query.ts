@@ -1,25 +1,18 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { companyProfileService } from "@/lib/api/services/settings/company-profile.service";
-import type { UpdateCompanyProfileDto } from "shared";
+import {
+  createGetQueryHook,
+  createMutationHook,
+} from "@/lib/api/client/hook-factory";
 import { settingsKeys } from "../query-keys";
 
-export function useCompanyProfile() {
-  return useQuery({
-    queryKey: settingsKeys.companyProfile(),
-    queryFn: companyProfileService.get,
-    staleTime: 60_000,
-  });
-}
+export const useCompanyProfile = createGetQueryHook(
+  settingsKeys.companyProfile,
+  companyProfileService.get,
+);
 
-export function useUpdateCompanyProfileMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (dto: UpdateCompanyProfileDto) => companyProfileService.update(dto),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: settingsKeys.companyProfile() });
-    },
-  });
-}
+export const useUpdateCompanyProfileMutation = createMutationHook(
+  settingsKeys.companyProfile,
+  companyProfileService.update,
+);

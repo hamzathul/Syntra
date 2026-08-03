@@ -1,6 +1,10 @@
 import type { PrismaClient } from "../../generated/prisma";
 import type { ICompanyRepository } from "./company.repository.port";
-import type { CompanyWithRole, CreateCompanyInput, MemberRole } from "./company.types";
+import type {
+  CompanyWithRole,
+  CreateCompanyInput,
+  MemberRole,
+} from "./company.types";
 
 export class CompanyRepository implements ICompanyRepository {
   constructor(private readonly prisma: PrismaClient) {}

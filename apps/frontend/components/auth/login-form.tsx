@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
-import { companyService } from "@/lib/api/services/company.service";
-import { setUser, setActiveCompany } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
+import { useCompanies } from "@/hooks/companies/use-companies-query";
+import { useAuth } from "@/lib/auth-context";
 
 export function LoginForm() {
-  const [pending, setPending] = useState(false);
+  const { login, isLoggingIn } = useAuth();
+  const { data: companies = [], isLoading: isLoadingCompanies } =
+    useCompanies();
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (hasLoggedIn && !isLoadingCompanies) {
+      window.location.href =
+        companies.length === 0 ? "/onboarding" : "/dashboard";
+    }
+  }, [hasLoggedIn, isLoadingCompanies, companies]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,27 +28,12 @@ export function LoginForm() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    setPending(true);
     try {
-      const response = await authApi.login({ email, password });
-      const { user } = response.data.data;
-      setUser(user);
-
-      const companies = await companyService.list();
-      if (companies.length === 0) {
-        toast.success("Welcome back! Let's set up your company.");
-        window.location.href = "/onboarding";
-        return;
-      }
-
-      const defaultCompany = companies.find((c) => c.isDefault) ?? companies[0]!;
-      setActiveCompany({ id: defaultCompany.id, name: defaultCompany.name, role: defaultCompany.role });
+      await login({ email, password });
+      setHasLoggedIn(true);
       toast.success("Welcome back!");
-      window.location.href = "/dashboard";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
-    } finally {
-      setPending(false);
     }
   };
 
@@ -76,9 +71,9 @@ export function LoginForm() {
       <Button
         type="submit"
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
-        disabled={pending}
+        disabled={isLoggingIn}
       >
-        {pending ? "Signing in…" : "Sign in"}
+        {isLoggingIn ? "Signing in…" : "Sign in"}
       </Button>
     </form>
   );

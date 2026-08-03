@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
@@ -10,8 +16,12 @@ export default function LoginPage() {
           S
         </div>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in to your Syntra account</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Welcome back
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Sign in to your Syntra account
+          </p>
         </div>
       </div>
 

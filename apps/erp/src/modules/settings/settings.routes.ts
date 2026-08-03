@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { validateRequest } from "backend-p";
-import { updateCompanyProfileSchema, updateGeneralSettingsSchema } from "shared";
+import {
+  updateCompanyProfileSchema,
+  updateGeneralSettingsSchema,
+} from "shared";
 import type { CompanyProfileController } from "./company-profile/company-profile.controller";
 import type { GeneralSettingsController } from "./general-settings/general-settings.controller";
 import type { Router as TaxesRouter } from "express";

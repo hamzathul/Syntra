@@ -101,14 +101,19 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
           ))}
         </Select>
         {errors.businessCurrency && (
-          <p className="text-xs text-destructive">{errors.businessCurrency.message}</p>
+          <p className="text-xs text-destructive">
+            {errors.businessCurrency.message}
+          </p>
         )}
       </div>
 
       {/* Decimal Places */}
       <div className="grid gap-2">
         <Label htmlFor="decimalPlaces">Decimal Places</Label>
-        <Select id="decimalPlaces" {...register("decimalPlaces", { valueAsNumber: true })}>
+        <Select
+          id="decimalPlaces"
+          {...register("decimalPlaces", { valueAsNumber: true })}
+        >
           {[1, 2, 3, 4, 5].map((n) => (
             <option key={n} value={n}>
               {n} {n === 1 ? "place" : "places"}
@@ -116,7 +121,9 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
           ))}
         </Select>
         {errors.decimalPlaces && (
-          <p className="text-xs text-destructive">{errors.decimalPlaces.message}</p>
+          <p className="text-xs text-destructive">
+            {errors.decimalPlaces.message}
+          </p>
         )}
       </div>
 
@@ -131,13 +138,19 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
           ))}
         </Select>
         {errors.dateFormat && (
-          <p className="text-xs text-destructive">{errors.dateFormat.message}</p>
+          <p className="text-xs text-destructive">
+            {errors.dateFormat.message}
+          </p>
         )}
       </div>
 
       {/* Save */}
       <div className="flex justify-end pt-4 border-t">
-        <Button type="submit" disabled={updateMutation.isPending} className="gap-2">
+        <Button
+          type="submit"
+          disabled={updateMutation.isPending}
+          className="gap-2"
+        >
           {updateMutation.isPending ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (

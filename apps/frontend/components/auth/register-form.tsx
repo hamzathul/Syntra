@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authApi, getApiErrorMessage } from "@/lib/api/client/core-client";
-import { setUser } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
+import { useAuth } from "@/lib/auth-context";
 
 export function RegisterForm() {
-  const [pending, setPending] = useState(false);
+  const { register, isRegistering } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,17 +17,12 @@ export function RegisterForm() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    setPending(true);
     try {
-      const response = await authApi.register({ name, email, password });
-      const { user } = response.data.data;
-      setUser(user);
+      await register({ name, email, password });
       toast.success("Account created! Let's set up your company.");
       window.location.href = "/onboarding";
     } catch (error) {
       toast.error(getApiErrorMessage(error));
-    } finally {
-      setPending(false);
     }
   };
 
@@ -81,9 +75,9 @@ export function RegisterForm() {
       <Button
         type="submit"
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
-        disabled={pending}
+        disabled={isRegistering}
       >
-        {pending ? "Creating account…" : "Create account"}
+        {isRegistering ? "Creating account…" : "Create account"}
       </Button>
     </form>
   );

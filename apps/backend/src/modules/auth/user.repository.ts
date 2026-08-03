@@ -9,7 +9,12 @@ import type {
 } from "./user.types";
 
 export class UserRepository
-  extends PrismaCrudRepository<UserRecord, CreateUserInput, UpdateUserInput, UserFilter>
+  extends PrismaCrudRepository<
+    UserRecord,
+    CreateUserInput,
+    UpdateUserInput,
+    UserFilter
+  >
   implements IUserRepository
 {
   constructor(private readonly prisma: PrismaClient) {

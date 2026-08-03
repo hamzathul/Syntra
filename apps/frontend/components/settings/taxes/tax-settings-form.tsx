@@ -17,22 +17,29 @@ interface TaxSettingsFormProps {
 export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
   const updateGeneralMutation = useUpdateGeneralSettingsMutation();
   const [activeTab, setActiveTab] = useState<"rates" | "groups">("rates");
-  const [stateOfSupply, setStateOfSupply] = useState(settings.stateOfSupplyEnabled);
+  const [stateOfSupply, setStateOfSupply] = useState(
+    settings.stateOfSupplyEnabled,
+  );
 
   useEffect(() => {
     setStateOfSupply(settings.stateOfSupplyEnabled);
   }, [settings.stateOfSupplyEnabled]);
 
-  const handleToggle = useCallback(async (checked: boolean) => {
-    setStateOfSupply(checked);
-    try {
-      await updateGeneralMutation.mutateAsync({ stateOfSupplyEnabled: checked });
-      toast.success("State of Supply " + (checked ? "enabled" : "disabled"));
-    } catch {
-      setStateOfSupply(!checked);
-      toast.error("Failed to update State of Supply setting");
-    }
-  }, [updateGeneralMutation]);
+  const handleToggle = useCallback(
+    async (checked: boolean) => {
+      setStateOfSupply(checked);
+      try {
+        await updateGeneralMutation.mutateAsync({
+          stateOfSupplyEnabled: checked,
+        });
+        toast.success("State of Supply " + (checked ? "enabled" : "disabled"));
+      } catch {
+        setStateOfSupply(!checked);
+        toast.error("Failed to update State of Supply setting");
+      }
+    },
+    [updateGeneralMutation],
+  );
 
   const tabClass = (tab: "rates" | "groups") =>
     `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
@@ -64,10 +71,16 @@ export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
       <div>
         <h3 className="text-sm font-medium mb-3">Tax List</h3>
         <div className="flex gap-0 border-b">
-          <button className={tabClass("rates")} onClick={() => setActiveTab("rates")}>
+          <button
+            className={tabClass("rates")}
+            onClick={() => setActiveTab("rates")}
+          >
             Tax Rates
           </button>
-          <button className={tabClass("groups")} onClick={() => setActiveTab("groups")}>
+          <button
+            className={tabClass("groups")}
+            onClick={() => setActiveTab("groups")}
+          >
             Tax Groups
           </button>
         </div>

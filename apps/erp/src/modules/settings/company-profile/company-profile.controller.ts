@@ -1,16 +1,15 @@
 import type { RequestHandler } from "express";
-import { BaseController, ResponseFactory, getAuthenticatedUser } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getAuthenticatedUser,
+  getCompanyId,
+} from "backend-p";
 import type { UpdateCompanyProfileDto } from "shared";
 import type { ICompanyProfileService } from "./company-profile.service.port";
 
-function getCompanyId(locals: Record<string, unknown>): string {
-  const id = locals.companyId as string | undefined;
-  if (!id) throw new Error("Company ID not found in request context");
-  return id;
-}
-
 export class CompanyProfileController extends BaseController {
-  private readonly v1 = ResponseFactory.createV1Response();
+  private readonly v1 = V1Response.getInstance();
 
   constructor(private readonly service: ICompanyProfileService) {
     super();

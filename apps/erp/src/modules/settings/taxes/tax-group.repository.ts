@@ -1,6 +1,7 @@
 import type { PrismaClient } from "../../../generated/prisma";
 import type { ITaxGroupRepository } from "./tax-group.repository.port";
 import type { TaxGroupRecord } from "./taxes.types";
+import { toTaxRateRecord } from "./tax-rate.record";
 
 export class TaxGroupRepository implements ITaxGroupRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -18,7 +19,10 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return groups.map((g) => this.mapRecord(g));
   }
 
-  async findById(id: string, companyId: string): Promise<TaxGroupRecord | null> {
+  async findById(
+    id: string,
+    companyId: string,
+  ): Promise<TaxGroupRecord | null> {
     const group = await this.prisma.taxGroup.findUnique({
       where: { id },
       include: {
@@ -31,7 +35,10 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return this.mapRecord(group);
   }
 
-  async create(companyId: string, data: { name: string; taxRateIds: string[] }): Promise<TaxGroupRecord> {
+  async create(
+    companyId: string,
+    data: { name: string; taxRateIds: string[] },
+  ): Promise<TaxGroupRecord> {
     const ids = [...new Set(data.taxRateIds)];
     const group = await this.prisma.taxGroup.create({
       data: {
@@ -50,7 +57,11 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     return this.mapRecord(group);
   }
 
-  async update(id: string, companyId: string, data: { name?: string; taxRateIds?: string[] }): Promise<TaxGroupRecord> {
+  async update(
+    id: string,
+    companyId: string,
+    data: { name?: string; taxRateIds?: string[] },
+  ): Promise<TaxGroupRecord> {
     const group = await this.prisma.$transaction(async (tx) => {
       if (data.taxRateIds) {
         const ids = [...new Set(data.taxRateIds)];
@@ -102,14 +113,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
       groupRates: r.groupRates.map((gr) => ({
-        taxRate: {
-          id: gr.taxRate.id,
-          companyId: gr.taxRate.companyId,
-          name: gr.taxRate.name,
-          rate: Number(gr.taxRate.rate),
-          createdAt: gr.taxRate.createdAt,
-          updatedAt: gr.taxRate.updatedAt,
-        },
+        taxRate: toTaxRateRecord(gr.taxRate),
       })),
     };
   }

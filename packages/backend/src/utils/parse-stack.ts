@@ -9,7 +9,13 @@ export const parseStack = (error: Error): ApiErrorDebug => {
     .map((line) => {
       const match = FRAME_RE.exec(line);
       if (!match) return null;
-      const [, fn = "<anonymous>", file = "<unknown>", lineStr = "0", colStr = "0"] = match;
+      const [
+        ,
+        fn = "<anonymous>",
+        file = "<unknown>",
+        lineStr = "0",
+        colStr = "0",
+      ] = match;
       return {
         fn: fn.trim(),
         file: file.trim(),

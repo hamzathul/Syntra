@@ -14,7 +14,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const STORAGE_KEY = "sidebar-collapsed";
 
@@ -39,10 +43,8 @@ export function AppSidebar() {
   }, []);
 
   const toggle = () => {
-    setCollapsed((prev) => {
-      localStorage.setItem(STORAGE_KEY, String(!prev));
-      return !prev;
-    });
+    setCollapsed((prev) => !prev);
+    localStorage.setItem(STORAGE_KEY, String(!collapsed));
   };
 
   return (
@@ -55,13 +57,20 @@ export function AppSidebar() {
     >
       {/* Logo */}
       <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
-        <div className={cn("flex items-center gap-2.5 overflow-hidden", collapsed && "justify-center")}>
+        <div
+          className={cn(
+            "flex items-center gap-2.5 overflow-hidden",
+            collapsed && "justify-center",
+          )}
+        >
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">
             S
           </div>
           {!collapsed && (
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-semibold tracking-tight text-sidebar-foreground">Syntra</span>
+              <span className="text-base font-semibold tracking-tight text-sidebar-foreground">
+                Syntra
+              </span>
               <span className="rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold uppercase text-accent-foreground">
                 ERP
               </span>
@@ -74,7 +83,9 @@ export function AppSidebar() {
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3">
         <ul className="space-y-0.5">
           {navItems.map(({ href, label, icon: Icon, exact }) => {
-            const isActive = exact ? pathname === href : pathname.startsWith(href);
+            const isActive = exact
+              ? pathname === href
+              : pathname.startsWith(href);
 
             const linkContent = (
               <Link

@@ -23,13 +23,38 @@ const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 const pincodeRegex = /^\d{6}$/;
 
 const companyProfileFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
-  gstin: z.string().refine((v) => v === "" || gstinRegex.test(v), "Invalid GSTIN format"),
-  phone1: z.string().refine((v) => v === "" || v.length >= 10, "Phone must be at least 10 digits"),
-  phone2: z.string().refine((v) => v === "" || v.length >= 10, "Phone must be at least 10 digits"),
-  email: z.string().refine((v) => v === "" || z.string().email().safeParse(v).success, "Invalid email"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name too long"),
+  gstin: z
+    .string()
+    .refine((v) => v === "" || gstinRegex.test(v), "Invalid GSTIN format"),
+  phone1: z
+    .string()
+    .refine(
+      (v) => v === "" || v.length >= 10,
+      "Phone must be at least 10 digits",
+    ),
+  phone2: z
+    .string()
+    .refine(
+      (v) => v === "" || v.length >= 10,
+      "Phone must be at least 10 digits",
+    ),
+  email: z
+    .string()
+    .refine(
+      (v) => v === "" || z.string().email().safeParse(v).success,
+      "Invalid email",
+    ),
   address: z.string().max(500, "Address too long"),
-  pincode: z.string().refine((v) => v === "" || pincodeRegex.test(v), "Pincode must be exactly 6 digits"),
+  pincode: z
+    .string()
+    .refine(
+      (v) => v === "" || pincodeRegex.test(v),
+      "Pincode must be exactly 6 digits",
+    ),
   description: z.string().max(1000, "Description too long"),
   state: z.string(),
   businessType: z.string(),
@@ -42,16 +67,22 @@ const companyProfileFormSchema = z.object({
 
 type FormValues = z.infer<typeof companyProfileFormSchema>;
 
+export type CompanyProfileFormValues = FormValues;
+
 interface CompanyProfileFormProps {
   profile: CompanyProfileDto;
   onLiveValuesChange?: (values: FormValues) => void;
 }
 
-export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfileFormProps) {
+export function CompanyProfileForm({
+  profile,
+  onLiveValuesChange,
+}: CompanyProfileFormProps) {
   const updateMutation = useUpdateCompanyProfileMutation();
 
-  const isOtherBusinessType = profile.businessType
-    && !(businessTypes as readonly string[]).includes(profile.businessType);
+  const isOtherBusinessType =
+    profile.businessType &&
+    !(businessTypes as readonly string[]).includes(profile.businessType);
 
   const {
     register,
@@ -72,12 +103,16 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
       pincode: profile.pincode ?? "",
       description: profile.description ?? "",
       state: profile.state ?? "",
-      businessType: isOtherBusinessType ? "__other__" : (profile.businessType ?? ""),
+      businessType: isOtherBusinessType
+        ? "__other__"
+        : (profile.businessType ?? ""),
       businessCategory: profile.businessCategory ?? "",
       logo: profile.logo ?? "",
       signature: profile.signature ?? "",
       showOnCard: profile.showOnCard ?? [],
-      otherBusinessType: isOtherBusinessType ? profile.businessType ?? "" : "",
+      otherBusinessType: isOtherBusinessType
+        ? (profile.businessType ?? "")
+        : "",
     },
   });
 
@@ -111,9 +146,10 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
 
   const onSubmit = useCallback(
     async (data: FormValues) => {
-      const businessType = data.businessType === "__other__"
-        ? data.otherBusinessType
-        : data.businessType;
+      const businessType =
+        data.businessType === "__other__"
+          ? data.otherBusinessType
+          : data.businessType;
 
       const dto: UpdateCompanyProfileDto = {
         name: data.name || undefined,
@@ -171,6 +207,7 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
         </p>
         <LogoUpload
           value={currentLogo}
+          name={profile.name ?? undefined}
           onChange={(v) => setValue("logo", v ?? "", { shouldDirty: true })}
         />
       </div>
@@ -202,7 +239,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             className="font-mono"
           />
           {errors.gstin && (
-            <p className="text-xs text-destructive mt-1">{errors.gstin.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.gstin.message}
+            </p>
           )}
         </FieldToggle>
 
@@ -218,7 +257,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             placeholder="+91 9876543210"
           />
           {errors.phone1 && (
-            <p className="text-xs text-destructive mt-1">{errors.phone1.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.phone1.message}
+            </p>
           )}
         </FieldToggle>
       </div>
@@ -237,7 +278,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             placeholder="+91 9876543210"
           />
           {errors.phone2 && (
-            <p className="text-xs text-destructive mt-1">{errors.phone2.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.phone2.message}
+            </p>
           )}
         </FieldToggle>
 
@@ -254,7 +297,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             placeholder="business@example.com"
           />
           {errors.email && (
-            <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.email.message}
+            </p>
           )}
         </FieldToggle>
       </div>
@@ -274,7 +319,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             rows={2}
           />
           {errors.address && (
-            <p className="text-xs text-destructive mt-1">{errors.address.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.address.message}
+            </p>
           )}
         </FieldToggle>
 
@@ -291,7 +338,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
             maxLength={6}
           />
           {errors.pincode && (
-            <p className="text-xs text-destructive mt-1">{errors.pincode.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.pincode.message}
+            </p>
           )}
         </FieldToggle>
       </div>
@@ -307,7 +356,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
           <Select id="state" {...register("state")}>
             <option value="">Select state</option>
             {indianStates.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </Select>
         </FieldToggle>
@@ -321,7 +372,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
           <Select id="businessType" {...register("businessType")}>
             <option value="">Select type</option>
             {businessTypes.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
             <option value="__other__">Other</option>
           </Select>
@@ -345,7 +398,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
           className="mt-1"
         />
         {errors.businessCategory && (
-          <p className="text-xs text-destructive mt-1">{errors.businessCategory.message}</p>
+          <p className="text-xs text-destructive mt-1">
+            {errors.businessCategory.message}
+          </p>
         )}
       </div>
 
@@ -360,7 +415,9 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
           className="mt-1"
         />
         {errors.description && (
-          <p className="text-xs text-destructive mt-1">{errors.description.message}</p>
+          <p className="text-xs text-destructive mt-1">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
@@ -372,13 +429,19 @@ export function CompanyProfileForm({ profile, onLiveValuesChange }: CompanyProfi
         </p>
         <SignatureInput
           value={currentSignature}
-          onChange={(v) => setValue("signature", v ?? "", { shouldDirty: true })}
+          onChange={(v) =>
+            setValue("signature", v ?? "", { shouldDirty: true })
+          }
         />
       </div>
 
       {/* Save */}
       <div className="flex justify-end pt-4 border-t">
-        <Button type="submit" disabled={updateMutation.isPending} className="gap-2">
+        <Button
+          type="submit"
+          disabled={updateMutation.isPending}
+          className="gap-2"
+        >
           {updateMutation.isPending ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
