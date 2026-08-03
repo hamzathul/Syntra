@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma";
+import type { DbClient } from "../../database/db-client";
 import type { IItemRepository } from "./item.repository.port";
 import type {
   ItemCreateData,
@@ -22,10 +22,10 @@ const ITEM_INCLUDE = {
 } as const;
 
 export class ItemRepository implements IItemRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string): Promise<ItemRecord[]> {
-    const items = await this.prisma.item.findMany({
+    const items = await this.db.item.findMany({
       where: { companyId },
       include: ITEM_INCLUDE,
       orderBy: { createdAt: "desc" },
@@ -34,7 +34,7 @@ export class ItemRepository implements IItemRepository {
   }
 
   async findById(id: string, companyId: string): Promise<ItemRecord | null> {
-    const item = await this.prisma.item.findUnique({
+    const item = await this.db.item.findUnique({
       where: { id },
       include: ITEM_INCLUDE,
     });
@@ -43,7 +43,7 @@ export class ItemRepository implements IItemRepository {
   }
 
   async create(companyId: string, data: ItemCreateData): Promise<ItemRecord> {
-    const item = await this.prisma.item.create({
+    const item = await this.db.item.create({
       data: { ...data, companyId },
       include: ITEM_INCLUDE,
     });
@@ -51,7 +51,7 @@ export class ItemRepository implements IItemRepository {
   }
 
   async update(id: string, data: ItemUpdateData): Promise<ItemRecord> {
-    const item = await this.prisma.item.update({
+    const item = await this.db.item.update({
       where: { id },
       data,
       include: ITEM_INCLUDE,
@@ -60,7 +60,7 @@ export class ItemRepository implements IItemRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.item.delete({ where: { id } });
+    await this.db.item.delete({ where: { id } });
   }
 
   async existsCode(
@@ -68,7 +68,7 @@ export class ItemRepository implements IItemRepository {
     companyId: string,
     excludeId?: string,
   ): Promise<boolean> {
-    const count = await this.prisma.item.count({
+    const count = await this.db.item.count({
       where: {
         companyId,
         itemCode: code,
@@ -83,7 +83,7 @@ export class ItemRepository implements IItemRepository {
     companyId: string,
     excludeId?: string,
   ): Promise<boolean> {
-    const count = await this.prisma.item.count({
+    const count = await this.db.item.count({
       where: {
         companyId,
         barcode,

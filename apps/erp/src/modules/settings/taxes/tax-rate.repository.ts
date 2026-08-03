@@ -1,13 +1,13 @@
-import type { PrismaClient } from "../../../generated/prisma";
+import type { DbClient } from "../../../database/db-client";
 import type { ITaxRateRepository } from "./tax-rate.repository.port";
 import type { TaxRateRecord } from "./taxes.types";
 import { toTaxRateRecord } from "./tax-rate.record";
 
 export class TaxRateRepository implements ITaxRateRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string): Promise<TaxRateRecord[]> {
-    const rates = await this.prisma.taxRate.findMany({
+    const rates = await this.db.taxRate.findMany({
       where: { companyId },
       orderBy: { name: "asc" },
     });
@@ -15,7 +15,7 @@ export class TaxRateRepository implements ITaxRateRepository {
   }
 
   async findById(id: string, companyId: string): Promise<TaxRateRecord | null> {
-    const rate = await this.prisma.taxRate.findUnique({
+    const rate = await this.db.taxRate.findUnique({
       where: { id },
     });
     if (!rate || rate.companyId !== companyId) return null;
@@ -26,7 +26,7 @@ export class TaxRateRepository implements ITaxRateRepository {
     companyId: string,
     data: { name: string; rate: number },
   ): Promise<TaxRateRecord> {
-    const rate = await this.prisma.taxRate.create({
+    const rate = await this.db.taxRate.create({
       data: { companyId, ...data },
     });
     return toTaxRateRecord(rate);
@@ -36,7 +36,7 @@ export class TaxRateRepository implements ITaxRateRepository {
     id: string,
     data: { name?: string; rate?: number },
   ): Promise<TaxRateRecord> {
-    const rate = await this.prisma.taxRate.update({
+    const rate = await this.db.taxRate.update({
       where: { id },
       data,
     });
@@ -44,21 +44,21 @@ export class TaxRateRepository implements ITaxRateRepository {
   }
 
   async delete(id: string): Promise<TaxRateRecord> {
-    const rate = await this.prisma.taxRate.delete({
+    const rate = await this.db.taxRate.delete({
       where: { id },
     });
     return toTaxRateRecord(rate);
   }
 
   async isUsedInAnyGroup(id: string, companyId: string): Promise<boolean> {
-    const count = await this.prisma.taxGroupRate.count({
+    const count = await this.db.taxGroupRate.count({
       where: { taxRateId: id, taxGroup: { companyId } },
     });
     return count > 0;
   }
 
   async countByIds(ids: string[], companyId: string): Promise<number> {
-    return this.prisma.taxRate.count({
+    return this.db.taxRate.count({
       where: { id: { in: ids }, companyId },
     });
   }

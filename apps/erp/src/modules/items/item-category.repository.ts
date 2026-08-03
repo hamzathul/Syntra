@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma";
+import type { DbClient } from "../../database/db-client";
 import type { IItemCategoryRepository } from "./item-category.repository.port";
 import type {
   ItemCategoryCreateData,
@@ -8,10 +8,10 @@ import type {
 import { toItemCategoryRecord } from "./item-category.record";
 
 export class ItemCategoryRepository implements IItemCategoryRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string): Promise<ItemCategoryRecord[]> {
-    const categories = await this.prisma.itemCategory.findMany({
+    const categories = await this.db.itemCategory.findMany({
       where: { companyId },
       orderBy: { name: "asc" },
     });
@@ -22,7 +22,7 @@ export class ItemCategoryRepository implements IItemCategoryRepository {
     id: string,
     companyId: string,
   ): Promise<ItemCategoryRecord | null> {
-    const category = await this.prisma.itemCategory.findUnique({
+    const category = await this.db.itemCategory.findUnique({
       where: { id },
     });
     if (!category || category.companyId !== companyId) return null;
@@ -33,7 +33,7 @@ export class ItemCategoryRepository implements IItemCategoryRepository {
     companyId: string,
     data: ItemCategoryCreateData,
   ): Promise<ItemCategoryRecord> {
-    const category = await this.prisma.itemCategory.create({
+    const category = await this.db.itemCategory.create({
       data: { companyId, ...data },
     });
     return toItemCategoryRecord(category);
@@ -43,7 +43,7 @@ export class ItemCategoryRepository implements IItemCategoryRepository {
     id: string,
     data: ItemCategoryUpdateData,
   ): Promise<ItemCategoryRecord> {
-    const category = await this.prisma.itemCategory.update({
+    const category = await this.db.itemCategory.update({
       where: { id },
       data,
     });
@@ -51,17 +51,17 @@ export class ItemCategoryRepository implements IItemCategoryRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.itemCategory.delete({ where: { id } });
+    await this.db.itemCategory.delete({ where: { id } });
   }
 
   async countByIds(ids: string[], companyId: string): Promise<number> {
-    return this.prisma.itemCategory.count({
+    return this.db.itemCategory.count({
       where: { id: { in: ids }, companyId },
     });
   }
 
   async isUsedInAnyItem(id: string, companyId: string): Promise<boolean> {
-    const count = await this.prisma.item.count({
+    const count = await this.db.item.count({
       where: { companyId, categoryId: id },
     });
     return count > 0;
