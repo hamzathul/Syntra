@@ -39,8 +39,7 @@ export class ItemsController extends BaseController {
     this.v1.success(res, {
       request: req,
       message: "Items retrieved successfully",
-      data: result.items,
-      pagination: result.meta,
+      data: result,
     });
   });
 
