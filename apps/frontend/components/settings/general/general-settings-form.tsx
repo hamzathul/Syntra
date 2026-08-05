@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AxiosError } from "axios";
 import { z } from "zod";
@@ -10,7 +10,13 @@ import { currencies, dateFormats } from "shared";
 import type { GeneralSettingsDto, UpdateGeneralSettingsDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useUpdateGeneralSettingsMutation } from "@/hooks/settings/use-general-settings-query";
 import { toast } from "sonner";
 
@@ -32,9 +38,9 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
   const updateMutation = useUpdateGeneralSettingsMutation();
 
   const {
-    register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, dirtyFields },
   } = useForm<FormValues>({
     resolver: zodResolver(generalSettingsFormSchema),
@@ -93,13 +99,24 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
       {/* Business Currency */}
       <div className="grid gap-2">
         <Label htmlFor="businessCurrency">Business Currency</Label>
-        <Select id="businessCurrency" {...register("businessCurrency")}>
-          {currencies.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.symbol} — {c.code} ({c.name})
-            </option>
-          ))}
-        </Select>
+        <Controller
+          control={control}
+          name="businessCurrency"
+          render={({ field }) => (
+            <Select value={field.value || ""} onValueChange={field.onChange}>
+              <SelectTrigger id="businessCurrency">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencies.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.symbol} — {c.code} ({c.name})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
         {errors.businessCurrency && (
           <p className="text-xs text-destructive">
             {errors.businessCurrency.message}
@@ -110,16 +127,27 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
       {/* Decimal Places */}
       <div className="grid gap-2">
         <Label htmlFor="decimalPlaces">Decimal Places</Label>
-        <Select
-          id="decimalPlaces"
-          {...register("decimalPlaces", { valueAsNumber: true })}
-        >
-          {[1, 2, 3, 4, 5].map((n) => (
-            <option key={n} value={n}>
-              {n} {n === 1 ? "place" : "places"}
-            </option>
-          ))}
-        </Select>
+        <Controller
+          control={control}
+          name="decimalPlaces"
+          render={({ field }) => (
+            <Select
+              value={String(field.value)}
+              onValueChange={(v) => field.onChange(Number(v))}
+            >
+              <SelectTrigger id="decimalPlaces">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n} {n === 1 ? "place" : "places"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
         {errors.decimalPlaces && (
           <p className="text-xs text-destructive">
             {errors.decimalPlaces.message}
@@ -130,13 +158,24 @@ export function GeneralSettingsForm({ settings }: GeneralSettingsFormProps) {
       {/* Date Format */}
       <div className="grid gap-2">
         <Label htmlFor="dateFormat">Date Format</Label>
-        <Select id="dateFormat" {...register("dateFormat")}>
-          {dateFormats.map((f) => (
-            <option key={f} value={f}>
-              {f}
-            </option>
-          ))}
-        </Select>
+        <Controller
+          control={control}
+          name="dateFormat"
+          render={({ field }) => (
+            <Select value={field.value || ""} onValueChange={field.onChange}>
+              <SelectTrigger id="dateFormat">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {dateFormats.map((f) => (
+                  <SelectItem key={f} value={f}>
+                    {f}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
         {errors.dateFormat && (
           <p className="text-xs text-destructive">
             {errors.dateFormat.message}

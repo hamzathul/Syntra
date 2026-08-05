@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import type { GeneralSettingsDto } from "shared";
 import { useUpdateGeneralSettingsMutation } from "@/hooks/settings/use-general-settings-query";
 import { TaxRatesTab } from "./tax-rates-tab";
@@ -71,18 +72,22 @@ export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
       <div>
         <h3 className="text-sm font-medium mb-3">Tax List</h3>
         <div className="flex gap-0 border-b">
-          <button
+          <Button
+            type="button"
+            variant="ghost"
             className={tabClass("rates")}
             onClick={() => setActiveTab("rates")}
           >
             Tax Rates
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
             className={tabClass("groups")}
             onClick={() => setActiveTab("groups")}
           >
             Tax Groups
-          </button>
+          </Button>
         </div>
         <div className="pt-4">
           {activeTab === "rates" ? <TaxRatesTab /> : <TaxGroupsTab />}

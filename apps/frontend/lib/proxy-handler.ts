@@ -12,6 +12,7 @@ interface ProxyHandlerOptions {
   readonly baseUrl: string;
   readonly setSessionCookies?: (path: string) => boolean;
   readonly clearSessionCookies?: (path: string) => boolean;
+  readonly injectRefreshTokenBody?: (path: string) => boolean;
 }
 
 async function handler(
@@ -31,10 +32,15 @@ async function handler(
   const companyId = req.headers.get("x-company-id");
   if (companyId) headers["X-Company-Id"] = companyId;
 
-  const body =
+  let body =
     req.method !== "GET" && req.method !== "HEAD"
       ? await req.text()
       : undefined;
+
+  if (options.injectRefreshTokenBody?.(path.join("/"))) {
+    const refreshToken = cookieStore.get("refresh_token")?.value ?? "";
+    body = JSON.stringify({ refreshToken });
+  }
 
   let res: Response;
   try {

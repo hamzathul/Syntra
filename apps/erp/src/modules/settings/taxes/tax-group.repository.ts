@@ -1,13 +1,13 @@
-import type { PrismaClient } from "../../../generated/prisma";
+import type { DbClient } from "../../../database/db-client";
 import type { ITaxGroupRepository } from "./tax-group.repository.port";
 import type { TaxGroupRecord } from "./taxes.types";
 import { toTaxRateRecord } from "./tax-rate.record";
 
 export class TaxGroupRepository implements ITaxGroupRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string): Promise<TaxGroupRecord[]> {
-    const groups = await this.prisma.taxGroup.findMany({
+    const groups = await this.db.taxGroup.findMany({
       where: { companyId },
       include: {
         groupRates: {
@@ -23,7 +23,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     id: string,
     companyId: string,
   ): Promise<TaxGroupRecord | null> {
-    const group = await this.prisma.taxGroup.findUnique({
+    const group = await this.db.taxGroup.findUnique({
       where: { id },
       include: {
         groupRates: {
@@ -40,7 +40,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     data: { name: string; taxRateIds: string[] },
   ): Promise<TaxGroupRecord> {
     const ids = [...new Set(data.taxRateIds)];
-    const group = await this.prisma.taxGroup.create({
+    const group = await this.db.taxGroup.create({
       data: {
         companyId,
         name: data.name,
@@ -62,7 +62,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
     companyId: string,
     data: { name?: string; taxRateIds?: string[] },
   ): Promise<TaxGroupRecord> {
-    const group = await this.prisma.$transaction(async (tx) => {
+    const group = await this.db.$transaction(async (tx) => {
       if (data.taxRateIds) {
         const ids = [...new Set(data.taxRateIds)];
         await tx.taxGroupRate.deleteMany({ where: { taxGroupId: id } });
@@ -86,7 +86,7 @@ export class TaxGroupRepository implements ITaxGroupRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.taxGroup.delete({ where: { id } });
+    await this.db.taxGroup.delete({ where: { id } });
   }
 
   private mapRecord(r: {

@@ -12,6 +12,7 @@ import type { TaxGroupDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -237,11 +238,9 @@ export function TaxGroupsTab() {
                       key={rate.id}
                       className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 cursor-pointer text-sm"
                     >
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={selectedRateIds.has(rate.id)}
-                        onChange={() => toggleRateId(rate.id)}
-                        className="h-4 w-4 rounded border-gray-300"
+                        onCheckedChange={() => toggleRateId(rate.id)}
                       />
                       <span className="flex-1">{rate.name}</span>
                       <span className="text-muted-foreground">

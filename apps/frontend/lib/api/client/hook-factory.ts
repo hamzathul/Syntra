@@ -38,3 +38,10 @@ export function createUpdateMutationHook<TDto, TResult>(
     });
   };
 }
+
+export function createPlainMutationHook<TResult>(
+  mutationFn: () => Promise<TResult>,
+) {
+  return (): UseMutationResult<TResult, Error, void> =>
+    useMutation({ mutationFn });
+}

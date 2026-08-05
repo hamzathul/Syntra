@@ -11,6 +11,7 @@ const handler = createProxyHandler({
   baseUrl: CORE_URL,
   setSessionCookies: isAuthPath,
   clearSessionCookies: isLogoutPath,
+  injectRefreshTokenBody: isLogoutPath,
 });
 
 export const GET = handler;

@@ -13,6 +13,16 @@ enum MemberRole {
   MEMBER
 }
 
+enum ItemType {
+  GOODS
+  SERVICE
+}
+
+enum DiscountType {
+  AMOUNT
+  PERCENTAGE
+}
+
 model Company {
   id               String   @id @default(cuid())
   name             String
@@ -36,6 +46,9 @@ model Company {
   settings  CompanySettings?
   taxRates  TaxRate[]
   taxGroups TaxGroup[]
+  units     Unit[]
+  categories ItemCategory[]
+  items     Item[]
 }
 
 model CompanySettings {
@@ -61,6 +74,7 @@ model TaxRate {
 
   company          Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   groupRates       TaxGroupRate[]
+  items            Item[]
 
   @@unique([companyId, name])
 }
@@ -74,6 +88,7 @@ model TaxGroup {
 
   company    Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   groupRates TaxGroupRate[]
+  items      Item[]
 
   @@unique([companyId, name])
 }
@@ -100,4 +115,75 @@ model CompanyMember {
 
   @@unique([userId, companyId])
   @@index([userId])
+}
+
+model Unit {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  shortName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company           Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  primaryItems      Item[]  @relation("ItemPrimaryUnit")
+  secondaryItems    Item[]  @relation("ItemSecondaryUnit")
+
+  @@unique([companyId, name])
+}
+
+model ItemCategory {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  items   Item[]
+
+  @@unique([companyId, name])
+}
+
+model Item {
+  id                      String       @id @default(cuid())
+  companyId               String
+  name                    String
+  itemType                ItemType     @default(GOODS)
+  itemCode                String?
+  barcode                 String?
+  categoryId              String?
+  hsnSac                  String?
+  description             String?
+  image                   String?
+  unitPrimaryId           String
+  unitSecondaryId         String?
+  unitConversionRate      Decimal?     @db.Decimal(15, 4)
+  salePriceExclTax        Decimal?     @db.Decimal(15, 4)
+  salePriceInclTax        Decimal?     @db.Decimal(15, 4)
+  saleDiscountType        DiscountType?
+  saleDiscountValue       Decimal?     @db.Decimal(15, 4)
+  purchasePriceExclTax    Decimal?     @db.Decimal(15, 4)
+  purchasePriceInclTax    Decimal?     @db.Decimal(15, 4)
+  taxRateId               String?
+  taxGroupId              String?
+  openingStock            Decimal?     @db.Decimal(15, 4)
+  openingStockDate        DateTime?
+  openingStockValuePerUnit Decimal?    @db.Decimal(15, 4)
+  minStockQuantity        Decimal?     @db.Decimal(15, 4)
+  location                String?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category      ItemCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  unitPrimary   Unit          @relation("ItemPrimaryUnit", fields: [unitPrimaryId], references: [id], onDelete: Restrict)
+  unitSecondary Unit?         @relation("ItemSecondaryUnit", fields: [unitSecondaryId], references: [id], onDelete: Restrict)
+  taxRate       TaxRate?      @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
+  taxGroup      TaxGroup?     @relation(fields: [taxGroupId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, name])
+  @@unique([companyId, itemCode])
+  @@unique([companyId, barcode])
+  @@index([companyId])
 }

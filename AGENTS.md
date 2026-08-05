@@ -130,6 +130,7 @@ To target a single workspace, use `--filter <package-name>`:
 - The proxy handler also auto-refreshes on 401 (reads `refresh_token` cookie, calls Core `/auth/refresh`, re-sets cookies, retries once).
 - `proxy.ts` guards routes using the `access_token` cookie. After login the cookie must exist or users are looped back to `/login`.
 - **`setActiveCompany` (cookie) and `setActiveCompanyState` (React state) must BOTH be called** wherever the active company changes (`switchCompany`, `createCompany`, default-company effect) — missing the cookie write causes `/onboarding` ↔ `/dashboard` redirect loops.
+- **On company switch, RESET company-scoped queries, don't just invalidate**: `switchCompany`/`createCompany` call `queryClient.resetQueries` for every key in `companyScopedQueryKeys` (`apps/frontend/hooks/query-keys.ts`). Invalidation keeps the old company's cached data visible while refetching (and skips inactive queries), which surfaces stale "previous company" data. Reset drops the cache so `PageState`-wrapped pages unmount/remount their forms with the new company's data. New company-scoped queries MUST be added to `companyScopedQueryKeys`.
 - `getApiErrorMessage(error)`: always check `axios.isAxiosError(error)` **before** the generic `"message" in error` branch, or server messages are lost.
 
 ### Route Versioning
@@ -191,4 +192,4 @@ To target a single workspace, use `--filter <package-name>`:
 - **Contracts**: Zod schemas in `packages/shared/src/contracts/` are the single source of truth.
 - **Frontend UI**: `shadcn` components in `apps/frontend/components/ui/`. Use `cn()` from `@/lib/utils`.
 - **Frontend services/hooks**: Use `crud-factory.ts` + `hook-factory.ts` — never hand-write axios wrappers or raw `useQuery`/`useMutation`.
-- **Dark/Light Mode**: Uses `next-themes` with `attribute="class"`, `defaultTheme="system"`. The `.dark` class is applied to `<html>`.
+- **Dark/Light Mode**: Uses the in-house `ThemeProvider`/`useTheme` from `apps/frontend/lib/theme-provider.tsx` (`attribute="class"`, `defaultTheme="system"`). The FOUC-prevention inline script is injected via `useServerInsertedHTML` (never render a `<script>` inside a client component — React 19 warns and it won't execute). The `.dark` class is applied to `<html>`. `next-themes` was removed because of the React 19 script-tag warning.

@@ -8,13 +8,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import type { CompanyDto, CreateCompanyDto } from "shared";
 import {
   useCompanies,
   useCreateCompanyMutation,
 } from "@/hooks/companies/use-companies-query";
-import { settingsKeys, taxKeys } from "@/hooks/query-keys";
+import { companyScopedQueryKeys } from "@/hooks/query-keys";
 import {
   getActiveCompany,
   setActiveCompany as setActiveCompanyCookie,
@@ -30,6 +30,12 @@ interface CompanyContextValue {
 }
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
+
+function resetCompanyScopedQueries(queryClient: QueryClient) {
+  for (const queryKey of companyScopedQueryKeys) {
+    queryClient.resetQueries({ queryKey });
+  }
+}
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
   const { data: companies = [], isLoading } = useCompanies();
@@ -63,8 +69,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
       };
       setActiveCompanyCookie(next);
       setActiveCompanyState(next);
-      queryClient.invalidateQueries({ queryKey: settingsKeys.all });
-      queryClient.invalidateQueries({ queryKey: taxKeys.all });
+      resetCompanyScopedQueries(queryClient);
     },
     [queryClient],
   );
@@ -79,9 +84,10 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
       };
       setActiveCompanyState(next);
       setActiveCompanyCookie(next);
+      resetCompanyScopedQueries(queryClient);
       return company;
     },
-    [createCompanyMutation],
+    [createCompanyMutation, queryClient],
   );
 
   return (

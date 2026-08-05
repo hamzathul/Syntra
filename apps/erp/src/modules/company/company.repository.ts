@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma";
+import type { DbClient } from "../../database/db-client";
 import type { ICompanyRepository } from "./company.repository.port";
 import type {
   CompanyWithRole,
@@ -7,10 +7,10 @@ import type {
 } from "./company.types";
 
 export class CompanyRepository implements ICompanyRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async create(input: CreateCompanyInput): Promise<CompanyWithRole> {
-    const company = await this.prisma.company.create({
+    const company = await this.db.company.create({
       data: {
         name: input.name,
         members: {
@@ -32,7 +32,7 @@ export class CompanyRepository implements ICompanyRepository {
   }
 
   async findByUserId(userId: string): Promise<CompanyWithRole[]> {
-    const members = await this.prisma.companyMember.findMany({
+    const members = await this.db.companyMember.findMany({
       where: { userId },
       include: { company: true },
       orderBy: { joinedAt: "asc" },
@@ -49,7 +49,7 @@ export class CompanyRepository implements ICompanyRepository {
   }
 
   async isMember(userId: string, companyId: string): Promise<boolean> {
-    const count = await this.prisma.companyMember.count({
+    const count = await this.db.companyMember.count({
       where: { userId, companyId },
     });
     return count > 0;
