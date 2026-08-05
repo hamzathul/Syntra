@@ -1,18 +1,26 @@
 import {
+  BadRequestError,
   ConflictError,
   InternalServerError,
   NotFoundError,
   isPrismaUniqueViolation,
 } from "backend-p";
 import type { LoggerPort } from "backend-p";
-import type { CreateItemDto, ItemDto, UpdateItemDto } from "shared";
+import {
+  conversionRefine,
+  discountRefine,
+  taxRefine,
+  type CreateItemDto,
+  type ItemDto,
+  type UpdateItemDto,
+} from "shared";
 import type { IItemRepository } from "./item.repository.port";
 import type { IItemCategoryRepository } from "./item-category.repository.port";
 import type { IUnitRepository } from "./unit.repository.port";
 import type { ITaxRateRepository } from "../settings/taxes/tax-rate.repository.port";
 import type { ITaxGroupRepository } from "../settings/taxes/tax-group.repository.port";
 import type { IItemService, ItemListParams } from "./item.service.port";
-import type { ItemCreateData, ItemUpdateData } from "./items.types";
+import type { ItemCreateData, ItemRecord, ItemUpdateData } from "./items.types";
 import { toItemDto } from "./item.mapper";
 import { generateEan13, randomSegment } from "./code-generator";
 
@@ -98,6 +106,8 @@ export class ItemService implements IItemService {
   ): Promise<ItemDto> {
     const existing = await this.repo.findById(id, companyId);
     if (!existing) throw new NotFoundError("Item");
+
+    this.assertValidMergedState(existing, dto);
 
     await this.assertReferencesBelongToCompany(dto, companyId);
 
@@ -208,6 +218,30 @@ export class ItemService implements IItemService {
         : null;
     }
     return data as ItemUpdateData;
+  }
+
+  private assertValidMergedState(
+    existing: ItemRecord,
+    dto: UpdateItemDto,
+  ): void {
+    const merged = {
+      taxRateId: dto.taxRateId ?? existing.taxRateId,
+      taxGroupId: dto.taxGroupId ?? existing.taxGroupId,
+      saleDiscountType: dto.saleDiscountType ?? existing.saleDiscountType,
+      saleDiscountValue: dto.saleDiscountValue ?? existing.saleDiscountValue,
+      unitSecondaryId: dto.unitSecondaryId ?? existing.unitSecondaryId,
+      unitConversionRate: dto.unitConversionRate ?? existing.unitConversionRate,
+    };
+
+    if (!taxRefine.check(merged)) {
+      throw new BadRequestError(taxRefine.message);
+    }
+    if (!discountRefine.check(merged)) {
+      throw new BadRequestError(discountRefine.message);
+    }
+    if (!conversionRefine.check(merged)) {
+      throw new BadRequestError(conversionRefine.message);
+    }
   }
 
   private async assertReferencesBelongToCompany(

@@ -92,20 +92,22 @@ export function ThemeProvider({
       // storage unavailable — ignore
     }
     const nextMode: ThemeMode =
-      stored === "light" || stored === "dark" ? stored : defaultTheme;
+      stored === "light" || stored === "dark" || stored === "system"
+        ? stored
+        : defaultTheme;
     setMode(nextMode);
     setSystemTheme(getSystemTheme());
-    applyThemeToDocument(resolveTheme(nextMode, getSystemTheme()));
   }, [storageKey, defaultTheme]);
+
+  useEffect(() => {
+    if (disableTransitionOnChange) {
+      disableTransitions();
+    }
+    applyThemeToDocument(resolveTheme(mode, systemTheme));
+  }, [mode, systemTheme, disableTransitionOnChange]);
 
   const setTheme = useCallback(
     (next: ThemeMode) => {
-      const system = getSystemTheme();
-      const nextResolved = resolveTheme(next, system);
-      applyThemeToDocument(nextResolved);
-      if (disableTransitionOnChange) {
-        disableTransitions();
-      }
       try {
         window.localStorage.setItem(storageKey, next);
       } catch {
@@ -113,7 +115,7 @@ export function ThemeProvider({
       }
       setMode(next);
     },
-    [disableTransitionOnChange, storageKey],
+    [storageKey],
   );
 
   const resolvedTheme = useMemo(

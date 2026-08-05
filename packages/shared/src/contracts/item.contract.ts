@@ -65,6 +65,13 @@ const amount = (label: string) =>
     .max(999_999_999_999, `${label} is too large`)
     .multipleOf(0.0001, `${label} must have at most 4 decimal places`);
 
+const positiveAmount = (label: string) =>
+  z
+    .number()
+    .positive(`${label} must be greater than zero`)
+    .max(999_999_999_999, `${label} is too large`)
+    .multipleOf(0.0001, `${label} must have at most 4 decimal places`);
+
 const itemFieldShapes = {
   name: trimmedString.min(1, "Item name is required").max(200),
   itemType: z.enum(itemTypes).optional(),
@@ -76,7 +83,7 @@ const itemFieldShapes = {
   image: z.string().max(800_000, "Image too large").optional(),
   unitPrimaryId: z.string().min(1, "Primary unit is required"),
   unitSecondaryId: z.string().min(1).optional(),
-  unitConversionRate: amount("Conversion rate").optional(),
+  unitConversionRate: positiveAmount("Conversion rate").optional(),
   salePriceExclTax: amount("Sale price excluding tax").optional(),
   salePriceInclTax: amount("Sale price including tax").optional(),
   saleDiscountType: z.enum(discountTypes).optional(),
@@ -95,7 +102,7 @@ const itemFieldShapes = {
   location: trimmedString.max(200).optional(),
 } as const;
 
-const taxRefine = {
+export const taxRefine = {
   check: (value: Record<string, unknown>) =>
     (value.taxRateId != null) !== (value.taxGroupId != null) ||
     (value.taxRateId == null && value.taxGroupId == null),
@@ -103,14 +110,14 @@ const taxRefine = {
   path: ["taxRateId"] as string[],
 };
 
-const discountRefine = {
+export const discountRefine = {
   check: (value: Record<string, unknown>) =>
     (value.saleDiscountType != null) === (value.saleDiscountValue != null),
   message: "Both discount type and discount value are required together",
   path: ["saleDiscountType"] as string[],
 };
 
-const conversionRefine = {
+export const conversionRefine = {
   check: (value: Record<string, unknown>) =>
     value.unitSecondaryId == null || value.unitConversionRate != null,
   message: "Conversion rate is required when a secondary unit is selected",
@@ -134,17 +141,17 @@ export const createItemSchema = z
 
 export const updateItemSchema = z
   .object({
-    name: trimmedString.min(1).max(200).nullable().optional(),
-    itemType: z.enum(itemTypes).nullable().optional(),
+    name: trimmedString.min(1).max(200).optional(),
+    itemType: z.enum(itemTypes).optional(),
     itemCode: trimmedString.max(50).nullable().optional(),
     barcode: trimmedString.max(100).nullable().optional(),
     categoryId: z.string().min(1).nullable().optional(),
     hsnSac: trimmedString.max(50).nullable().optional(),
     description: trimmedString.max(5000).nullable().optional(),
     image: z.string().max(800_000, "Image too large").nullable().optional(),
-    unitPrimaryId: z.string().min(1).nullable().optional(),
+    unitPrimaryId: z.string().min(1).optional(),
     unitSecondaryId: z.string().min(1).nullable().optional(),
-    unitConversionRate: amount("Conversion rate").nullable().optional(),
+    unitConversionRate: positiveAmount("Conversion rate").nullable().optional(),
     salePriceExclTax: amount("Sale price excluding tax").nullable().optional(),
     salePriceInclTax: amount("Sale price including tax").nullable().optional(),
     saleDiscountType: z.enum(discountTypes).nullable().optional(),
@@ -162,18 +169,6 @@ export const updateItemSchema = z
     openingStockValuePerUnit: amount("Opening stock value per unit").nullable().optional(),
     minStockQuantity: amount("Minimum stock quantity").nullable().optional(),
     location: trimmedString.max(200).nullable().optional(),
-  })
-  .refine(taxRefine.check, {
-    message: taxRefine.message,
-    path: taxRefine.path,
-  })
-  .refine(discountRefine.check, {
-    message: discountRefine.message,
-    path: discountRefine.path,
-  })
-  .refine(conversionRefine.check, {
-    message: conversionRefine.message,
-    path: conversionRefine.path,
   });
 
 export const itemResponseSchema = z.object({
