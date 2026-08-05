@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { itemsService } from "@/lib/api/services/items/items.service";
 import {
   createGetQueryHook,
@@ -10,7 +11,17 @@ import {
 import { itemKeys } from "../query-keys";
 
 // Items
-export const useItems = createGetQueryHook(itemKeys.list, itemsService.items.list);
+export const useItems = createGetQueryHook(
+  itemKeys.list,
+  itemsService.items.list,
+);
+
+export const useItem = (id: string) =>
+  useQuery({
+    queryKey: itemKeys.detail(id),
+    queryFn: () => itemsService.items.get(id),
+    staleTime: 60_000,
+  });
 
 export const useCreateItemMutation = createMutationHook(
   itemKeys.list,

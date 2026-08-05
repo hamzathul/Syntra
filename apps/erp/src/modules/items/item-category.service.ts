@@ -61,7 +61,7 @@ export class ItemCategoryService implements IItemCategoryService {
 
     let record;
     try {
-      record = await this.repo.update(id, { name: dto.name });
+      record = await this.repo.update(id, companyId, { name: dto.name });
     } catch (error) {
       if (isPrismaUniqueViolation(error)) {
         throw new ConflictError("A category with this name already exists");
@@ -93,7 +93,7 @@ export class ItemCategoryService implements IItemCategoryService {
       );
     }
 
-    await this.repo.delete(id);
+    await this.repo.delete(id, companyId);
 
     this.logger.info(
       {

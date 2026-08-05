@@ -57,7 +57,7 @@ export class UnitService implements IUnitService {
 
     let record;
     try {
-      record = await this.repo.update(id, {
+      record = await this.repo.update(id, companyId, {
         name: dto.name,
         shortName: dto.shortName,
       });
@@ -90,7 +90,7 @@ export class UnitService implements IUnitService {
       throw new ConflictError("Cannot delete a unit that is used by an item");
     }
 
-    await this.repo.delete(id);
+    await this.repo.delete(id, companyId);
 
     this.logger.info(
       {

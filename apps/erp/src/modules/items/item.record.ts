@@ -67,7 +67,10 @@ export interface ItemRow {
   readonly taxGroup: TaxGroupRow | null;
 }
 
-export function toItemRecord(row: ItemRow): ItemRecord {
+export function toItemRecord(
+  row: ItemRow,
+  options?: { excludeImage?: boolean },
+): ItemRecord {
   return {
     id: row.id,
     companyId: row.companyId,
@@ -78,7 +81,7 @@ export function toItemRecord(row: ItemRow): ItemRecord {
     categoryId: row.categoryId,
     hsnSac: row.hsnSac,
     description: row.description,
-    image: row.image,
+    image: options?.excludeImage ? undefined : row.image,
     unitPrimaryId: row.unitPrimaryId,
     unitSecondaryId: row.unitSecondaryId,
     unitConversionRate: toNumber(row.unitConversionRate),

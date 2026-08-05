@@ -1,3 +1,4 @@
+import { NotFoundError } from "backend-p";
 import type { DbClient } from "../../database/db-client";
 import type { IUnitRepository } from "./unit.repository.port";
 import type {
@@ -35,13 +36,20 @@ export class UnitRepository implements IUnitRepository {
     return toUnitRecord(unit);
   }
 
-  async update(id: string, data: UnitUpdateData): Promise<UnitRecord> {
-    const unit = await this.db.unit.update({ where: { id }, data });
-    return toUnitRecord(unit);
+  async update(id: string, companyId: string, data: UnitUpdateData): Promise<UnitRecord> {
+    const { count } = await this.db.unit.updateMany({
+      where: { id, companyId },
+      data,
+    });
+    if (count === 0) throw new NotFoundError("Unit");
+
+    const unit = await this.db.unit.findUnique({ where: { id } });
+    return toUnitRecord(unit!);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.db.unit.delete({ where: { id } });
+  async delete(id: string, companyId: string): Promise<void> {
+    const { count } = await this.db.unit.deleteMany({ where: { id, companyId } });
+    if (count === 0) throw new NotFoundError("Unit");
   }
 
   async countByIds(ids: string[], companyId: string): Promise<number> {

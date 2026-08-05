@@ -12,16 +12,16 @@ const currency = (value: number | null) =>
   value === null ? "—" : `$${value.toFixed(2)}`;
 
 export default function ItemsPage() {
-  const { data: items, isLoading, error } = useItems();
+  const { data, isLoading, error } = useItems();
 
   return (
     <PageState
       isLoading={isLoading}
-      data={items}
+      data={data}
       error={error}
       errorTitle="Failed to load items"
     >
-      {(data) => (
+      {(result) => (
         <div className="space-y-6">
           <div className="flex items-start justify-between">
             <div>
@@ -39,7 +39,7 @@ export default function ItemsPage() {
           </div>
 
           <div className="border rounded-xl overflow-hidden">
-            {data.length > 0 ? (
+            {result.items.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -53,7 +53,7 @@ export default function ItemsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {data.map((item) => (
+                    {result.items.map((item) => (
                       <ItemRow key={item.id} item={item} />
                     ))}
                   </tbody>

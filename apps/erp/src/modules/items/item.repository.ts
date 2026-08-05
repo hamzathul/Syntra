@@ -1,11 +1,15 @@
+import { NotFoundError, paginateResult } from "backend-p";
 import type { DbClient } from "../../database/db-client";
-import type { IItemRepository } from "./item.repository.port";
+import type { IItemRepository, ItemListOptions } from "./item.repository.port";
 import type {
   ItemCreateData,
   ItemRecord,
   ItemUpdateData,
 } from "./items.types";
 import { toItemRecord, type ItemRow } from "./item.record";
+
+const DEFAULT_LIST_LIMIT = 25;
+const MAX_LIST_LIMIT = 100;
 
 const ITEM_INCLUDE = {
   category: true,
@@ -24,13 +28,22 @@ const ITEM_INCLUDE = {
 export class ItemRepository implements IItemRepository {
   constructor(private readonly db: DbClient) {}
 
-  async findAll(companyId: string): Promise<ItemRecord[]> {
-    const items = await this.db.item.findMany({
-      where: { companyId },
+  async findAll(companyId: string, options?: ItemListOptions) {
+    const limit = Math.min(options?.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
+    const rawItems = await this.db.item.findMany({
+      where: {
+        companyId,
+        ...(options?.cursor ? { id: { gt: options.cursor } } : {}),
+      },
       include: ITEM_INCLUDE,
       orderBy: { createdAt: "desc" },
+      take: limit + 1,
     });
-    return items.map((item) => toItemRecord(item as unknown as ItemRow));
+    return paginateResult(
+      rawItems.map((item) => toItemRecord(item as unknown as ItemRow, { excludeImage: true })),
+      limit,
+      options?.cursor,
+    );
   }
 
   async findById(id: string, companyId: string): Promise<ItemRecord | null> {
@@ -50,17 +63,23 @@ export class ItemRepository implements IItemRepository {
     return toItemRecord(item as unknown as ItemRow);
   }
 
-  async update(id: string, data: ItemUpdateData): Promise<ItemRecord> {
-    const item = await this.db.item.update({
-      where: { id },
+  async update(id: string, companyId: string, data: ItemUpdateData): Promise<ItemRecord> {
+    const { count } = await this.db.item.updateMany({
+      where: { id, companyId },
       data,
+    });
+    if (count === 0) throw new NotFoundError("Item");
+
+    const item = await this.db.item.findUnique({
+      where: { id },
       include: ITEM_INCLUDE,
     });
     return toItemRecord(item as unknown as ItemRow);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.db.item.delete({ where: { id } });
+  async delete(id: string, companyId: string): Promise<void> {
+    const { count } = await this.db.item.deleteMany({ where: { id, companyId } });
+    if (count === 0) throw new NotFoundError("Item");
   }
 
   async existsCode(

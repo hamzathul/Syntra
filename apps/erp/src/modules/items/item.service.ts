@@ -11,7 +11,7 @@ import type { IItemCategoryRepository } from "./item-category.repository.port";
 import type { IUnitRepository } from "./unit.repository.port";
 import type { ITaxRateRepository } from "../settings/taxes/tax-rate.repository.port";
 import type { ITaxGroupRepository } from "../settings/taxes/tax-group.repository.port";
-import type { IItemService } from "./item.service.port";
+import type { IItemService, ItemListParams } from "./item.service.port";
 import type { ItemCreateData, ItemUpdateData } from "./items.types";
 import { toItemDto } from "./item.mapper";
 import { generateEan13, randomSegment } from "./code-generator";
@@ -51,9 +51,12 @@ export class ItemService implements IItemService {
     private readonly logger: LoggerPort,
   ) {}
 
-  async list(companyId: string): Promise<ItemDto[]> {
-    const records = await this.repo.findAll(companyId);
-    return records.map(toItemDto);
+  async list(companyId: string, params?: ItemListParams) {
+    const result = await this.repo.findAll(companyId, params);
+    return {
+      items: result.items.map(toItemDto),
+      meta: result.meta,
+    };
   }
 
   async get(id: string, companyId: string): Promise<ItemDto> {
@@ -100,7 +103,7 @@ export class ItemService implements IItemService {
 
     let record;
     try {
-      record = await this.repo.update(id, this.toUpdateData(dto));
+      record = await this.repo.update(id, companyId, this.toUpdateData(dto));
     } catch (error) {
       if (isPrismaUniqueViolation(error)) {
         throw await this.uniqueConflict(companyId, dto.itemCode, dto.barcode, id);
@@ -125,7 +128,7 @@ export class ItemService implements IItemService {
     const existing = await this.repo.findById(id, companyId);
     if (!existing) throw new NotFoundError("Item");
 
-    await this.repo.delete(id);
+    await this.repo.delete(id, companyId);
 
     this.logger.info(
       {

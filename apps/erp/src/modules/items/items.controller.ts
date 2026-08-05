@@ -32,12 +32,15 @@ export class ItemsController extends BaseController {
 
   readonly listItems: RequestHandler = this.asyncHandler(async (req, res) => {
     const companyId = getCompanyId(res.locals);
-    const items = await this.itemService.list(companyId);
+    const limit = req.query["limit"] ? Math.min(Number(req.query["limit"]), 100) : undefined;
+    const cursor = typeof req.query["cursor"] === "string" ? req.query["cursor"] : undefined;
+    const result = await this.itemService.list(companyId, { limit, cursor });
 
     this.v1.success(res, {
       request: req,
       message: "Items retrieved successfully",
-      data: items,
+      data: result.items,
+      pagination: result.meta,
     });
   });
 

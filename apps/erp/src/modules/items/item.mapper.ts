@@ -17,7 +17,7 @@ export function toItemDto(record: ItemRecord): ItemDto {
     category: record.category ? toItemCategoryDto(record.category) : null,
     hsnSac: record.hsnSac,
     description: record.description,
-    image: record.image,
+    image: record.image ?? null,
     unitPrimaryId: record.unitPrimaryId,
     unitSecondaryId: record.unitSecondaryId,
     unitPrimary: toUnitDto(record.unitPrimary),

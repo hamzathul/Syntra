@@ -1,9 +1,9 @@
 import type { ItemDto, ItemCategoryDto, UnitDto } from "shared";
 import { erpApi } from "../../client/erp-client";
-import { createCrud } from "../../client/crud-factory";
+import { createCrud, createPaginatedCrud } from "../../client/crud-factory";
 
 export const itemsService = {
-  items: createCrud<ItemDto>(erpApi, "/items"),
+  items: createPaginatedCrud<ItemDto>(erpApi, "/items"),
   categories: createCrud<ItemCategoryDto>(erpApi, "/items/categories"),
   units: createCrud<UnitDto>(erpApi, "/items/units"),
 

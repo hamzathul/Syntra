@@ -1,3 +1,4 @@
+import { NotFoundError } from "backend-p";
 import type { DbClient } from "../../database/db-client";
 import type { IItemCategoryRepository } from "./item-category.repository.port";
 import type {
@@ -41,17 +42,24 @@ export class ItemCategoryRepository implements IItemCategoryRepository {
 
   async update(
     id: string,
+    companyId: string,
     data: ItemCategoryUpdateData,
   ): Promise<ItemCategoryRecord> {
-    const category = await this.db.itemCategory.update({
-      where: { id },
+    const { count } = await this.db.itemCategory.updateMany({
+      where: { id, companyId },
       data,
     });
-    return toItemCategoryRecord(category);
+    if (count === 0) throw new NotFoundError("Item category");
+
+    const category = await this.db.itemCategory.findUnique({ where: { id } });
+    return toItemCategoryRecord(category!);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.db.itemCategory.delete({ where: { id } });
+  async delete(id: string, companyId: string): Promise<void> {
+    const { count } = await this.db.itemCategory.deleteMany({
+      where: { id, companyId },
+    });
+    if (count === 0) throw new NotFoundError("Item category");
   }
 
   async countByIds(ids: string[], companyId: string): Promise<number> {

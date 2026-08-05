@@ -28,7 +28,7 @@ export interface ItemRecord {
   readonly categoryId: string | null;
   readonly hsnSac: string | null;
   readonly description: string | null;
-  readonly image: string | null;
+  readonly image?: string | null;
   readonly unitPrimaryId: string;
   readonly unitSecondaryId: string | null;
   readonly unitConversionRate: number | null;

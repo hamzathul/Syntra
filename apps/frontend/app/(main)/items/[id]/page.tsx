@@ -1,15 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useItems } from "@/hooks/items/use-items-query";
+import { useItem } from "@/hooks/items/use-items-query";
 import { PageState } from "@/components/ui/page-state";
 import { ItemForm } from "@/components/items/item-form";
 
 export default function EditItemPage() {
   const params = useParams<{ id: string }>();
-  const { data: items, isLoading, error } = useItems();
-
-  const item = items?.find((i) => i.id === params.id);
+  const { data: item, isLoading, error } = useItem(params.id);
 
   return (
     <PageState
