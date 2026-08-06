@@ -23,6 +23,11 @@ enum DiscountType {
   PERCENTAGE
 }
 
+enum OpeningBalanceType {
+  TO_PAY
+  TO_RECEIVE
+}
+
 model Company {
   id               String   @id @default(cuid())
   name             String
@@ -49,6 +54,7 @@ model Company {
   units     Unit[]
   categories ItemCategory[]
   items     Item[]
+  parties   Party[]
 }
 
 model CompanySettings {
@@ -185,5 +191,25 @@ model Item {
   @@unique([companyId, name])
   @@unique([companyId, itemCode])
   @@unique([companyId, barcode])
+  @@index([companyId])
+}
+
+model Party {
+  id                   String             @id @default(cuid())
+  companyId            String
+  name                 String
+  contactNumber        String?
+  openingBalanceAmount Decimal?           @db.Decimal(15, 4)
+  openingBalanceType   OpeningBalanceType?
+  openingBalanceDate   DateTime?
+  creditLimit          Decimal?           @db.Decimal(15, 4)
+  billingAddress       String?
+  email                String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, name])
   @@index([companyId])
 }

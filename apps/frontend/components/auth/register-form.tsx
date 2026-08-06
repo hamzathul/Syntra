@@ -1,5 +1,8 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,18 +10,32 @@ import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { useAuth } from "@/lib/auth-context";
 
+const registerFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name too long"),
+  email: z.string().min(1, "Email is required").email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type RegisterFormValues = z.infer<typeof registerFormSchema>;
+
 export function RegisterForm() {
-  const { register, isRegistering } = useAuth();
+  const { register: registerAuth, isRegistering } = useAuth();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
 
+  const onSubmit = async (values: RegisterFormValues) => {
     try {
-      await register({ name, email, password });
+      await registerAuth(values);
       toast.success("Account created! Let's set up your company.");
       window.location.href = "/onboarding";
     } catch (error) {
@@ -27,21 +44,22 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="name" className="text-sm font-medium">
           Full name
         </Label>
         <Input
           id="name"
-          name="name"
           type="text"
           placeholder="Jane Smith"
-          required
           autoComplete="name"
-          minLength={2}
           className="rounded-xl h-10"
+          {...register("name")}
         />
+        {errors.name && (
+          <p className="text-xs text-destructive mt-1">{errors.name.message}</p>
+        )}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-sm font-medium">
@@ -49,13 +67,17 @@ export function RegisterForm() {
         </Label>
         <Input
           id="email"
-          name="email"
           type="email"
           placeholder="you@example.com"
-          required
           autoComplete="email"
           className="rounded-xl h-10"
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-xs text-destructive mt-1">
+            {errors.email.message}
+          </p>
+        )}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="password" className="text-sm font-medium">
@@ -63,14 +85,17 @@ export function RegisterForm() {
         </Label>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="••••••••"
-          required
           autoComplete="new-password"
-          minLength={8}
           className="rounded-xl h-10"
+          {...register("password")}
         />
+        {errors.password && (
+          <p className="text-xs text-destructive mt-1">
+            {errors.password.message}
+          </p>
+        )}
       </div>
       <Button
         type="submit"
