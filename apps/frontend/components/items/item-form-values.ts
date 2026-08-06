@@ -138,8 +138,8 @@ export function itemFormValuesFromDto(item: ItemDto): ItemFormValues {
 }
 
 const optStr = (v: string) => (v.trim() === "" ? undefined : v.trim());
-const optNum = (v: string) => (v.trim() === "" ? undefined : parseFloat(v));
-const numOrNull = (v: string) => (v.trim() === "" ? null : parseFloat(v));
+const optNum = (v: string) => (v.trim() === "" ? undefined : Number(v));
+const numOrNull = (v: string) => (v.trim() === "" ? null : Number(v));
 const strOrNull = (v: string) => (v.trim() === "" ? null : v.trim());
 const dateOrNull = (v: string) => (v === "" ? null : v);
 
@@ -188,7 +188,7 @@ export function toUpdateItemPayload(values: ItemFormValues): UpdateItemDto {
     unitPrimaryId: values.unitPrimaryId,
   };
 
-  const nullable: Array<[string, unknown]> = [
+  const nullable: Array<[keyof UpdateItemDto, unknown]> = [
     ["itemCode", strOrNull(values.itemCode)],
     ["barcode", strOrNull(values.barcode)],
     ["categoryId", strOrNull(values.categoryId)],

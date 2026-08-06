@@ -36,7 +36,7 @@ import { toast } from "sonner";
 
 const taxGroupFormSchema = z.object({
   name: z.string().trim().min(1, "Group name is required").max(100),
-  rateIds: z.array(z.string()),
+  rateIds: z.array(z.string()).min(1, "Select at least one tax rate"),
 });
 
 type TaxGroupFormValues = z.infer<typeof taxGroupFormSchema>;
@@ -103,11 +103,6 @@ export function TaxGroupsTab() {
 
   const handleSave = useCallback(
     async (values: TaxGroupFormValues) => {
-      if (values.rateIds.length === 0) {
-        toast.error("Select at least one tax rate");
-        return;
-      }
-
       try {
         if (editingGroup) {
           await updateMutation.mutateAsync({
@@ -282,6 +277,11 @@ export function TaxGroupsTab() {
                   %
                 </p>
               )}
+              {errors.rateIds && (
+                <p className="text-xs text-destructive">
+                  {errors.rateIds.message}
+                </p>
+              )}
             </div>
 
             <DialogFooter>
@@ -290,7 +290,7 @@ export function TaxGroupsTab() {
               </Button>
               <Button
                 type="submit"
-                disabled={!groupName.trim() || rateIds.length === 0}
+                disabled={!groupName.trim()}
               >
                 {editingGroup ? "Update" : "Create"}
               </Button>

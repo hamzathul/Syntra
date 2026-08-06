@@ -13,6 +13,7 @@ import { useCompany } from "@/lib/company-context";
 const companyFormSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(2, "Company name must be at least 2 characters")
     .max(100, "Company name too long"),
 });
@@ -25,7 +26,7 @@ export function CompanyForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CompanyFormValues>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: { name: "" },
@@ -51,6 +52,8 @@ export function CompanyForm() {
           id="name"
           type="text"
           placeholder="Acme Corp"
+          aria-required="true"
+          aria-invalid={!!errors.name}
           className="rounded-xl h-10"
           {...register("name")}
         />
@@ -60,6 +63,7 @@ export function CompanyForm() {
       </div>
       <Button
         type="submit"
+        disabled={isSubmitting}
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
       >
         Create company

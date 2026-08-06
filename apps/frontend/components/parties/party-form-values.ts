@@ -11,10 +11,13 @@ const money = (label: string) =>
     .refine(
       (v) => {
         if (v.trim() === "") return true;
+        const [int = "", frac] = v.trim().split(".");
+        if (int.length > 11) return false;
+        if (frac !== undefined && frac.length > 4) return false;
         const n = Number(v);
-        return Number.isFinite(n) && n >= 0 && n <= 999_999_999_999;
+        return Number.isFinite(n) && n >= 0;
       },
-      `${label} must be a valid non-negative amount`,
+      `${label} must be a valid non-negative amount (max 11 integer digits, 4 decimal places)`,
     );
 
 export const partyFormSchema = z.object({

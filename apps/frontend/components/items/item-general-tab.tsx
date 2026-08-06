@@ -49,7 +49,7 @@ export function ItemGeneralTab({
   const handleAssignCode = async () => {
     try {
       const { code } = await codeMutation.mutateAsync();
-      setValue("itemCode", code);
+      setValue("itemCode", code, { shouldDirty: true, shouldValidate: true });
       toast.success("Item code generated");
     } catch (err) {
       toast.error(getApiErrorMessage(err));
@@ -59,7 +59,7 @@ export function ItemGeneralTab({
   const handleAssignBarcode = async () => {
     try {
       const { barcode } = await barcodeMutation.mutateAsync();
-      setValue("barcode", barcode);
+      setValue("barcode", barcode, { shouldDirty: true, shouldValidate: true });
       toast.success("Barcode generated");
     } catch (err) {
       toast.error(getApiErrorMessage(err));
@@ -196,6 +196,9 @@ export function ItemGeneralTab({
             placeholder="e.g. 1006"
             {...register("hsnSac")}
           />
+          {errors.hsnSac && (
+            <p className="text-xs text-destructive mt-1">{errors.hsnSac.message}</p>
+          )}
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="item-location" className="text-sm font-medium">
@@ -206,6 +209,9 @@ export function ItemGeneralTab({
             placeholder="e.g. Warehouse A - Rack 3"
             {...register("location")}
           />
+          {errors.location && (
+            <p className="text-xs text-destructive mt-1">{errors.location.message}</p>
+          )}
         </div>
       </div>
 
@@ -225,7 +231,9 @@ export function ItemGeneralTab({
         <Label className="text-sm font-medium">Item Image</Label>
         <ItemImageUpload
           value={image}
-          onChange={(img) => setValue("image", img)}
+          onChange={(img) =>
+            setValue("image", img, { shouldDirty: true, shouldValidate: true })
+          }
         />
       </div>
 
@@ -291,7 +299,10 @@ export function ItemGeneralTab({
                   onValueChange={(v) => {
                     if (v === "__none__") {
                       field.onChange("");
-                      setValue("unitConversionRate", "");
+                      setValue("unitConversionRate", "", {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
                     } else {
                       field.onChange(v);
                     }
@@ -338,9 +349,15 @@ export function ItemGeneralTab({
         onOpenChange={setUnitManagerOpen}
         onSelect={(unit) => {
           if (!unitPrimaryId) {
-            setValue("unitPrimaryId", unit.id);
+            setValue("unitPrimaryId", unit.id, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
           } else if (!unitSecondaryId || unitSecondaryId === unit.id) {
-            setValue("unitSecondaryId", unit.id);
+            setValue("unitSecondaryId", unit.id, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
           }
         }}
       />
@@ -348,7 +365,12 @@ export function ItemGeneralTab({
       <CategoryManagerDialog
         open={categoryManagerOpen}
         onOpenChange={setCategoryManagerOpen}
-        onSelect={(category) => setValue("categoryId", category.id)}
+        onSelect={(category) =>
+          setValue("categoryId", category.id, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        }
       />
     </div>
   );

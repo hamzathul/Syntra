@@ -88,6 +88,7 @@ function TaxRateEditRow({
       <div className="grid gap-1 flex-1">
         <Input
           placeholder="Name"
+          aria-label="Tax rate name"
           {...register("name")}
           className="h-8"
           aria-invalid={!!errors.name}
@@ -102,6 +103,7 @@ function TaxRateEditRow({
           step="0.01"
           min="0"
           placeholder="Rate"
+          aria-label="Tax rate percentage"
           {...register("rate")}
           className="h-8"
           aria-invalid={!!errors.rate}
@@ -111,7 +113,12 @@ function TaxRateEditRow({
         )}
       </div>
       <div className="flex gap-1">
-        <Button type="submit" size="icon" variant="ghost">
+        <Button
+          type="submit"
+          size="icon"
+          variant="ghost"
+          disabled={updateMutation.isPending}
+        >
           <CheckIcon className="h-4 w-4 text-green-600" />
         </Button>
         <Button size="icon" variant="ghost" type="button" onClick={onCancel}>

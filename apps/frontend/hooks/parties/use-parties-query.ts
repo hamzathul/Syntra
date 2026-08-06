@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { partiesService } from "@/lib/api/services/parties/parties.service";
 import {
+  createGetDetailQueryHook,
   createGetQueryHook,
   createMutationHook,
   createUpdateMutationHook,
@@ -14,12 +14,10 @@ export const useParties = createGetQueryHook(
   partiesService.parties.list,
 );
 
-export const useParty = (id: string) =>
-  useQuery({
-    queryKey: partyKeys.detail(id),
-    queryFn: () => partiesService.parties.get(id),
-    staleTime: 60_000,
-  });
+export const useParty = createGetDetailQueryHook(
+  (id: string) => partyKeys.detail(id),
+  (id: string) => partiesService.parties.get(id),
+);
 
 export const useCreatePartyMutation = createMutationHook(
   partyKeys.list,

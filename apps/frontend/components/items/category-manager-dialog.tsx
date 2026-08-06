@@ -123,12 +123,6 @@ export function CategoryManagerDialog({
                 id="category-name"
                 placeholder="e.g. Grains"
                 {...register("name")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSubmit(handleCreate)();
-                  }
-                }}
               />
               {errors.name && (
                 <p className="text-xs text-destructive mt-1">

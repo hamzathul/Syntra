@@ -15,7 +15,7 @@ const registerFormSchema = z.object({
     .string()
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name too long"),
-  email: z.string().min(1, "Email is required").email("Invalid email"),
+  email: z.email("Invalid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -54,6 +54,8 @@ export function RegisterForm() {
           type="text"
           placeholder="Jane Smith"
           autoComplete="name"
+          aria-required="true"
+          aria-invalid={!!errors.name}
           className="rounded-xl h-10"
           {...register("name")}
         />
@@ -70,6 +72,8 @@ export function RegisterForm() {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
+          aria-required="true"
+          aria-invalid={!!errors.email}
           className="rounded-xl h-10"
           {...register("email")}
         />
@@ -88,6 +92,8 @@ export function RegisterForm() {
           type="password"
           placeholder="••••••••"
           autoComplete="new-password"
+          aria-required="true"
+          aria-invalid={!!errors.password}
           className="rounded-xl h-10"
           {...register("password")}
         />

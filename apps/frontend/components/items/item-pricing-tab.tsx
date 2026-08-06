@@ -14,6 +14,12 @@ interface ItemPricingTabProps {
   errors: FieldErrors<ItemFormValues>;
 }
 
+type PriceField =
+  | "salePriceExclTax"
+  | "salePriceInclTax"
+  | "purchasePriceExclTax"
+  | "purchasePriceInclTax";
+
 function PriceInput({
   id,
   label,
@@ -27,7 +33,7 @@ function PriceInput({
   error?: string;
   placeholder?: string;
   register: UseFormRegister<ItemFormValues>;
-  name: keyof ItemFormValues;
+  name: PriceField;
 }) {
   return (
     <div className="grid gap-1.5">
@@ -49,7 +55,6 @@ function PriceInput({
 
 export function ItemPricingTab({ register, control, errors }: ItemPricingTabProps) {
   const saleDiscountType = useWatch({ control, name: "saleDiscountType" });
-  const saleDiscountValue = useWatch({ control, name: "saleDiscountValue" });
 
   return (
     <div className="space-y-6">
@@ -131,17 +136,6 @@ export function ItemPricingTab({ register, control, errors }: ItemPricingTabProp
             )}
           </div>
         </div>
-
-        {saleDiscountType !== "" && saleDiscountValue.trim() === "" && (
-          <p className="text-xs text-destructive">
-            Both discount type and value are required together.
-          </p>
-        )}
-        {saleDiscountType === "" && saleDiscountValue.trim() !== "" && (
-          <p className="text-xs text-destructive">
-            Select a discount type to use the entered discount value.
-          </p>
-        )}
       </section>
 
       <Separator />

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import type { FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Loader2Icon,
@@ -26,6 +27,7 @@ import {
   useDeletePartyMutation,
 } from "@/hooks/parties/use-parties-query";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   partyFormDefaultValues,
@@ -111,14 +113,23 @@ export function PartyForm({ party }: PartyFormProps) {
   }, [party, deleteMutation, router]);
 
   const tabClass = (tab: Tab) =>
-    `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
+    cn(
+      "px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors",
       activeTab === tab
         ? "border-primary text-primary"
-        : "border-transparent text-muted-foreground hover:text-foreground"
-    }`;
+        : "border-transparent text-muted-foreground hover:text-foreground",
+    );
+
+  const handleInvalid = useCallback((errs: FieldErrors<PartyFormValues>) => {
+    if (errs.billingAddress || errs.email) {
+      setActiveTab("address");
+    } else {
+      setActiveTab("general");
+    }
+  }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, handleInvalid)} className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex gap-0 border-b">
           {TABS.map((tab) => (

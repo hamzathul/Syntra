@@ -5,16 +5,21 @@ export type OpeningBalanceType = (typeof openingBalanceTypes)[number];
 
 const trimmedString = z.string().trim();
 
+const MAX_AMOUNT = 99_999_999_999.99;
+
 const amount = (label: string) =>
   z
     .number()
     .nonnegative(`${label} must be non-negative`)
-    .max(999_999_999_999, `${label} is too large`)
+    .max(MAX_AMOUNT, `${label} must be at most 11 integer digits`)
     .multipleOf(0.0001, `${label} must have at most 4 decimal places`);
 
-const dateString = z
-  .string()
-  .refine((v) => !Number.isNaN(Date.parse(v)), "Invalid date");
+const dateString = z.iso.date("Invalid date");
+
+export const listPartiesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  cursor: z.string().min(1).optional(),
+});
 
 export const createPartySchema = z.object({
   name: trimmedString.min(1, "Party name is required").max(200),

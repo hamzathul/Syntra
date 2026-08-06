@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { validateRequest } from "backend-p";
 import { z } from "zod";
-import { createPartySchema, updatePartySchema } from "shared";
+import {
+  createPartySchema,
+  listPartiesQuerySchema,
+  updatePartySchema,
+} from "shared";
 import type { PartiesController } from "./parties.controller";
 
 const paramsWithId = z.object({ id: z.string().min(1) });
@@ -9,7 +13,11 @@ const paramsWithId = z.object({ id: z.string().min(1) });
 export function createPartiesRouter(controller: PartiesController): Router {
   const router = Router();
 
-  router.get("/", controller.listParties);
+  router.get(
+    "/",
+    validateRequest({ query: listPartiesQuerySchema }),
+    controller.listParties,
+  );
   router.post(
     "/",
     validateRequest({ body: createPartySchema }),

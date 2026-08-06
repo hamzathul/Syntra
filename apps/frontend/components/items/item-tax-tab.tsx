@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import type { Control, UseFormSetValue } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
@@ -30,11 +31,9 @@ export function ItemTaxTab({ control, setValue }: ItemTaxTabProps) {
   const taxRateId = useWatch({ control, name: "taxRateId" });
   const taxGroupId = useWatch({ control, name: "taxGroupId" });
 
-  const mode: "none" | "rate" | "group" = taxGroupId
-    ? "group"
-    : taxRateId
-      ? "rate"
-      : "none";
+  const [mode, setMode] = useState<"none" | "rate" | "group">(() =>
+    taxGroupId ? "group" : taxRateId ? "rate" : "none",
+  );
 
   const selectedGroup = groups?.find((g) => g.id === taxGroupId);
 
@@ -63,8 +62,28 @@ export function ItemTaxTab({ control, setValue }: ItemTaxTabProps) {
           <Select
             value={mode}
             onValueChange={(next) => {
-              if (next === "rate") setValue("taxGroupId", "");
-              if (next === "group") setValue("taxRateId", "");
+              const nextMode = next as "none" | "rate" | "group";
+              setMode(nextMode);
+              if (nextMode === "rate") {
+                setValue("taxGroupId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              } else if (nextMode === "group") {
+                setValue("taxRateId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              } else {
+                setValue("taxRateId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setValue("taxGroupId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
             }}
           >
             <SelectTrigger id="tax-mode">

@@ -128,12 +128,6 @@ export function UnitManagerDialog({
                 id="unit-name"
                 placeholder="e.g. Kilogram"
                 {...register("name")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSubmit(handleCreate)();
-                  }
-                }}
               />
               {errors.name && (
                 <p className="text-xs text-destructive mt-1">
@@ -150,12 +144,6 @@ export function UnitManagerDialog({
                 placeholder="kg"
                 maxLength={10}
                 {...register("shortName")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSubmit(handleCreate)();
-                  }
-                }}
               />
             </div>
             <div className="flex gap-1">

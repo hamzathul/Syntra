@@ -13,7 +13,7 @@ import { useCompanies } from "@/hooks/companies/use-companies-query";
 import { useAuth } from "@/lib/auth-context";
 
 const loginFormSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email"),
+  email: z.email("Invalid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -62,6 +62,8 @@ export function LoginForm() {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
+          aria-required="true"
+          aria-invalid={!!errors.email}
           className="rounded-xl h-10"
           {...register("email")}
         />
@@ -78,6 +80,8 @@ export function LoginForm() {
           type="password"
           placeholder="••••••••"
           autoComplete="current-password"
+          aria-required="true"
+          aria-invalid={!!errors.password}
           className="rounded-xl h-10"
           {...register("password")}
         />

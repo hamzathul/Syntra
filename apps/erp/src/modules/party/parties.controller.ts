@@ -12,7 +12,8 @@ export class PartiesController extends BaseController {
 
   readonly listParties: RequestHandler = this.asyncHandler(async (req, res) => {
     const companyId = getCompanyId(res.locals);
-    const limit = req.query["limit"] ? Math.min(Number(req.query["limit"]), 100) : undefined;
+    const limit =
+      req.query["limit"] === undefined ? undefined : Number(req.query["limit"]);
     const cursor = typeof req.query["cursor"] === "string" ? req.query["cursor"] : undefined;
     const result = await this.partyService.list(companyId, { limit, cursor });
 

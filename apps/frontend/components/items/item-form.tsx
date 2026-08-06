@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import type { FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Loader2Icon,
@@ -49,6 +50,38 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: "stock", label: "Stock" },
 ];
 
+const TAB_FIELDS: Record<Tab, readonly (keyof ItemFormValues)[]> = {
+  general: [
+    "name",
+    "itemType",
+    "itemCode",
+    "barcode",
+    "categoryId",
+    "hsnSac",
+    "description",
+    "image",
+    "unitPrimaryId",
+    "unitSecondaryId",
+    "unitConversionRate",
+    "location",
+  ],
+  pricing: [
+    "salePriceExclTax",
+    "salePriceInclTax",
+    "saleDiscountType",
+    "saleDiscountValue",
+    "purchasePriceExclTax",
+    "purchasePriceInclTax",
+  ],
+  tax: ["taxRateId", "taxGroupId"],
+  stock: [
+    "openingStock",
+    "openingStockDate",
+    "openingStockValuePerUnit",
+    "minStockQuantity",
+  ],
+};
+
 interface ItemFormProps {
   item?: ItemDto;
 }
@@ -67,7 +100,6 @@ export function ItemForm({ item }: ItemFormProps) {
     control,
     setValue,
     reset,
-    watch,
     formState: { errors },
   } = useForm<ItemFormValues>({
     resolver: zodResolver(itemFormSchema),
@@ -81,9 +113,14 @@ export function ItemForm({ item }: ItemFormProps) {
     if (item) reset(itemFormValuesFromDto(item));
   }, [item, reset]);
 
-  const name = watch("name");
-  const unitPrimaryId = watch("unitPrimaryId");
-  const canSubmit = name.trim() !== "" && unitPrimaryId.trim() !== "";
+  const handleInvalid = useCallback((errs: FieldErrors<ItemFormValues>) => {
+    for (const tab of TABS) {
+      if (TAB_FIELDS[tab.id].some((field) => errs[field])) {
+        setActiveTab(tab.id);
+        return;
+      }
+    }
+  }, []);
 
   const onSubmit = useCallback(
     async (values: ItemFormValues) => {
@@ -126,7 +163,7 @@ export function ItemForm({ item }: ItemFormProps) {
     }`;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, handleInvalid)} className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex gap-0 border-b">
           {TABS.map((tab) => (
@@ -169,7 +206,7 @@ export function ItemForm({ item }: ItemFormProps) {
         <div className="flex gap-2">
           <Button
             type="submit"
-            disabled={!canSubmit || createMutation.isPending || updateMutation.isPending}
+            disabled={createMutation.isPending || updateMutation.isPending}
             className="gap-2"
           >
             {createMutation.isPending || updateMutation.isPending ? (
