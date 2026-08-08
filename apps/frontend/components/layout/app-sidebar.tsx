@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   BarChart3,
   ChevronLeft,
+  Landmark,
   LayoutDashboard,
   Package,
   PanelLeft,
@@ -29,6 +30,7 @@ const navItems = [
   { href: "/purchases", label: "Purchases", icon: ShoppingCart },
   { href: "/items", label: "Items", icon: Package },
   { href: "/parties", label: "Party", icon: Users },
+  { href: "/banks", label: "Bank", icon: Landmark },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

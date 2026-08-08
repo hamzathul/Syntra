@@ -55,6 +55,7 @@ model Company {
   categories ItemCategory[]
   items     Item[]
   parties   Party[]
+  banks     Bank[]
 }
 
 model CompanySettings {
@@ -207,6 +208,28 @@ model Party {
   email                String?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, name])
+  @@index([companyId])
+}
+
+model Bank {
+  id                 String   @id @default(cuid())
+  companyId          String
+  name               String
+  openingBalance     Decimal? @db.Decimal(15, 4)
+  openingBalanceDate DateTime?
+  printBankDetails   Boolean  @default(false)
+  accountHolderName  String?
+  accountNumber      String?
+  ifscCode           String?
+  branchName         String?
+  printUpiQr         Boolean  @default(false)
+  upiId              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
