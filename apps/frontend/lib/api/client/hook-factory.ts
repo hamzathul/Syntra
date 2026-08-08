@@ -10,6 +10,19 @@ export function createGetQueryHook<TResult>(
     useQuery({ queryKey: keyFactory(), queryFn, staleTime });
 }
 
+export function createGetDetailQueryHook<TParams, TResult>(
+  keyFactory: (params: TParams) => readonly unknown[],
+  queryFn: (params: TParams) => Promise<TResult>,
+  staleTime = 60_000,
+) {
+  return (params: TParams): UseQueryResult<TResult> =>
+    useQuery({
+      queryKey: keyFactory(params),
+      queryFn: () => queryFn(params),
+      staleTime,
+    });
+}
+
 export function createMutationHook<TVariables, TResult>(
   keyFactory: () => readonly unknown[],
   mutationFn: (variables: TVariables) => Promise<TResult>,

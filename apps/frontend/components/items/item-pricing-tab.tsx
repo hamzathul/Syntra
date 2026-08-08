@@ -1,26 +1,39 @@
 "use client";
 
+import { Controller, useWatch } from "react-hook-form";
+import type { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import type { ItemFormState } from "./item-form-state";
+import type { ItemFormValues } from "./item-form-values";
 
 interface ItemPricingTabProps {
-  state: ItemFormState;
-  patch: (partial: Partial<ItemFormState>) => void;
+  register: UseFormRegister<ItemFormValues>;
+  control: Control<ItemFormValues>;
+  errors: FieldErrors<ItemFormValues>;
 }
+
+type PriceField =
+  | "salePriceExclTax"
+  | "salePriceInclTax"
+  | "purchasePriceExclTax"
+  | "purchasePriceInclTax";
 
 function PriceInput({
   id,
   label,
-  value,
-  onChange,
+  error,
+  placeholder,
+  register,
+  name,
 }: {
   id: string;
   label: string;
-  value: string;
-  onChange: (value: string) => void;
+  error?: string;
+  placeholder?: string;
+  register: UseFormRegister<ItemFormValues>;
+  name: PriceField;
 }) {
   return (
     <div className="grid gap-1.5">
@@ -32,15 +45,17 @@ function PriceInput({
         type="number"
         step="0.0001"
         min="0"
-        placeholder="0.00"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder ?? "0.00"}
+        {...register(name)}
       />
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
     </div>
   );
 }
 
-export function ItemPricingTab({ state, patch }: ItemPricingTabProps) {
+export function ItemPricingTab({ register, control, errors }: ItemPricingTabProps) {
+  const saleDiscountType = useWatch({ control, name: "saleDiscountType" });
+
   return (
     <div className="space-y-6">
       <section className="space-y-4">
@@ -57,14 +72,16 @@ export function ItemPricingTab({ state, patch }: ItemPricingTabProps) {
           <PriceInput
             id="sale-excl"
             label="Sale Price (excl. tax)"
-            value={state.salePriceExclTax}
-            onChange={(v) => patch({ salePriceExclTax: v })}
+            error={errors.salePriceExclTax?.message}
+            register={register}
+            name="salePriceExclTax"
           />
           <PriceInput
             id="sale-incl"
             label="Sale Price (incl. tax)"
-            value={state.salePriceInclTax}
-            onChange={(v) => patch({ salePriceInclTax: v })}
+            error={errors.salePriceInclTax?.message}
+            register={register}
+            name="salePriceInclTax"
           />
         </div>
 
@@ -73,25 +90,32 @@ export function ItemPricingTab({ state, patch }: ItemPricingTabProps) {
             <Label htmlFor="discount-type" className="text-sm font-medium">
               Discount Type
             </Label>
-            <Select
-              value={state.saleDiscountType || "__none__"}
-              onValueChange={(v) =>
-                patch({
-                  saleDiscountType: (v === "__none__"
-                    ? ""
-                    : v) as ItemFormState["saleDiscountType"],
-                })
-              }
-            >
-              <SelectTrigger id="discount-type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
-                <SelectItem value="PERCENTAGE">Percentage (%)</SelectItem>
-                <SelectItem value="AMOUNT">Fixed Amount</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="saleDiscountType"
+              render={({ field }) => (
+                <Select
+                  value={field.value || "__none__"}
+                  onValueChange={(v) =>
+                    field.onChange(v === "__none__" ? "" : v)
+                  }
+                >
+                  <SelectTrigger id="discount-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    <SelectItem value="PERCENTAGE">Percentage (%)</SelectItem>
+                    <SelectItem value="AMOUNT">Fixed Amount</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.saleDiscountType && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.saleDiscountType.message}
+              </p>
+            )}
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="discount-value" className="text-sm font-medium">
@@ -102,25 +126,16 @@ export function ItemPricingTab({ state, patch }: ItemPricingTabProps) {
               type="number"
               step="0.0001"
               min="0"
-              placeholder={state.saleDiscountType === "PERCENTAGE" ? "10" : "0.00"}
-              value={state.saleDiscountValue}
-              onChange={(e) => patch({ saleDiscountValue: e.target.value })}
+              placeholder={saleDiscountType === "PERCENTAGE" ? "10" : "0.00"}
+              {...register("saleDiscountValue")}
             />
+            {errors.saleDiscountValue && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.saleDiscountValue.message}
+              </p>
+            )}
           </div>
         </div>
-
-        {state.saleDiscountType !== "" &&
-          state.saleDiscountValue.trim() === "" && (
-            <p className="text-xs text-destructive">
-              Both discount type and value are required together.
-            </p>
-          )}
-        {state.saleDiscountType === "" &&
-          state.saleDiscountValue.trim() !== "" && (
-            <p className="text-xs text-destructive">
-              Select a discount type to use the entered discount value.
-            </p>
-          )}
       </section>
 
       <Separator />
@@ -137,14 +152,16 @@ export function ItemPricingTab({ state, patch }: ItemPricingTabProps) {
           <PriceInput
             id="purchase-excl"
             label="Purchase Price (excl. tax)"
-            value={state.purchasePriceExclTax}
-            onChange={(v) => patch({ purchasePriceExclTax: v })}
+            error={errors.purchasePriceExclTax?.message}
+            register={register}
+            name="purchasePriceExclTax"
           />
           <PriceInput
             id="purchase-incl"
             label="Purchase Price (incl. tax)"
-            value={state.purchasePriceInclTax}
-            onChange={(v) => patch({ purchasePriceInclTax: v })}
+            error={errors.purchasePriceInclTax?.message}
+            register={register}
+            name="purchasePriceInclTax"
           />
         </div>
       </section>

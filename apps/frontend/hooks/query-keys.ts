@@ -29,8 +29,15 @@ export const itemKeys = {
   units: () => [...itemKeys.all, "units"] as const,
 };
 
+export const partyKeys = {
+  all: ["parties"] as const,
+  list: () => [...partyKeys.all, "list"] as const,
+  detail: (id: string) => [...partyKeys.all, "detail", id] as const,
+};
+
 export const companyScopedQueryKeys = [
   settingsKeys.all,
   taxKeys.all,
   itemKeys.all,
+  partyKeys.all,
 ] as const;

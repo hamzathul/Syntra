@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Trash2Icon,
   CheckIcon,
@@ -28,6 +31,12 @@ import {
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
+const categoryFormSchema = z.object({
+  name: z.string().trim().min(1, "Category name is required").max(100),
+});
+
+type CategoryFormValues = z.infer<typeof categoryFormSchema>;
+
 interface CategoryManagerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -43,21 +52,34 @@ export function CategoryManagerDialog({
   const createMutation = useCreateCategoryMutation();
   const deleteMutation = useDeleteCategoryMutation();
 
-  const [newName, setNewName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<CategoryFormValues>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: { name: "" },
+  });
+
+  const newName = watch("name");
   const [deleteTarget, setDeleteTarget] = useState<ItemCategoryDto | null>(null);
 
-  const resetForm = useCallback(() => setNewName(""), []);
+  const resetForm = useCallback(() => reset({ name: "" }), [reset]);
 
-  const handleCreate = useCallback(async () => {
-    if (!newName.trim()) return;
-    try {
-      await createMutation.mutateAsync({ name: newName.trim() });
-      toast.success("Category added");
-      resetForm();
-    } catch (err) {
-      toast.error(getApiErrorMessage(err));
-    }
-  }, [newName, createMutation, resetForm]);
+  const handleCreate = useCallback(
+    async (values: CategoryFormValues) => {
+      try {
+        await createMutation.mutateAsync({ name: values.name.trim() });
+        toast.success("Category added");
+        resetForm();
+      } catch (err) {
+        toast.error(getApiErrorMessage(err));
+      }
+    },
+    [createMutation, resetForm],
+  );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -89,7 +111,10 @@ export function CategoryManagerDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex items-end gap-2 p-3 rounded-lg border bg-muted/30">
+          <form
+            onSubmit={handleSubmit(handleCreate)}
+            className="flex items-end gap-2 p-3 rounded-lg border bg-muted/30"
+          >
             <div className="grid gap-1.5 flex-1">
               <Label htmlFor="category-name" className="text-xs">
                 Name
@@ -97,25 +122,28 @@ export function CategoryManagerDialog({
               <Input
                 id="category-name"
                 placeholder="e.g. Grains"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div className="flex gap-1">
               <Button
+                type="submit"
                 size="icon"
                 variant="ghost"
-                onClick={handleCreate}
                 disabled={!newName.trim() || createMutation.isPending}
               >
                 <CheckIcon className="h-4 w-4 text-green-600" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={resetForm}>
+              <Button size="icon" variant="ghost" type="button" onClick={resetForm}>
                 <XIcon className="h-4 w-4" />
               </Button>
             </div>
-          </div>
+          </form>
 
           <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
             {categories && categories.length > 0 ? (

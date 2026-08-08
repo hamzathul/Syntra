@@ -1,15 +1,16 @@
 "use client";
 
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { ItemFormState } from "./item-form-state";
+import type { ItemFormValues } from "./item-form-values";
 
 interface ItemStockTabProps {
-  state: ItemFormState;
-  patch: (partial: Partial<ItemFormState>) => void;
+  register: UseFormRegister<ItemFormValues>;
+  errors: FieldErrors<ItemFormValues>;
 }
 
-export function ItemStockTab({ state, patch }: ItemStockTabProps) {
+export function ItemStockTab({ register, errors }: ItemStockTabProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -30,9 +31,13 @@ export function ItemStockTab({ state, patch }: ItemStockTabProps) {
             step="0.0001"
             min="0"
             placeholder="0"
-            value={state.openingStock}
-            onChange={(e) => patch({ openingStock: e.target.value })}
+            {...register("openingStock")}
           />
+          {errors.openingStock && (
+            <p className="text-xs text-destructive mt-1">
+              {errors.openingStock.message}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-1.5">
@@ -42,8 +47,7 @@ export function ItemStockTab({ state, patch }: ItemStockTabProps) {
           <Input
             id="opening-stock-date"
             type="date"
-            value={state.openingStockDate}
-            onChange={(e) => patch({ openingStockDate: e.target.value })}
+            {...register("openingStockDate")}
           />
         </div>
       </div>
@@ -62,9 +66,13 @@ export function ItemStockTab({ state, patch }: ItemStockTabProps) {
             step="0.0001"
             min="0"
             placeholder="0.00"
-            value={state.openingStockValuePerUnit}
-            onChange={(e) => patch({ openingStockValuePerUnit: e.target.value })}
+            {...register("openingStockValuePerUnit")}
           />
+          {errors.openingStockValuePerUnit && (
+            <p className="text-xs text-destructive mt-1">
+              {errors.openingStockValuePerUnit.message}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-1.5">
@@ -77,9 +85,13 @@ export function ItemStockTab({ state, patch }: ItemStockTabProps) {
             step="0.0001"
             min="0"
             placeholder="0"
-            value={state.minStockQuantity}
-            onChange={(e) => patch({ minStockQuantity: e.target.value })}
+            {...register("minStockQuantity")}
           />
+          {errors.minStockQuantity && (
+            <p className="text-xs text-destructive mt-1">
+              {errors.minStockQuantity.message}
+            </p>
+          )}
         </div>
       </div>
     </div>

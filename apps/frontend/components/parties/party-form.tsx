@@ -11,7 +11,7 @@ import {
   Trash2Icon,
   AlertTriangleIcon,
 } from "lucide-react";
-import type { ItemDto } from "shared";
+import type { PartyDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -22,145 +22,111 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  useCreateItemMutation,
-  useUpdateItemMutation,
-  useDeleteItemMutation,
-} from "@/hooks/items/use-items-query";
+  useCreatePartyMutation,
+  useUpdatePartyMutation,
+  useDeletePartyMutation,
+} from "@/hooks/parties/use-parties-query";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
-  emptyItemFormValues,
-  itemFormSchema,
-  itemFormValuesFromDto,
-  toCreateItemPayload,
-  toUpdateItemPayload,
-  type ItemFormValues,
-} from "./item-form-values";
-import { ItemGeneralTab } from "./item-general-tab";
-import { ItemPricingTab } from "./item-pricing-tab";
-import { ItemTaxTab } from "./item-tax-tab";
-import { ItemStockTab } from "./item-stock-tab";
+  partyFormDefaultValues,
+  partyFormSchema,
+  partyFormValuesFromDto,
+  toCreatePartyPayload,
+  toUpdatePartyPayload,
+  type PartyFormValues,
+} from "./party-form-values";
+import { PartyGeneralTab } from "./party-general-tab";
+import { PartyAddressTab } from "./party-address-tab";
 
-type Tab = "general" | "pricing" | "tax" | "stock";
+type Tab = "general" | "address";
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: "general", label: "General" },
-  { id: "pricing", label: "Sale & Purchase" },
-  { id: "tax", label: "Tax" },
-  { id: "stock", label: "Stock" },
+  { id: "address", label: "Address" },
 ];
 
-const TAB_FIELDS: Record<Tab, readonly (keyof ItemFormValues)[]> = {
-  general: [
-    "name",
-    "itemType",
-    "itemCode",
-    "barcode",
-    "categoryId",
-    "hsnSac",
-    "description",
-    "image",
-    "unitPrimaryId",
-    "unitSecondaryId",
-    "unitConversionRate",
-    "location",
-  ],
-  pricing: [
-    "salePriceExclTax",
-    "salePriceInclTax",
-    "saleDiscountType",
-    "saleDiscountValue",
-    "purchasePriceExclTax",
-    "purchasePriceInclTax",
-  ],
-  tax: ["taxRateId", "taxGroupId"],
-  stock: [
-    "openingStock",
-    "openingStockDate",
-    "openingStockValuePerUnit",
-    "minStockQuantity",
-  ],
-};
-
-interface ItemFormProps {
-  item?: ItemDto;
+interface PartyFormProps {
+  party?: PartyDto;
 }
 
-export function ItemForm({ item }: ItemFormProps) {
+export function PartyForm({ party }: PartyFormProps) {
   const router = useRouter();
-  const isEdit = Boolean(item);
+  const isEdit = Boolean(party);
 
-  const createMutation = useCreateItemMutation();
-  const updateMutation = useUpdateItemMutation();
-  const deleteMutation = useDeleteItemMutation();
+  const createMutation = useCreatePartyMutation();
+  const updateMutation = useUpdatePartyMutation();
+  const deleteMutation = useDeletePartyMutation();
 
   const {
     register,
     handleSubmit,
     control,
-    setValue,
     reset,
     formState: { errors },
-  } = useForm<ItemFormValues>({
-    resolver: zodResolver(itemFormSchema),
-    defaultValues: item ? itemFormValuesFromDto(item) : emptyItemFormValues(),
+  } = useForm<PartyFormValues>({
+    resolver: zodResolver(partyFormSchema),
+    defaultValues: party
+      ? partyFormValuesFromDto(party)
+      : partyFormDefaultValues(),
   });
 
   const [activeTab, setActiveTab] = useState<Tab>("general");
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
-    if (item) reset(itemFormValuesFromDto(item));
-  }, [item, reset]);
-
-  const handleInvalid = useCallback((errs: FieldErrors<ItemFormValues>) => {
-    for (const tab of TABS) {
-      if (TAB_FIELDS[tab.id].some((field) => errs[field])) {
-        setActiveTab(tab.id);
-        return;
-      }
-    }
-  }, []);
+    if (party) reset(partyFormValuesFromDto(party));
+  }, [party, reset]);
 
   const onSubmit = useCallback(
-    async (values: ItemFormValues) => {
+    async (values: PartyFormValues) => {
       try {
-        if (isEdit && item) {
+        if (isEdit && party) {
           await updateMutation.mutateAsync({
-            id: item.id,
-            dto: toUpdateItemPayload(values),
+            id: party.id,
+            dto: toUpdatePartyPayload(values),
           });
-          toast.success("Item updated");
+          toast.success("Party updated");
         } else {
-          await createMutation.mutateAsync(toCreateItemPayload(values));
-          toast.success("Item created");
+          await createMutation.mutateAsync(toCreatePartyPayload(values));
+          toast.success("Party created");
         }
-        router.push("/items");
+        router.push("/parties");
       } catch (err) {
         toast.error(getApiErrorMessage(err));
       }
     },
-    [isEdit, item, updateMutation, createMutation, router],
+    [isEdit, party, updateMutation, createMutation, router],
   );
 
   const handleDelete = useCallback(async () => {
-    if (!item) return;
+    if (!party) return;
     try {
-      await deleteMutation.mutateAsync(item.id);
-      toast.success("Item deleted");
-      router.push("/items");
+      await deleteMutation.mutateAsync(party.id);
+      toast.success("Party deleted");
+      router.push("/parties");
     } catch (err) {
       toast.error(getApiErrorMessage(err));
       setDeleteOpen(false);
     }
-  }, [item, deleteMutation, router]);
+  }, [party, deleteMutation, router]);
 
   const tabClass = (tab: Tab) =>
-    `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
+    cn(
+      "px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors",
       activeTab === tab
         ? "border-primary text-primary"
-        : "border-transparent text-muted-foreground hover:text-foreground"
-    }`;
+        : "border-transparent text-muted-foreground hover:text-foreground",
+    );
+
+  const handleInvalid = useCallback((errs: FieldErrors<PartyFormValues>) => {
+    if (errs.billingAddress || errs.email) {
+      setActiveTab("address");
+    } else {
+      setActiveTab("general");
+    }
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(onSubmit, handleInvalid)} className="space-y-6">
@@ -184,20 +150,11 @@ export function ItemForm({ item }: ItemFormProps) {
 
       <div className="max-w-3xl">
         {activeTab === "general" && (
-          <ItemGeneralTab
-            register={register}
-            control={control}
-            setValue={setValue}
-            errors={errors}
-          />
+          <PartyGeneralTab register={register} control={control} errors={errors} />
         )}
-        {activeTab === "pricing" && (
-          <ItemPricingTab register={register} control={control} errors={errors} />
+        {activeTab === "address" && (
+          <PartyAddressTab register={register} errors={errors} />
         )}
-        {activeTab === "tax" && (
-          <ItemTaxTab control={control} setValue={setValue} />
-        )}
-        {activeTab === "stock" && <ItemStockTab register={register} errors={errors} />}
       </div>
 
       <Separator />
@@ -214,14 +171,14 @@ export function ItemForm({ item }: ItemFormProps) {
             ) : (
               <SaveIcon className="h-4 w-4" />
             )}
-            {isEdit ? "Save Changes" : "Create Item"}
+            {isEdit ? "Save Changes" : "Create Party"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.push("/items")}>
+          <Button type="button" variant="outline" onClick={() => router.push("/parties")}>
             Cancel
           </Button>
         </div>
 
-        {isEdit && item && (
+        {isEdit && party && (
           <Button
             type="button"
             variant="destructive"
@@ -242,10 +199,10 @@ export function ItemForm({ item }: ItemFormProps) {
                 <AlertTriangleIcon className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <DialogTitle>Delete Item</DialogTitle>
+                <DialogTitle>Delete Party</DialogTitle>
                 <DialogDescription>
                   Are you sure you want to delete{" "}
-                  <span className="font-medium text-foreground">{item?.name}</span>
+                  <span className="font-medium text-foreground">{party?.name}</span>
                   ?
                 </DialogDescription>
               </div>

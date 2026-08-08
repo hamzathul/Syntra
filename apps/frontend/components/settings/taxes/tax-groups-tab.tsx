@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   PlusIcon,
   PencilIcon,
@@ -31,6 +34,13 @@ import {
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
+const taxGroupFormSchema = z.object({
+  name: z.string().trim().min(1, "Group name is required").max(100),
+  rateIds: z.array(z.string()).min(1, "Select at least one tax rate"),
+});
+
+type TaxGroupFormValues = z.infer<typeof taxGroupFormSchema>;
+
 export function TaxGroupsTab() {
   const { data: groups, isLoading: groupsLoading, error } = useTaxGroups();
   const { data: rates, error: ratesError } = useTaxRates();
@@ -40,79 +50,80 @@ export function TaxGroupsTab() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<TaxGroupDto | null>(null);
-  const [groupName, setGroupName] = useState("");
-  const [selectedRateIds, setSelectedRateIds] = useState<Set<string>>(
-    new Set(),
-  );
   const [deleteTarget, setDeleteTarget] = useState<TaxGroupDto | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<TaxGroupFormValues>({
+    resolver: zodResolver(taxGroupFormSchema),
+    defaultValues: { name: "", rateIds: [] },
+  });
+
+  const groupName = watch("name");
+  const rateIds = watch("rateIds");
 
   const openAddDialog = useCallback(() => {
     setEditingGroup(null);
-    setGroupName("");
-    setSelectedRateIds(new Set());
+    reset({ name: "", rateIds: [] });
     setDialogOpen(true);
-  }, []);
+  }, [reset]);
 
-  const openEditDialog = useCallback((group: TaxGroupDto) => {
-    setEditingGroup(group);
-    setGroupName(group.name);
-    setSelectedRateIds(new Set(group.rates.map((r) => r.id)));
-    setDialogOpen(true);
-  }, []);
+  const openEditDialog = useCallback(
+    (group: TaxGroupDto) => {
+      setEditingGroup(group);
+      reset({ name: group.name, rateIds: group.rates.map((r) => r.id) });
+      setDialogOpen(true);
+    },
+    [reset],
+  );
 
   const closeDialog = useCallback(() => {
     setDialogOpen(false);
     setEditingGroup(null);
-    setGroupName("");
-    setSelectedRateIds(new Set());
-  }, []);
+    reset({ name: "", rateIds: [] });
+  }, [reset]);
 
-  const toggleRateId = useCallback((rateId: string) => {
-    setSelectedRateIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(rateId)) {
-        next.delete(rateId);
-      } else {
-        next.add(rateId);
+  const toggleRateId = useCallback(
+    (rateId: string) => {
+      setValue(
+        "rateIds",
+        rateIds.includes(rateId)
+          ? rateIds.filter((id) => id !== rateId)
+          : [...rateIds, rateId],
+        { shouldDirty: true },
+      );
+    },
+    [rateIds, setValue],
+  );
+
+  const handleSave = useCallback(
+    async (values: TaxGroupFormValues) => {
+      try {
+        if (editingGroup) {
+          await updateMutation.mutateAsync({
+            id: editingGroup.id,
+            dto: { name: values.name.trim(), taxRateIds: values.rateIds },
+          });
+          toast.success("Tax group updated");
+        } else {
+          await createMutation.mutateAsync({
+            name: values.name.trim(),
+            taxRateIds: values.rateIds,
+          });
+          toast.success("Tax group created");
+        }
+        closeDialog();
+      } catch (err: unknown) {
+        toast.error(getApiErrorMessage(err));
       }
-      return next;
-    });
-  }, []);
-
-  const handleSave = useCallback(async () => {
-    if (!groupName.trim()) return;
-    const rateIds = Array.from(selectedRateIds);
-    if (rateIds.length === 0) {
-      toast.error("Select at least one tax rate");
-      return;
-    }
-
-    try {
-      if (editingGroup) {
-        await updateMutation.mutateAsync({
-          id: editingGroup.id,
-          dto: { name: groupName.trim(), taxRateIds: rateIds },
-        });
-        toast.success("Tax group updated");
-      } else {
-        await createMutation.mutateAsync({
-          name: groupName.trim(),
-          taxRateIds: rateIds,
-        });
-        toast.success("Tax group created");
-      }
-      closeDialog();
-    } catch (err: unknown) {
-      toast.error(getApiErrorMessage(err));
-    }
-  }, [
-    groupName,
-    selectedRateIds,
-    editingGroup,
-    createMutation,
-    updateMutation,
-    closeDialog,
-  ]);
+    },
+    [editingGroup, createMutation, updateMutation, closeDialog],
+  );
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!deleteTarget) return;
@@ -214,15 +225,18 @@ export function TaxGroupsTab() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
+          <form onSubmit={handleSubmit(handleSave)} className="space-y-4 py-2">
             <div className="grid gap-2">
               <Label htmlFor="group-name">Group Name</Label>
               <Input
                 id="group-name"
                 placeholder="e.g. GST Composite"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
+                aria-invalid={!!errors.name}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-xs text-destructive">{errors.name.message}</p>
+              )}
             </div>
 
             <div className="grid gap-2">
@@ -239,7 +253,7 @@ export function TaxGroupsTab() {
                       className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 cursor-pointer text-sm"
                     >
                       <Checkbox
-                        checked={selectedRateIds.has(rate.id)}
+                        checked={rateIds.includes(rate.id)}
                         onCheckedChange={() => toggleRateId(rate.id)}
                       />
                       <span className="flex-1">{rate.name}</span>
@@ -254,29 +268,34 @@ export function TaxGroupsTab() {
                   No tax rates available. Add tax rates first.
                 </p>
               )}
-              {selectedRateIds.size > 0 && (
+              {rateIds.length > 0 && (
                 <p className="text-xs text-muted-foreground">
                   Total:{" "}
                   {rates
-                    ?.filter((r) => selectedRateIds.has(r.id))
+                    ?.filter((r) => rateIds.includes(r.id))
                     .reduce((sum, r) => sum + r.rate, 0)}
                   %
                 </p>
               )}
+              {errors.rateIds && (
+                <p className="text-xs text-destructive">
+                  {errors.rateIds.message}
+                </p>
+              )}
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={!groupName.trim() || selectedRateIds.size === 0}
-            >
-              {editingGroup ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={closeDialog}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!groupName.trim()}
+              >
+                {editingGroup ? "Update" : "Create"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 

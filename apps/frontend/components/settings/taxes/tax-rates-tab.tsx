@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   PlusIcon,
   PencilIcon,
@@ -31,69 +34,146 @@ import {
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
-export function TaxRatesTab() {
-  const { data: rates, isLoading, error } = useTaxRates();
-  const createMutation = useCreateTaxRateMutation();
+const taxRateFormSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name too long"),
+  rate: z
+    .string()
+    .refine(
+      (v) => v !== "" && Number.isFinite(Number(v)) && Number(v) >= 0,
+      "Enter a valid rate",
+    ),
+});
+
+type TaxRateFormValues = z.infer<typeof taxRateFormSchema>;
+
+function TaxRateEditRow({
+  rate,
+  onCancel,
+}: {
+  rate: TaxRateDto;
+  onCancel: () => void;
+}) {
   const updateMutation = useUpdateTaxRateMutation();
-  const deleteMutation = useDeleteTaxRateMutation();
 
-  const [isAdding, setIsAdding] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newRate, setNewRate] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editRate, setEditRate] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TaxRateFormValues>({
+    resolver: zodResolver(taxRateFormSchema),
+    defaultValues: { name: rate.name, rate: String(rate.rate) },
+  });
 
-  const [deleteTarget, setDeleteTarget] = useState<TaxRateDto | null>(null);
-
-  const resetAddForm = useCallback(() => {
-    setIsAdding(false);
-    setNewName("");
-    setNewRate("");
-  }, []);
-
-  const handleAdd = useCallback(async () => {
-    if (!newName.trim() || !newRate) return;
-    try {
-      await createMutation.mutateAsync({
-        name: newName.trim(),
-        rate: parseFloat(newRate),
-      });
-      toast.success("Tax rate added");
-      resetAddForm();
-    } catch (err: unknown) {
-      toast.error(getApiErrorMessage(err));
-    }
-  }, [newName, newRate, createMutation, resetAddForm]);
-
-  const startEdit = useCallback((rate: TaxRateDto) => {
-    setEditingId(rate.id);
-    setEditName(rate.name);
-    setEditRate(String(rate.rate));
-  }, []);
-
-  const cancelEdit = useCallback(() => {
-    setEditingId(null);
-    setEditName("");
-    setEditRate("");
-  }, []);
-
-  const handleUpdate = useCallback(
-    async (id: string) => {
-      if (!editName.trim() || !editRate) return;
+  const onSubmit = useCallback(
+    async (values: TaxRateFormValues) => {
       try {
         await updateMutation.mutateAsync({
-          id,
-          dto: { name: editName.trim(), rate: parseFloat(editRate) },
+          id: rate.id,
+          dto: { name: values.name.trim(), rate: parseFloat(values.rate) },
         });
         toast.success("Tax rate updated");
-        cancelEdit();
+        onCancel();
       } catch (err: unknown) {
         toast.error(getApiErrorMessage(err));
       }
     },
-    [editName, editRate, updateMutation, cancelEdit],
+    [rate.id, updateMutation, onCancel],
   );
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex items-center gap-3 w-full"
+    >
+      <div className="grid gap-1 flex-1">
+        <Input
+          placeholder="Name"
+          aria-label="Tax rate name"
+          {...register("name")}
+          className="h-8"
+          aria-invalid={!!errors.name}
+        />
+        {errors.name && (
+          <p className="text-xs text-destructive">{errors.name.message}</p>
+        )}
+      </div>
+      <div className="grid gap-1 w-24">
+        <Input
+          type="number"
+          step="0.01"
+          min="0"
+          placeholder="Rate"
+          aria-label="Tax rate percentage"
+          {...register("rate")}
+          className="h-8"
+          aria-invalid={!!errors.rate}
+        />
+        {errors.rate && (
+          <p className="text-xs text-destructive">{errors.rate.message}</p>
+        )}
+      </div>
+      <div className="flex gap-1">
+        <Button
+          type="submit"
+          size="icon"
+          variant="ghost"
+          disabled={updateMutation.isPending}
+        >
+          <CheckIcon className="h-4 w-4 text-green-600" />
+        </Button>
+        <Button size="icon" variant="ghost" type="button" onClick={onCancel}>
+          <XIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function TaxRatesTab() {
+  const { data: rates, isLoading, error } = useTaxRates();
+  const createMutation = useCreateTaxRateMutation();
+  const deleteMutation = useDeleteTaxRateMutation();
+
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TaxRateDto | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<TaxRateFormValues>({
+    resolver: zodResolver(taxRateFormSchema),
+    defaultValues: { name: "", rate: "" },
+  });
+
+  const newName = watch("name");
+  const newRate = watch("rate");
+
+  const resetAddForm = useCallback(() => {
+    setIsAdding(false);
+    reset({ name: "", rate: "" });
+  }, [reset]);
+
+  const handleAdd = useCallback(
+    async (values: TaxRateFormValues) => {
+      try {
+        await createMutation.mutateAsync({
+          name: values.name.trim(),
+          rate: parseFloat(values.rate),
+        });
+        toast.success("Tax rate added");
+        resetAddForm();
+      } catch (err: unknown) {
+        toast.error(getApiErrorMessage(err));
+      }
+    },
+    [createMutation, resetAddForm],
+  );
+
+  const cancelEdit = useCallback(() => setEditingId(null), []);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -147,7 +227,10 @@ export function TaxRatesTab() {
       </div>
 
       {isAdding && (
-        <div className="flex items-end gap-3 p-3 border rounded-lg bg-muted/30">
+        <form
+          onSubmit={handleSubmit(handleAdd)}
+          className="flex items-end gap-3 p-3 border rounded-lg bg-muted/30"
+        >
           <div className="grid gap-1.5 flex-1">
             <Label htmlFor="new-name" className="text-xs">
               Name
@@ -155,9 +238,12 @@ export function TaxRatesTab() {
             <Input
               id="new-name"
               placeholder="e.g. CGST"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              aria-invalid={!!errors.name}
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
           </div>
           <div className="grid gap-1.5 w-24">
             <Label htmlFor="new-rate" className="text-xs">
@@ -169,24 +255,27 @@ export function TaxRatesTab() {
               step="0.01"
               min="0"
               placeholder="18"
-              value={newRate}
-              onChange={(e) => setNewRate(e.target.value)}
+              aria-invalid={!!errors.rate}
+              {...register("rate")}
             />
+            {errors.rate && (
+              <p className="text-xs text-destructive">{errors.rate.message}</p>
+            )}
           </div>
           <div className="flex gap-1">
             <Button
+              type="submit"
               size="icon"
               variant="ghost"
-              onClick={handleAdd}
-              disabled={!newName.trim() || !newRate}
+              disabled={!newName.trim() || !newRate || createMutation.isPending}
             >
               <CheckIcon className="h-4 w-4 text-green-600" />
             </Button>
-            <Button size="icon" variant="ghost" onClick={resetAddForm}>
+            <Button size="icon" variant="ghost" type="button" onClick={resetAddForm}>
               <XIcon className="h-4 w-4" />
             </Button>
           </div>
-        </div>
+        </form>
       )}
 
       <div className="border rounded-lg divide-y">
@@ -194,42 +283,10 @@ export function TaxRatesTab() {
           rates.map((rate) => (
             <div key={rate.id} className="flex items-center gap-3 px-4 py-3">
               {editingId === rate.id ? (
-                <>
-                  <div className="grid gap-1.5 flex-1">
-                    <Input
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      className="h-8"
-                    />
-                  </div>
-                  <div className="grid gap-1.5 w-24">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={editRate}
-                      onChange={(e) => setEditRate(e.target.value)}
-                      className="h-8"
-                    />
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleUpdate(rate.id)}
-                    >
-                      <CheckIcon className="h-4 w-4 text-green-600" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={cancelEdit}>
-                      <XIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </>
+                <TaxRateEditRow rate={rate} onCancel={cancelEdit} />
               ) : (
                 <>
-                  <span className="flex-1 text-sm font-medium">
-                    {rate.name}
-                  </span>
+                  <span className="flex-1 text-sm font-medium">{rate.name}</span>
                   <span className="w-24 text-sm text-muted-foreground">
                     {rate.rate}%
                   </span>
@@ -237,7 +294,7 @@ export function TaxRatesTab() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => startEdit(rate)}
+                      onClick={() => setEditingId(rate.id)}
                     >
                       <PencilIcon className="h-4 w-4" />
                     </Button>

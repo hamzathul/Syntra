@@ -110,6 +110,10 @@ async function handler(
       ...COOKIE_OPTIONS,
       maxAge: data.data.refreshExpiresIn,
     });
+
+    delete data.data.token;
+    delete data.data.refreshToken;
+    delete data.data.refreshExpiresIn;
   }
 
   if (res.ok && options.clearSessionCookies?.(path.join("/"))) {

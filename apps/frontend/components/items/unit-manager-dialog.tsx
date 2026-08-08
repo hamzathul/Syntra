@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Trash2Icon,
   CheckIcon,
@@ -28,6 +31,13 @@ import {
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 
+const unitFormSchema = z.object({
+  name: z.string().trim().min(1, "Unit name is required").max(50),
+  shortName: z.string().max(10, "Short name too long"),
+});
+
+type UnitFormValues = z.infer<typeof unitFormSchema>;
+
 interface UnitManagerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -43,28 +53,37 @@ export function UnitManagerDialog({
   const createMutation = useCreateUnitMutation();
   const deleteMutation = useDeleteUnitMutation();
 
-  const [newName, setNewName] = useState("");
-  const [newShortName, setNewShortName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<UnitFormValues>({
+    resolver: zodResolver(unitFormSchema),
+    defaultValues: { name: "", shortName: "" },
+  });
+
+  const newName = watch("name");
   const [deleteTarget, setDeleteTarget] = useState<UnitDto | null>(null);
 
-  const resetForm = useCallback(() => {
-    setNewName("");
-    setNewShortName("");
-  }, []);
+  const resetForm = useCallback(() => reset({ name: "", shortName: "" }), [reset]);
 
-  const handleCreate = useCallback(async () => {
-    if (!newName.trim()) return;
-    try {
-      await createMutation.mutateAsync({
-        name: newName.trim(),
-        shortName: newShortName.trim() || undefined,
-      });
-      toast.success("Unit added");
-      resetForm();
-    } catch (err) {
-      toast.error(getApiErrorMessage(err));
-    }
-  }, [newName, newShortName, createMutation, resetForm]);
+  const handleCreate = useCallback(
+    async (values: UnitFormValues) => {
+      try {
+        await createMutation.mutateAsync({
+          name: values.name.trim(),
+          shortName: values.shortName.trim() || undefined,
+        });
+        toast.success("Unit added");
+        resetForm();
+      } catch (err) {
+        toast.error(getApiErrorMessage(err));
+      }
+    },
+    [createMutation, resetForm],
+  );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -97,7 +116,10 @@ export function UnitManagerDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex items-end gap-2 p-3 rounded-lg border bg-muted/30">
+          <form
+            onSubmit={handleSubmit(handleCreate)}
+            className="flex items-end gap-2 p-3 rounded-lg border bg-muted/30"
+          >
             <div className="grid gap-1.5 flex-1">
               <Label htmlFor="unit-name" className="text-xs">
                 Name
@@ -105,10 +127,13 @@ export function UnitManagerDialog({
               <Input
                 id="unit-name"
                 placeholder="e.g. Kilogram"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div className="grid gap-1.5 w-28">
               <Label htmlFor="unit-short" className="text-xs">
@@ -118,25 +143,23 @@ export function UnitManagerDialog({
                 id="unit-short"
                 placeholder="kg"
                 maxLength={10}
-                value={newShortName}
-                onChange={(e) => setNewShortName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                {...register("shortName")}
               />
             </div>
             <div className="flex gap-1">
               <Button
+                type="submit"
                 size="icon"
                 variant="ghost"
-                onClick={handleCreate}
                 disabled={!newName.trim() || createMutation.isPending}
               >
                 <CheckIcon className="h-4 w-4 text-green-600" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={resetForm}>
+              <Button size="icon" variant="ghost" type="button" onClick={resetForm}>
                 <XIcon className="h-4 w-4" />
               </Button>
             </div>
-          </div>
+          </form>
 
           <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
             {units && units.length > 0 ? (

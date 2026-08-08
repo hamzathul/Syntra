@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +12,27 @@ import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { useCompanies } from "@/hooks/companies/use-companies-query";
 import { useAuth } from "@/lib/auth-context";
 
+const loginFormSchema = z.object({
+  email: z.email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginFormSchema>;
+
 export function LoginForm() {
   const { login, isLoggingIn } = useAuth();
   const { data: companies = [], isLoading: isLoadingCompanies } =
     useCompanies();
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
   useEffect(() => {
     if (hasLoggedIn && !isLoadingCompanies) {
@@ -22,14 +41,9 @@ export function LoginForm() {
     }
   }, [hasLoggedIn, isLoadingCompanies, companies]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
+  const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login({ email, password });
+      await login(values);
       setHasLoggedIn(true);
       toast.success("Welcome back!");
     } catch (error) {
@@ -38,20 +52,24 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-sm font-medium">
           Email
         </Label>
         <Input
           id="email"
-          name="email"
           type="email"
           placeholder="you@example.com"
-          required
           autoComplete="email"
+          aria-required="true"
+          aria-invalid={!!errors.email}
           className="rounded-xl h-10"
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+        )}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="password" className="text-sm font-medium">
@@ -59,14 +77,19 @@ export function LoginForm() {
         </Label>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="••••••••"
-          required
           autoComplete="current-password"
-          minLength={8}
+          aria-required="true"
+          aria-invalid={!!errors.password}
           className="rounded-xl h-10"
+          {...register("password")}
         />
+        {errors.password && (
+          <p className="text-xs text-destructive mt-1">
+            {errors.password.message}
+          </p>
+        )}
       </div>
       <Button
         type="submit"

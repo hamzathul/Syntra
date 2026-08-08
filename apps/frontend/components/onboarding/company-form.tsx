@@ -1,5 +1,8 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,16 +10,31 @@ import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { useCompany } from "@/lib/company-context";
 
+const companyFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Company name must be at least 2 characters")
+    .max(100, "Company name too long"),
+});
+
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
+
 export function CompanyForm() {
   const { createCompany } = useCompany();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: { name: "" },
+  });
 
+  const onSubmit = async (values: CompanyFormValues) => {
     try {
-      const company = await createCompany({ name });
+      const company = await createCompany(values);
       toast.success(`${company.name} is ready!`);
       window.location.href = "/dashboard";
     } catch (error) {
@@ -25,24 +43,27 @@ export function CompanyForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="name" className="text-sm font-medium">
           Company name
         </Label>
         <Input
           id="name"
-          name="name"
           type="text"
           placeholder="Acme Corp"
-          required
-          minLength={2}
-          maxLength={100}
+          aria-required="true"
+          aria-invalid={!!errors.name}
           className="rounded-xl h-10"
+          {...register("name")}
         />
+        {errors.name && (
+          <p className="text-xs text-destructive mt-1">{errors.name.message}</p>
+        )}
       </div>
       <Button
         type="submit"
+        disabled={isSubmitting}
         className="w-full h-10 rounded-xl font-medium shadow-sm shadow-primary/20 mt-2"
       >
         Create company

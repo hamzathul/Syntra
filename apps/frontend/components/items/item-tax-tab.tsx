@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Controller, useWatch } from "react-hook-form";
+import type { Control, UseFormSetValue } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,31 +17,25 @@ import {
   useTaxRates,
   useTaxGroups,
 } from "@/hooks/settings/use-tax-settings-query";
-import type { ItemFormState } from "./item-form-state";
+import type { ItemFormValues } from "./item-form-values";
 
 interface ItemTaxTabProps {
-  state: ItemFormState;
-  patch: (partial: Partial<ItemFormState>) => void;
+  control: Control<ItemFormValues>;
+  setValue: UseFormSetValue<ItemFormValues>;
 }
 
-export function ItemTaxTab({ state, patch }: ItemTaxTabProps) {
+export function ItemTaxTab({ control, setValue }: ItemTaxTabProps) {
   const { data: rates, isLoading: ratesLoading } = useTaxRates();
   const { data: groups, isLoading: groupsLoading } = useTaxGroups();
 
-  const [mode, setMode] = useState<"none" | "rate" | "group">(() => {
-    if (state.taxGroupId) return "group";
-    if (state.taxRateId) return "rate";
-    return "none";
-  });
+  const taxRateId = useWatch({ control, name: "taxRateId" });
+  const taxGroupId = useWatch({ control, name: "taxGroupId" });
 
-  const selectedGroup = groups?.find((g) => g.id === state.taxGroupId);
+  const [mode, setMode] = useState<"none" | "rate" | "group">(() =>
+    taxGroupId ? "group" : taxRateId ? "rate" : "none",
+  );
 
-  const handleModeChange = (next: "none" | "rate" | "group") => {
-    setMode(next);
-    if (next === "none") patch({ taxRateId: "", taxGroupId: "" });
-    if (next === "rate") patch({ taxGroupId: "" });
-    if (next === "group") patch({ taxRateId: "" });
-  };
+  const selectedGroup = groups?.find((g) => g.id === taxGroupId);
 
   if (ratesLoading || groupsLoading) {
     return (
@@ -63,7 +59,33 @@ export function ItemTaxTab({ state, patch }: ItemTaxTabProps) {
           <Label htmlFor="tax-mode" className="text-sm font-medium">
             Tax Mode
           </Label>
-          <Select value={mode} onValueChange={handleModeChange}>
+          <Select
+            value={mode}
+            onValueChange={(next) => {
+              const nextMode = next as "none" | "rate" | "group";
+              setMode(nextMode);
+              if (nextMode === "rate") {
+                setValue("taxGroupId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              } else if (nextMode === "group") {
+                setValue("taxRateId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              } else {
+                setValue("taxRateId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setValue("taxGroupId", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+            }}
+          >
             <SelectTrigger id="tax-mode">
               <SelectValue />
             </SelectTrigger>
@@ -80,24 +102,28 @@ export function ItemTaxTab({ state, patch }: ItemTaxTabProps) {
             <Label htmlFor="tax-rate" className="text-sm font-medium">
               Tax Rate
             </Label>
-            <Select
-              value={state.taxRateId || "__none__"}
-              onValueChange={(v) =>
-                patch({ taxRateId: v === "__none__" ? "" : v })
-              }
-            >
-              <SelectTrigger id="tax-rate">
-                <SelectValue placeholder="Select a tax rate..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">Select a tax rate...</SelectItem>
-                {(rates ?? []).map((rate) => (
-                  <SelectItem key={rate.id} value={rate.id}>
-                    {rate.name} ({rate.rate}%)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="taxRateId"
+              render={({ field }) => (
+                <Select
+                  value={field.value || "__none__"}
+                  onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                >
+                  <SelectTrigger id="tax-rate">
+                    <SelectValue placeholder="Select a tax rate..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Select a tax rate...</SelectItem>
+                    {(rates ?? []).map((rate) => (
+                      <SelectItem key={rate.id} value={rate.id}>
+                        {rate.name} ({rate.rate}%)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
         )}
 
@@ -107,24 +133,30 @@ export function ItemTaxTab({ state, patch }: ItemTaxTabProps) {
               <Label htmlFor="tax-group" className="text-sm font-medium">
                 Tax Group
               </Label>
-              <Select
-                value={state.taxGroupId || "__none__"}
-                onValueChange={(v) =>
-                  patch({ taxGroupId: v === "__none__" ? "" : v })
-                }
-              >
-                <SelectTrigger id="tax-group">
-                  <SelectValue placeholder="Select a tax group..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Select a tax group...</SelectItem>
-                  {(groups ?? []).map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name} ({group.totalRate}%)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="taxGroupId"
+                render={({ field }) => (
+                  <Select
+                    value={field.value || "__none__"}
+                    onValueChange={(v) =>
+                      field.onChange(v === "__none__" ? "" : v)
+                    }
+                  >
+                    <SelectTrigger id="tax-group">
+                      <SelectValue placeholder="Select a tax group..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">Select a tax group...</SelectItem>
+                      {(groups ?? []).map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          {group.name} ({group.totalRate}%)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
 
             {selectedGroup && (
