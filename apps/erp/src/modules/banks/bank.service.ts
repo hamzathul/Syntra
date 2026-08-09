@@ -65,9 +65,29 @@ export class BankService implements IBankService {
     const existing = await this.repo.findById(id, companyId);
     if (!existing) throw new NotFoundError("Bank");
 
+    let data = this.toUpdateData(dto);
+
+    if (dto.openingBalance !== undefined) {
+      const nextOpening = dto.openingBalance;
+      const currentOpening = existing.openingBalance;
+      if (nextOpening !== currentOpening) {
+        if (await this.repo.hasMovements(id, companyId)) {
+          throw new ConflictError(
+            "Opening balance can no longer be changed after a bank has movements. Use Adjust Bank Balance instead.",
+          );
+        }
+        const openingDelta = (nextOpening ?? 0) - (currentOpening ?? 0);
+        const withBalance: BankUpdateData = {
+          ...data,
+          currentBalance: existing.currentBalance + openingDelta,
+        };
+        data = withBalance;
+      }
+    }
+
     let record;
     try {
-      record = await this.repo.update(id, companyId, this.toUpdateData(dto));
+      record = await this.repo.update(id, companyId, data);
     } catch (error) {
       if (isPrismaUniqueViolation(error)) {
         throw new ConflictError("A bank with this name already exists");

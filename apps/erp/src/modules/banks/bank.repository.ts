@@ -23,7 +23,11 @@ export class BankRepository implements IBankRepository {
 
   async create(companyId: string, data: BankCreateData): Promise<BankRecord> {
     const bank = await this.db.bank.create({
-      data: { ...data, companyId },
+      data: {
+        ...data,
+        companyId,
+        currentBalance: data.openingBalance ?? 0,
+      },
     });
     return toBankRecord(bank as unknown as BankRow);
   }
@@ -48,5 +52,18 @@ export class BankRepository implements IBankRepository {
       where: { id, companyId },
     });
     if (count === 0) throw new NotFoundError("Bank");
+  }
+
+  async hasMovements(bankId: string, companyId: string): Promise<boolean> {
+    const [adjustmentCount, transferCount] = await Promise.all([
+      this.db.bankAdjustment.count({ where: { bankId, companyId } }),
+      this.db.moneyTransfer.count({
+        where: {
+          companyId,
+          OR: [{ fromBankId: bankId }, { toBankId: bankId }],
+        },
+      }),
+    ]);
+    return adjustmentCount > 0 || transferCount > 0;
   }
 }

@@ -10,4 +10,5 @@ export interface IBankRepository {
     data: BankUpdateData,
   ): Promise<BankRecord>;
   delete(id: string, companyId: string): Promise<void>;
+  hasMovements(bankId: string, companyId: string): Promise<boolean>;
 }

@@ -8,3 +8,4 @@ export * from "./contracts/tax-settings.contract";
 export * from "./contracts/item.contract";
 export * from "./contracts/party.contract";
 export * from "./contracts/bank.contract";
+export * from "./contracts/cash.contract";

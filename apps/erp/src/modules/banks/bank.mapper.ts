@@ -7,6 +7,7 @@ export function toBankDto(record: BankRecord): BankDto {
     companyId: record.companyId,
     name: record.name,
     openingBalance: record.openingBalance,
+    currentBalance: record.currentBalance,
     openingBalanceDate: record.openingBalanceDate
       ? record.openingBalanceDate.toISOString()
       : null,

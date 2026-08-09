@@ -14,6 +14,7 @@ import {
   ShoppingCart,
   TrendingUp,
   Users,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/items", label: "Items", icon: Package },
   { href: "/parties", label: "Party", icon: Users },
   { href: "/banks", label: "Bank", icon: Landmark },
+  { href: "/cash", label: "Cash", icon: Wallet },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

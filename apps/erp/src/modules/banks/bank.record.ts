@@ -5,6 +5,7 @@ export interface BankRow {
   readonly companyId: string;
   readonly name: string;
   readonly openingBalance: number;
+  readonly currentBalance: number;
   readonly openingBalanceDate: Date | null;
   readonly printBankDetails: boolean;
   readonly accountHolderName: string | null;
@@ -23,6 +24,7 @@ export function toBankRecord(row: BankRow): BankRecord {
     companyId: row.companyId,
     name: row.name,
     openingBalance: row.openingBalance === null ? null : Number(row.openingBalance),
+    currentBalance: Number(row.currentBalance),
     openingBalanceDate: row.openingBalanceDate,
     printBankDetails: row.printBankDetails,
     accountHolderName: row.accountHolderName,

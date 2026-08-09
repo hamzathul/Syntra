@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangleIcon,
   LandmarkIcon,
@@ -29,6 +30,7 @@ import {
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 import { BankFormDialog } from "./bank-form-dialog";
+import { MoneyActionsPanel } from "@/components/money/money-actions-panel";
 
 export function BankAccountsSection() {
   const { data: banks, isLoading, error } = useBanks();
@@ -91,10 +93,18 @@ export function BankAccountsSection() {
           {banks?.length ?? 0} bank{(banks?.length ?? 0) !== 1 ? "s" : ""}{" "}
           added
         </p>
-        <Button variant="outline" size="sm" className="gap-1" onClick={openCreate}>
-          <PlusIcon className="h-4 w-4" />
-          Add Bank
-        </Button>
+        <div className="flex items-center gap-2">
+          <MoneyActionsPanel banks={banks ?? []} />
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={openCreate}
+          >
+            <PlusIcon className="h-4 w-4" />
+            Add Bank
+          </Button>
+        </div>
       </div>
 
       <div className="border rounded-xl overflow-hidden">
@@ -105,6 +115,7 @@ export function BankAccountsSection() {
                 <tr className="border-b bg-muted/40 text-left text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Bank</th>
                   <th className="px-4 py-3 font-medium">Opening Balance</th>
+                  <th className="px-4 py-3 font-medium">Current Balance</th>
                   <th className="px-4 py-3 font-medium">Print On Invoice</th>
                   <th className="px-4 py-3 font-medium text-right">Actions</th>
                 </tr>
@@ -217,7 +228,12 @@ function BankRow({
   return (
     <tr className="transition-colors hover:bg-muted/30">
       <td className="px-4 py-3">
-        <p className="font-medium">{bank.name}</p>
+        <Link
+          href={`/banks/${bank.id}`}
+          className="font-medium transition-colors hover:text-primary hover:underline"
+        >
+          {bank.name}
+        </Link>
         {bank.accountNumber && (
           <p className="text-xs text-muted-foreground">
             {bank.branchName ? `${bank.branchName} · ` : ""}
@@ -226,6 +242,14 @@ function BankRow({
         )}
       </td>
       <td className="px-4 py-3 text-muted-foreground">{balanceLabel}</td>
+      <td className="px-4 py-3">
+        <span className="font-semibold tabular-nums">
+          {bank.currentBalance.toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4,
+          })}
+        </span>
+      </td>
       <td className="px-4 py-3">
         <div className="flex gap-1.5">
           <Badge

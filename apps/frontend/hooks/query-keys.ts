@@ -40,10 +40,18 @@ export const bankKeys = {
   list: () => [...bankKeys.all, "list"] as const,
 };
 
+export const moneyKeys = {
+  all: ["money"] as const,
+  cash: () => [...moneyKeys.all, "cash"] as const,
+  bankHistory: (bankId: string) =>
+    [...moneyKeys.all, "bank-history", bankId] as const,
+};
+
 export const companyScopedQueryKeys = [
   settingsKeys.all,
   taxKeys.all,
   itemKeys.all,
   partyKeys.all,
   bankKeys.all,
+  moneyKeys.all,
 ] as const;

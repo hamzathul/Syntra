@@ -3,6 +3,7 @@ export interface BankRecord {
   readonly companyId: string;
   readonly name: string;
   readonly openingBalance: number | null;
+  readonly currentBalance: number;
   readonly openingBalanceDate: Date | null;
   readonly printBankDetails: boolean;
   readonly accountHolderName: string | null;
@@ -28,4 +29,6 @@ export interface BankCreateData {
   readonly upiId?: string | null;
 }
 
-export type BankUpdateData = Partial<Omit<BankCreateData, "companyId">>;
+export type BankUpdateData = Partial<Omit<BankCreateData, "companyId">> & {
+  readonly currentBalance?: number;
+};

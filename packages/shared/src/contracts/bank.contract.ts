@@ -62,6 +62,7 @@ export const bankResponseSchema = z.object({
   companyId: z.string(),
   name: z.string(),
   openingBalance: z.number().nullable(),
+  currentBalance: z.number(),
   openingBalanceDate: z.string().nullable(),
   printBankDetails: z.boolean(),
   accountHolderName: z.string().nullable(),

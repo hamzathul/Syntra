@@ -26,13 +26,18 @@ export function createGetDetailQueryHook<TParams, TResult>(
 export function createMutationHook<TVariables, TResult>(
   keyFactory: () => readonly unknown[],
   mutationFn: (variables: TVariables) => Promise<TResult>,
+  additionalKeyFactories: Array<() => readonly unknown[]> = [],
 ) {
   return (): UseMutationResult<TResult, Error, TVariables> => {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn,
-      onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: keyFactory() }),
+      onSuccess: () => {
+        const factories = [keyFactory, ...additionalKeyFactories];
+        for (const factory of factories) {
+          queryClient.invalidateQueries({ queryKey: factory() });
+        }
+      },
     });
   };
 }
