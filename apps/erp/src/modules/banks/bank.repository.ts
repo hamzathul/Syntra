@@ -1,4 +1,5 @@
 import { NotFoundError } from "backend-p";
+import type { Prisma } from "../../generated/prisma";
 import type { DbClient } from "../../database/db-client";
 import type { IBankRepository } from "./bank.repository.port";
 import type { BankCreateData, BankRecord, BankUpdateData } from "./bank.types";
@@ -37,9 +38,17 @@ export class BankRepository implements IBankRepository {
     companyId: string,
     data: BankUpdateData,
   ): Promise<BankRecord> {
+    const { currentBalanceIncrement, ...fields } = data;
+    const updateData: Prisma.BankUpdateManyMutationInput = {
+      ...fields,
+      ...(currentBalanceIncrement !== undefined
+        ? { currentBalance: { increment: currentBalanceIncrement } }
+        : {}),
+    };
+
     const { count } = await this.db.bank.updateMany({
       where: { id, companyId },
-      data,
+      data: updateData,
     });
     if (count === 0) throw new NotFoundError("Bank");
 

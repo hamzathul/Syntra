@@ -77,11 +77,7 @@ export class BankService implements IBankService {
           );
         }
         const openingDelta = (nextOpening ?? 0) - (currentOpening ?? 0);
-        const withBalance: BankUpdateData = {
-          ...data,
-          currentBalance: existing.currentBalance + openingDelta,
-        };
-        data = withBalance;
+        data = { ...data, currentBalanceIncrement: openingDelta };
       }
     }
 

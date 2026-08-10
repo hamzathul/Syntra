@@ -30,5 +30,5 @@ export interface BankCreateData {
 }
 
 export type BankUpdateData = Partial<Omit<BankCreateData, "companyId">> & {
-  readonly currentBalance?: number;
+  readonly currentBalanceIncrement?: number;
 };
