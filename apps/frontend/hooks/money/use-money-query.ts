@@ -27,30 +27,33 @@ export const useAdjustCashMutation = createMutationHook(
 export const useUpdateCashAdjustmentMutation = createMutationHook(
   moneyKeys.cash,
   (variables: { adjustmentId: string; dto: AdjustCashDto }) =>
-    moneyService.updateCashAdjustment(variables.adjustmentId, variables.dto),
+    moneyService.cashAdjustments.update(
+      variables.adjustmentId,
+      variables.dto,
+    ),
 );
 
 export const useDeleteCashAdjustmentMutation = createMutationHook(
   moneyKeys.cash,
-  (adjustmentId: string) => moneyService.deleteCashAdjustment(adjustmentId),
+  (adjustmentId: string) => moneyService.cashAdjustments.remove(adjustmentId),
 );
 
 export const useCreateTransferMutation = createMutationHook(
   () => moneyKeys.all,
-  moneyService.createTransfer,
+  (dto: CreateTransferDto) => moneyService.transfers.create(dto),
   [bankKeys.list],
 );
 
 export const useUpdateTransferMutation = createMutationHook(
   () => moneyKeys.all,
   (variables: { transferId: string; dto: CreateTransferDto }) =>
-    moneyService.updateTransfer(variables.transferId, variables.dto),
+    moneyService.transfers.update(variables.transferId, variables.dto),
   [bankKeys.list],
 );
 
 export const useDeleteTransferMutation = createMutationHook(
   () => moneyKeys.all,
-  (transferId: string) => moneyService.deleteTransfer(transferId),
+  (transferId: string) => moneyService.transfers.remove(transferId),
   [bankKeys.list],
 );
 
@@ -68,18 +71,16 @@ export const useUpdateBankAdjustmentMutation = createMutationHook(
     bankId: string;
     dto: AdjustBankDto;
   }) =>
-    moneyService.updateBankAdjustment(
-      variables.adjustmentId,
-      variables.bankId,
-      variables.dto,
-    ),
+    moneyService.banks
+      .adjustments(variables.bankId)
+      .update(variables.adjustmentId, variables.dto),
   [bankKeys.list],
 );
 
 export const useDeleteBankAdjustmentMutation = createMutationHook(
   () => moneyKeys.all,
   (variables: { adjustmentId: string; bankId: string }) =>
-    moneyService.deleteBankAdjustment(variables.adjustmentId, variables.bankId),
+    moneyService.banks.adjustments(variables.bankId).remove(variables.adjustmentId),
   [bankKeys.list],
 );
 

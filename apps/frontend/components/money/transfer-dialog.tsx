@@ -11,8 +11,7 @@ import {
   Loader2Icon,
   SaveIcon,
 } from "lucide-react";
-import type { BankDto, CreateTransferDto, TransferDto } from "shared";
-import { CASH } from "@/lib/api/services/money/money.service";
+import { CASH, type BankDto, type CreateTransferDto, type TransferDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
