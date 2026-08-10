@@ -6,7 +6,7 @@ import {
   createMutationHook,
   createUpdateMutationHook,
 } from "@/lib/api/client/hook-factory";
-import { bankKeys } from "../query-keys";
+import { bankKeys, moneyKeys } from "../query-keys";
 
 export const useBanks = createGetQueryHook(bankKeys.list, banksService.list);
 
@@ -18,6 +18,7 @@ export const useCreateBankMutation = createMutationHook(
 export const useUpdateBankMutation = createUpdateMutationHook(
   bankKeys.list,
   banksService.update,
+  [() => moneyKeys.all],
 );
 
 export const useDeleteBankMutation = createMutationHook(
