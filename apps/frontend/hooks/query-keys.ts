@@ -35,9 +35,23 @@ export const partyKeys = {
   detail: (id: string) => [...partyKeys.all, "detail", id] as const,
 };
 
+export const bankKeys = {
+  all: ["banks"] as const,
+  list: () => [...bankKeys.all, "list"] as const,
+};
+
+export const moneyKeys = {
+  all: ["money"] as const,
+  cash: () => [...moneyKeys.all, "cash"] as const,
+  bankHistory: (bankId: string) =>
+    [...moneyKeys.all, "bank-history", bankId] as const,
+};
+
 export const companyScopedQueryKeys = [
   settingsKeys.all,
   taxKeys.all,
   itemKeys.all,
   partyKeys.all,
+  bankKeys.all,
+  moneyKeys.all,
 ] as const;
