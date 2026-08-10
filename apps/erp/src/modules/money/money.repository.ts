@@ -152,16 +152,18 @@ export class MoneyRepository implements IMoneyRepository {
     adjustmentId: string,
     data: { date: Date; type: AdjustmentType; amount: number; description?: string | null },
   ): Promise<CashAdjustmentRecord | null> {
-    const existing = await this.db.cashAdjustment.findFirst({
-      where: { id: adjustmentId, companyId },
-    });
-    if (!existing) return null;
-
-    const oldSigned =
-      existing.type === "INCREASE" ? Number(existing.amount) : -Number(existing.amount);
-    const newSigned = data.type === "INCREASE" ? data.amount : -data.amount;
-
     const updated = await this.db.$transaction(async (tx) => {
+      const existing = await tx.cashAdjustment.findFirst({
+        where: { id: adjustmentId, companyId },
+      });
+      if (!existing) return null;
+
+      const oldSigned =
+        existing.type === "INCREASE"
+          ? Number(existing.amount)
+          : -Number(existing.amount);
+      const newSigned = data.type === "INCREASE" ? data.amount : -data.amount;
+
       await tx.cashAccount.update({
         where: { companyId },
         data: { currentBalance: { increment: newSigned - oldSigned } },
@@ -177,6 +179,7 @@ export class MoneyRepository implements IMoneyRepository {
       });
     });
 
+    if (!updated) return null;
     return toCashAdjustmentRecord(updated as never);
   }
 
@@ -184,23 +187,26 @@ export class MoneyRepository implements IMoneyRepository {
     companyId: string,
     adjustmentId: string,
   ): Promise<boolean> {
-    const existing = await this.db.cashAdjustment.findFirst({
-      where: { id: adjustmentId, companyId },
-    });
-    if (!existing) return false;
+    const deleted = await this.db.$transaction(async (tx) => {
+      const existing = await tx.cashAdjustment.findFirst({
+        where: { id: adjustmentId, companyId },
+      });
+      if (!existing) return null;
 
-    const signed =
-      existing.type === "INCREASE" ? Number(existing.amount) : -Number(existing.amount);
+      const signed =
+        existing.type === "INCREASE"
+          ? Number(existing.amount)
+          : -Number(existing.amount);
 
-    await this.db.$transaction(async (tx) => {
       await tx.cashAccount.update({
         where: { companyId },
         data: { currentBalance: { decrement: signed } },
       });
       await tx.cashAdjustment.delete({ where: { id: adjustmentId } });
+      return true;
     });
 
-    return true;
+    return deleted !== null;
   }
 
   async updateBankAdjustment(
@@ -215,22 +221,24 @@ export class MoneyRepository implements IMoneyRepository {
       image?: string | null;
     },
   ): Promise<BankAdjustmentRecord | null> {
-    const existing = await this.db.bankAdjustment.findFirst({
-      where: { id: adjustmentId, companyId, bankId },
-      include: { bank: { select: { name: true } } },
-    });
-    if (!existing || !existing.bank) return null;
+    const result = await this.db.$transaction(async (tx) => {
+      const existing = await tx.bankAdjustment.findFirst({
+        where: { id: adjustmentId, companyId, bankId },
+        include: { bank: { select: { name: true } } },
+      });
+      if (!existing || !existing.bank) return null;
 
-    const oldSigned =
-      existing.type === "INCREASE" ? Number(existing.amount) : -Number(existing.amount);
-    const newSigned = data.type === "INCREASE" ? data.amount : -data.amount;
+      const oldSigned =
+        existing.type === "INCREASE"
+          ? Number(existing.amount)
+          : -Number(existing.amount);
+      const newSigned = data.type === "INCREASE" ? data.amount : -data.amount;
 
-    const updated = await this.db.$transaction(async (tx) => {
       await tx.bank.update({
         where: { id: bankId },
         data: { currentBalance: { increment: newSigned - oldSigned } },
       });
-      return tx.bankAdjustment.update({
+      const updated = await tx.bankAdjustment.update({
         where: { id: adjustmentId },
         data: {
           date: data.date,
@@ -240,11 +248,13 @@ export class MoneyRepository implements IMoneyRepository {
           image: data.image ?? null,
         },
       });
+      return { updated, bankName: existing.bank.name };
     });
 
+    if (!result) return null;
     return toBankAdjustmentRecord({
-      ...updated,
-      bankName: existing.bank.name,
+      ...result.updated,
+      bankName: result.bankName,
     } as never);
   }
 
@@ -253,23 +263,26 @@ export class MoneyRepository implements IMoneyRepository {
     bankId: string,
     adjustmentId: string,
   ): Promise<boolean> {
-    const existing = await this.db.bankAdjustment.findFirst({
-      where: { id: adjustmentId, companyId, bankId },
-    });
-    if (!existing) return false;
+    const deleted = await this.db.$transaction(async (tx) => {
+      const existing = await tx.bankAdjustment.findFirst({
+        where: { id: adjustmentId, companyId, bankId },
+      });
+      if (!existing) return null;
 
-    const signed =
-      existing.type === "INCREASE" ? Number(existing.amount) : -Number(existing.amount);
+      const signed =
+        existing.type === "INCREASE"
+          ? Number(existing.amount)
+          : -Number(existing.amount);
 
-    await this.db.$transaction(async (tx) => {
       await tx.bank.update({
         where: { id: bankId },
         data: { currentBalance: { decrement: signed } },
       });
       await tx.bankAdjustment.delete({ where: { id: adjustmentId } });
+      return true;
     });
 
-    return true;
+    return deleted !== null;
   }
 
   async updateTransfer(
@@ -277,13 +290,13 @@ export class MoneyRepository implements IMoneyRepository {
     transferId: string,
     data: TransferUpdateData,
   ): Promise<MoneyTransferNested | null> {
-    const existing = await this.db.moneyTransfer.findFirst({
-      where: { id: transferId, companyId },
-      include: TRANSFER_INCLUDE,
-    });
-    if (!existing) return null;
-
     const updated = await this.db.$transaction(async (tx) => {
+      const existing = await tx.moneyTransfer.findFirst({
+        where: { id: transferId, companyId },
+        include: TRANSFER_INCLUDE,
+      });
+      if (!existing) return null;
+
       await this.revertBalanceDeltas(tx, companyId, {
         fromBankId: existing.fromBankId,
         toBankId: existing.toBankId,
@@ -308,25 +321,27 @@ export class MoneyRepository implements IMoneyRepository {
       });
     });
 
+    if (!updated) return null;
     return toTransferRecord(updated as never);
   }
 
   async deleteTransfer(companyId: string, transferId: string): Promise<boolean> {
-    const existing = await this.db.moneyTransfer.findFirst({
-      where: { id: transferId, companyId },
-    });
-    if (!existing) return false;
+    const deleted = await this.db.$transaction(async (tx) => {
+      const existing = await tx.moneyTransfer.findFirst({
+        where: { id: transferId, companyId },
+      });
+      if (!existing) return null;
 
-    await this.db.$transaction(async (tx) => {
       await this.revertBalanceDeltas(tx, companyId, {
         fromBankId: existing.fromBankId,
         toBankId: existing.toBankId,
         amount: Number(existing.amount),
       });
       await tx.moneyTransfer.delete({ where: { id: transferId } });
+      return true;
     });
 
-    return true;
+    return deleted !== null;
   }
 
   private async applyBalanceDeltas(

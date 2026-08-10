@@ -139,7 +139,8 @@ export function TransferDialog({
   const [image, setImage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (open && editing) {
+    if (!open) return;
+    if (editing) {
       reset({
         date: editing.date.slice(0, 10),
         from: editing.fromBankId ?? CASH,
@@ -148,11 +149,7 @@ export function TransferDialog({
         description: editing.description ?? "",
       });
       setImage(editing.image ?? undefined);
-    }
-  }, [open, editing, reset]);
-
-  const handleOpenChange = useCallback(
-    (next: boolean) => {
+    } else {
       reset({
         date: today(),
         from: defaultFrom,
@@ -161,6 +158,21 @@ export function TransferDialog({
         description: "",
       });
       setImage(undefined);
+    }
+  }, [open, editing, reset, defaultFrom, defaultTo]);
+
+  const handleOpenChange = useCallback(
+    (next: boolean) => {
+      if (!next) {
+        reset({
+          date: today(),
+          from: defaultFrom,
+          to: defaultTo,
+          amount: "",
+          description: "",
+        });
+        setImage(undefined);
+      }
       onOpenChange(next);
     },
     [reset, defaultFrom, defaultTo, onOpenChange],
@@ -363,7 +375,7 @@ export function TransferDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               Cancel
             </Button>
