@@ -1,17 +1,40 @@
 import { Router } from "express";
+import { validateRequest } from "backend-p";
+import { z } from "zod";
+import {
+  createSaleSchema,
+  listSalesQuerySchema,
+  updateSaleSchema,
+} from "shared";
+import type { SalesController } from "./sales.controller";
 
-const router: Router = Router();
+const paramsWithId = z.object({ id: z.string().min(1) });
 
-router.get("/", (_req, res) => {
-  res.json({ data: [], meta: { total: 0 } });
-});
+export function createSalesRouter(controller: SalesController): Router {
+  const router = Router();
 
-router.get("/:id", (req, res) => {
-  res.json({ data: { id: req.params.id } });
-});
+  router.get(
+    "/",
+    validateRequest({ query: listSalesQuerySchema }),
+    controller.listSales,
+  );
+  router.post(
+    "/",
+    validateRequest({ body: createSaleSchema }),
+    controller.createSale,
+  );
 
-router.post("/", (_req, res) => {
-  res.status(201).json({ data: { id: "stub" } });
-});
+  router.get("/:id", validateRequest({ params: paramsWithId }), controller.getSale);
+  router.patch(
+    "/:id",
+    validateRequest({ params: paramsWithId, body: updateSaleSchema }),
+    controller.updateSale,
+  );
+  router.delete(
+    "/:id",
+    validateRequest({ params: paramsWithId }),
+    controller.deleteSale,
+  );
 
-export default router;
+  return router;
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PlusIcon, UsersIcon } from "lucide-react";
 import type { PartyDto } from "shared";
 import { Button } from "@/components/ui/button";
@@ -86,6 +87,8 @@ export default function PartiesPage() {
 }
 
 function PartyRow({ party }: { party: PartyDto }) {
+  const router = useRouter();
+
   const openingBalanceLabel =
     party.openingBalanceAmount === null
       ? "—"
@@ -98,12 +101,11 @@ function PartyRow({ party }: { party: PartyDto }) {
         }`;
 
   return (
-    <tr className="transition-colors hover:bg-muted/30">
-      <td className="px-4 py-3">
-        <Link href={`/parties/${party.id}`} className="font-medium hover:underline">
-          {party.name}
-        </Link>
-      </td>
+    <tr
+      className="cursor-pointer transition-colors hover:bg-muted/30"
+      onClick={() => router.push(`/parties/${party.id}`)}
+    >
+      <td className="px-4 py-3 font-medium">{party.name}</td>
       <td className="px-4 py-3 text-muted-foreground">
         {party.contactNumber ?? "—"}
       </td>

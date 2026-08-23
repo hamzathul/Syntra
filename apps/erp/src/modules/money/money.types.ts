@@ -40,6 +40,15 @@ export interface BankAdjustmentRecord {
   readonly updatedAt: Date;
 }
 
+export interface SalePaymentRecord {
+  readonly id: string;
+  readonly saleId: string;
+  readonly partyName: string;
+  readonly date: Date;
+  readonly amount: number;
+  readonly description: string | null;
+}
+
 export interface TransferCreateData {
   readonly date: Date;
   readonly amount: number;

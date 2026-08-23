@@ -33,6 +33,24 @@ enum AdjustmentType {
   DECREASE
 }
 
+enum SaleType {
+  CASH
+  CREDIT
+}
+
+enum PaymentMode {
+  CASH
+  CHEQUE
+  BANK
+}
+
+enum ChequeStatus {
+  RECEIVED
+  DEPOSITED_BANK
+  DEPOSITED_CASH
+  BOUNCED
+}
+
 model Company {
   id               String   @id @default(cuid())
   name             String
@@ -65,6 +83,9 @@ model Company {
   cashAdjustments CashAdjustment[]
   bankAdjustments BankAdjustment[]
   moneyTransfers  MoneyTransfer[]
+  sales     Sale[]
+  salePayments SalePayment[]
+  cheques   Cheque[]
 }
 
 model CompanySettings {
@@ -219,6 +240,7 @@ model Party {
   updatedAt            DateTime           @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sales   Sale[]
 
   @@unique([companyId, name])
   @@index([companyId])
@@ -245,6 +267,8 @@ model Bank {
   adjustments       BankAdjustment[]
   incomingTransfers MoneyTransfer[]  @relation("TransferTo")
   outgoingTransfers MoneyTransfer[]  @relation("TransferFrom")
+  payments          SalePayment[]
+  chequeDeposits    Cheque[]
 
   @@unique([companyId, name])
   @@index([companyId])
@@ -313,4 +337,71 @@ model MoneyTransfer {
   @@index([companyId, date])
   @@index([fromBankId])
   @@index([toBankId])
+}
+
+model Sale {
+  id             String    @id @default(cuid())
+  companyId      String
+  partyId        String
+  saleType       SaleType
+  saleDate       DateTime
+  totalAmount    Decimal   @db.Decimal(15, 4)
+  receivedAmount Decimal   @db.Decimal(15, 4) @default(0)
+  description    String?
+  image          String?
+  document       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  company  Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  party    Party          @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  payments SalePayment[]
+  cheques  Cheque[]
+
+  @@index([companyId, saleDate])
+  @@index([companyId, partyId])
+}
+
+model SalePayment {
+  id          String      @id @default(cuid())
+  saleId      String
+  companyId   String
+  mode        PaymentMode
+  amount      Decimal     @db.Decimal(15, 4)
+  bankId      String?
+  description String?
+  createdAt   DateTime    @default(now())
+
+  sale   Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  bank   Bank?   @relation(fields: [bankId], references: [id], onDelete: SetNull)
+  cheque Cheque?
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+  @@index([companyId])
+}
+
+model Cheque {
+  id            String        @id @default(cuid())
+  companyId     String
+  salePaymentId String        @unique
+  saleId        String
+  drawBankName  String
+  chequeNumber  String
+  chequeDate    DateTime
+  amount        Decimal       @db.Decimal(15, 4)
+  status        ChequeStatus  @default(RECEIVED)
+  depositBankId String?
+  depositedAt   DateTime?
+  notes         String?
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sale        Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  salePayment SalePayment  @relation(fields: [salePaymentId], references: [id], onDelete: Cascade)
+  depositBank Bank?        @relation(fields: [depositBankId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, status])
 }

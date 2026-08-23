@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BankAdjustmentDto, BankDto, BankHistoryDto, TransferDto } from "shared";
+import type { BankAdjustmentDto, BankDto, BankHistoryDto, MoneySalePaymentDto, TransferDto } from "shared";
 import { TransactionList, type TransactionItem } from "../money/transaction-list";
 import { AdjustBankDialog } from "../money/adjust-bank-dialog";
 import { TransferDialog, type TransferMode } from "../money/transfer-dialog";
@@ -87,9 +87,20 @@ export function BankTransactions({
         image: t.image,
       };
     }),
+    ...history.salePayments.map((s: MoneySalePaymentDto) => ({
+      id: s.id,
+      kind: "sale" as const,
+      label: `${s.partyName} · Sale payment`,
+      date: s.date,
+      amount: s.amount,
+      description: s.description,
+      image: null,
+      href: `/sales/${s.saleId}`,
+    })),
   ];
 
   const handleEdit = (item: TransactionItem) => {
+    if (item.kind === "sale") return;
     if (item.kind === "adjustment") {
       const adjustment = history.adjustments.find((a) => a.id === item.id);
       if (adjustment) setEditingAdjustment(adjustment);
@@ -100,6 +111,7 @@ export function BankTransactions({
   };
 
   const handleDelete = async (item: TransactionItem) => {
+    if (item.kind === "sale") return;
     if (item.kind === "adjustment") {
       await deleteAdjustmentMutation.mutateAsync({
         adjustmentId: item.id,

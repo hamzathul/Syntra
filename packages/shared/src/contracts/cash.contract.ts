@@ -92,21 +92,34 @@ export const transferResponseSchema = z.object({
   updatedAt: z.string(),
 });
 
+// Schema for sale payment as shown in money/bank transaction history
+export const moneySalePaymentResponseSchema = z.object({
+  id: z.string(),
+  saleId: z.string(),
+  partyName: z.string(),
+  date: z.string(),
+  amount: z.number(),
+  description: z.string().nullable(),
+});
+
 export const cashSummaryResponseSchema = z.object({
   balance: z.number(),
   adjustments: z.array(adjustmentResponseSchema),
   transfers: z.array(transferResponseSchema),
+  salePayments: z.array(moneySalePaymentResponseSchema),
 });
 
 export const bankHistoryResponseSchema = z.object({
   balance: z.number(),
   adjustments: z.array(bankAdjustmentResponseSchema),
   transfers: z.array(transferResponseSchema),
+  salePayments: z.array(moneySalePaymentResponseSchema),
 });
 
 export type AdjustmentDto = z.infer<typeof adjustmentResponseSchema>;
 export type BankAdjustmentDto = z.infer<typeof bankAdjustmentResponseSchema>;
 export type TransferDto = z.infer<typeof transferResponseSchema>;
+export type MoneySalePaymentDto = z.infer<typeof moneySalePaymentResponseSchema>;
 export type CashSummaryDto = z.infer<typeof cashSummaryResponseSchema>;
 export type BankHistoryDto = z.infer<typeof bankHistoryResponseSchema>;
 export type AdjustCashDto = z.infer<typeof adjustCashSchema>;

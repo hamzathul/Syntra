@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PlusIcon, PackageIcon } from "lucide-react";
 import type { ItemDto } from "shared";
 import { Button } from "@/components/ui/button";
@@ -86,13 +87,14 @@ export default function ItemsPage() {
 }
 
 function ItemRow({ item }: { item: ItemDto }) {
+  const router = useRouter();
+
   return (
-    <tr className="transition-colors hover:bg-muted/30">
-      <td className="px-4 py-3">
-        <Link href={`/items/${item.id}`} className="font-medium hover:underline">
-          {item.name}
-        </Link>
-      </td>
+    <tr
+      className="cursor-pointer transition-colors hover:bg-muted/30"
+      onClick={() => router.push(`/items/${item.id}`)}
+    >
+      <td className="px-4 py-3 font-medium">{item.name}</td>
       <td className="px-4 py-3">
         <Badge variant={item.itemType === "SERVICE" ? "secondary" : "outline"}>
           {item.itemType}

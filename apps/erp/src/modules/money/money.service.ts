@@ -15,6 +15,7 @@ import type { IMoneyService } from "./money.service.port";
 import {
   toAdjustmentDto,
   toBankAdjustmentDto,
+  toMoneySalePaymentDto,
   toTransferDto,
 } from "./money.mapper";
 
@@ -27,16 +28,18 @@ export class MoneyService implements IMoneyService {
   ) {}
 
   async getCashSummary(companyId: string): Promise<CashSummaryDto> {
-    const [balance, adjustments, transfers] = await Promise.all([
+    const [balance, adjustments, transfers, salePayments] = await Promise.all([
       this.repo.getCashBalance(companyId),
       this.repo.listCashAdjustments(companyId, MOVEMENT_LIMIT),
       this.repo.listCashTransfers(companyId, MOVEMENT_LIMIT),
+      this.repo.listCashSalePayments(companyId, MOVEMENT_LIMIT),
     ]);
 
     return {
       balance,
       adjustments: adjustments.map(toAdjustmentDto),
       transfers: transfers.map(toTransferDto),
+      salePayments: salePayments.map(toMoneySalePaymentDto),
     };
   }
 
@@ -239,16 +242,18 @@ export class MoneyService implements IMoneyService {
     const bank = await this.repo.findBank(bankId, companyId);
     if (!bank) throw new NotFoundError("Bank");
 
-    const [balance, adjustments, transfers] = await Promise.all([
+    const [balance, adjustments, transfers, salePayments] = await Promise.all([
       this.repo.getBankBalance(bankId),
       this.repo.listBankAdjustments(companyId, bankId, MOVEMENT_LIMIT),
       this.repo.listBankTransfers(companyId, bankId, MOVEMENT_LIMIT),
+      this.repo.listBankSalePayments(companyId, bankId, MOVEMENT_LIMIT),
     ]);
 
     return {
       balance,
       adjustments: adjustments.map(toBankAdjustmentDto),
       transfers: transfers.map(toTransferDto),
+      salePayments: salePayments.map(toMoneySalePaymentDto),
     };
   }
 

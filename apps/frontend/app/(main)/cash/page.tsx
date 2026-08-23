@@ -93,6 +93,7 @@ export default function CashPage() {
                 <CashTransactions
                   adjustments={data.adjustments}
                   transfers={data.transfers}
+                  salePayments={data.salePayments}
                   banks={banks}
                   currencySymbol={currencySymbol}
                 />
