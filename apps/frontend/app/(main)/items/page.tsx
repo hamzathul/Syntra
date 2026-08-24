@@ -88,11 +88,21 @@ export default function ItemsPage() {
 
 function ItemRow({ item }: { item: ItemDto }) {
   const router = useRouter();
+  const navigate = () => router.push(`/items/${item.id}`);
 
   return (
     <tr
-      className="cursor-pointer transition-colors hover:bg-muted/30"
-      onClick={() => router.push(`/items/${item.id}`)}
+      className="cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40"
+      role="link"
+      tabIndex={0}
+      aria-label={`View ${item.name}`}
+      onClick={navigate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          navigate();
+        }
+      }}
     >
       <td className="px-4 py-3 font-medium">{item.name}</td>
       <td className="px-4 py-3">

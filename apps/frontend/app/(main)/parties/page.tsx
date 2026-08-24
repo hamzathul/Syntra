@@ -100,10 +100,21 @@ function PartyRow({ party }: { party: PartyDto }) {
               : ""
         }`;
 
+  const navigate = () => router.push(`/parties/${party.id}`);
+
   return (
     <tr
-      className="cursor-pointer transition-colors hover:bg-muted/30"
-      onClick={() => router.push(`/parties/${party.id}`)}
+      className="cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40"
+      role="link"
+      tabIndex={0}
+      aria-label={`View ${party.name}`}
+      onClick={navigate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          navigate();
+        }
+      }}
     >
       <td className="px-4 py-3 font-medium">{party.name}</td>
       <td className="px-4 py-3 text-muted-foreground">

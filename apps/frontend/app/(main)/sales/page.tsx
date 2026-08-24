@@ -97,11 +97,21 @@ export default function SalesPage() {
 
 function SaleRow({ sale }: { sale: SaleDto }) {
   const router = useRouter();
+  const navigate = () => router.push(`/sales/${sale.id}`);
 
   return (
     <tr
-      className="cursor-pointer transition-colors hover:bg-muted/30"
-      onClick={() => router.push(`/sales/${sale.id}`)}
+      className="cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40"
+      role="link"
+      tabIndex={0}
+      aria-label={`View sale for ${sale.partyName}`}
+      onClick={navigate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          navigate();
+        }
+      }}
     >
       <td className="px-4 py-3 font-medium">{sale.saleDate.slice(0, 10)}</td>
       <td className="px-4 py-3">{sale.partyName}</td>

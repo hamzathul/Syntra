@@ -184,19 +184,20 @@ export class SaleService implements ISaleService {
     if (dto.image !== undefined) data.image = dto.image;
     if (dto.document !== undefined) data.document = dto.document;
 
+    const effectiveTotal = dto.totalAmount ?? existing.totalAmount;
+    const effectiveReceived =
+      existing.saleType === "CASH"
+        ? effectiveTotal
+        : (dto.receivedAmount ?? existing.receivedAmount);
+    if (effectiveReceived > effectiveTotal) {
+      throw new BadRequestError(
+        "Received amount cannot exceed the total amount",
+      );
+    }
+
     if (dto.payments !== undefined) {
-      const total = dto.totalAmount ?? existing.totalAmount;
-      const receivedAmount =
-        existing.saleType === "CASH"
-          ? total
-          : (dto.receivedAmount ?? existing.receivedAmount);
-      if (receivedAmount > total) {
-        throw new BadRequestError(
-          "Received amount cannot exceed the total amount",
-        );
-      }
-      this.assertPaymentsTotal(dto.payments, receivedAmount);
-      data.receivedAmount = receivedAmount;
+      this.assertPaymentsTotal(dto.payments, effectiveReceived);
+      data.receivedAmount = effectiveReceived;
       data.payments = dto.payments.map((payment) =>
         this.toPaymentCreateData(payment),
       );
@@ -261,7 +262,7 @@ export class SaleService implements ISaleService {
         ? {
             drawBankName: payment.cheque.drawBankName,
             chequeNumber: payment.cheque.chequeNumber,
-            chequeDate: payment.cheque.chequeDate.toISOString(),
+            chequeDate: payment.cheque.chequeDate.toISOString().slice(0, 10),
           }
         : null,
     }));
@@ -273,7 +274,10 @@ export class SaleService implements ISaleService {
         ? {
             drawBankName: payment.cheque.drawBankName,
             chequeNumber: payment.cheque.chequeNumber,
-            chequeDate: payment.cheque.chequeDate,
+            chequeDate:
+              typeof payment.cheque.chequeDate === "string"
+                ? payment.cheque.chequeDate.slice(0, 10)
+                : payment.cheque.chequeDate,
           }
         : null,
     }));

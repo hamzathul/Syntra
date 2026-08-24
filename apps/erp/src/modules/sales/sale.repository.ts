@@ -1,4 +1,5 @@
 import {
+  BadRequestError,
   ConflictError,
   NotFoundError,
   paginateResult,
@@ -108,6 +109,12 @@ export class SaleRepository implements ISaleRepository {
       if (!existing) throw new NotFoundError("Sale");
 
       if (data.payments) {
+        if (data.receivedAmount === undefined) {
+          throw new BadRequestError(
+            "receivedAmount must be supplied when payments are provided",
+          );
+        }
+
         const locked = existing.payments.some(
           (payment) => payment.cheque && payment.cheque.status !== "RECEIVED",
         );
@@ -224,10 +231,11 @@ export class SaleRepository implements ISaleRepository {
       if (payment.mode === "CASH") {
         await this.applyCashDelta(tx, companyId, payment.amount);
       } else if (payment.mode === "BANK" && payment.bankId) {
-        await tx.bank.update({
-          where: { id: payment.bankId },
+        const { count } = await tx.bank.updateMany({
+          where: { id: payment.bankId, companyId },
           data: { currentBalance: { increment: payment.amount } },
         });
+        if (count === 0) throw new NotFoundError("Bank");
       }
     }
   }
@@ -242,10 +250,11 @@ export class SaleRepository implements ISaleRepository {
       if (payment.mode === "CASH") {
         await this.applyCashDelta(tx, companyId, -amount);
       } else if (payment.mode === "BANK" && payment.bankId) {
-        await tx.bank.update({
-          where: { id: payment.bankId },
+        const { count } = await tx.bank.updateMany({
+          where: { id: payment.bankId, companyId },
           data: { currentBalance: { decrement: amount } },
         });
+        if (count === 0) throw new NotFoundError("Bank");
       }
     }
   }

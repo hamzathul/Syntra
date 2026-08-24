@@ -129,7 +129,7 @@ export function SaleForm({ sale }: SaleFormProps) {
 
   useEffect(() => {
     if (sale) reset(saleFormValuesFromDto(sale));
-  }, [sale, reset]);
+  }, [sale?.id, reset]);
 
   const saleType = watch("saleType");
   const totalAmount = watch("totalAmount");

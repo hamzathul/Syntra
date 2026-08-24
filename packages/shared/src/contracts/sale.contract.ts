@@ -166,8 +166,14 @@ export const updateSaleSchema = z
     const receivedAmount = value.receivedAmount;
     const sum = value.payments.reduce((acc, payment) => acc + payment.amount, 0);
 
-    if (receivedAmount !== undefined && totalAmount !== undefined) {
-      if (receivedAmount > totalAmount) {
+    if (receivedAmount === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["receivedAmount"],
+        message: "receivedAmount must be submitted together with payments",
+      });
+    } else {
+      if (totalAmount !== undefined && receivedAmount > totalAmount) {
         ctx.addIssue({
           code: "custom",
           path: ["receivedAmount"],

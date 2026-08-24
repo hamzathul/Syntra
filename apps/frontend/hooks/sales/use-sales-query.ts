@@ -22,11 +22,14 @@ export const useSale = createGetDetailQueryHook(
 export const useCreateSaleMutation = createMutationHook(
   saleKeys.list,
   salesService.sales.create,
+  [bankKeys.list, moneyKeys.cash],
 );
 
 export const useUpdateSaleMutation = createUpdateMutationHook(
   saleKeys.list,
   salesService.sales.update,
+  [bankKeys.list, moneyKeys.cash],
+  saleKeys.detail,
 );
 
 export const useDeleteSaleMutation = createMutationHook(
