@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Controller,
@@ -127,9 +127,13 @@ export function SaleForm({ sale }: SaleFormProps) {
     name: "payments",
   });
 
+  const syncedSaleId = useRef<string | undefined>(undefined);
   useEffect(() => {
-    if (sale) reset(saleFormValuesFromDto(sale));
-  }, [sale?.id, reset]);
+    if (sale && syncedSaleId.current !== sale.id) {
+      syncedSaleId.current = sale.id;
+      reset(saleFormValuesFromDto(sale));
+    }
+  }, [sale, reset]);
 
   const saleType = watch("saleType");
   const totalAmount = watch("totalAmount");
