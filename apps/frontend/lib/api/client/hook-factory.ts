@@ -46,16 +46,22 @@ export function createUpdateMutationHook<TDto, TResult>(
   keyFactory: () => readonly unknown[],
   mutationFn: (id: string, dto: TDto) => Promise<TResult>,
   additionalKeyFactories: Array<() => readonly unknown[]> = [],
+  detailKeyFactory?: (id: string) => readonly unknown[],
 ) {
   return (): UseMutationResult<TResult, Error, { id: string; dto: TDto }> => {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: (vars: { id: string; dto: TDto }) =>
         mutationFn(vars.id, vars.dto),
-      onSuccess: () => {
+      onSuccess: (_result, vars) => {
         const factories = [keyFactory, ...additionalKeyFactories];
         for (const factory of factories) {
           queryClient.invalidateQueries({ queryKey: factory() });
+        }
+        if (detailKeyFactory) {
+          queryClient.invalidateQueries({
+            queryKey: detailKeyFactory(vars.id),
+          });
         }
       },
     });

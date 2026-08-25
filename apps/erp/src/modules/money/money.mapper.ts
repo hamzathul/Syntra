@@ -1,10 +1,12 @@
 import type {
   AdjustmentDto,
   BankAdjustmentDto,
+  MoneySalePaymentDto,
   TransferDto,
 } from "shared";
 import type {
   BankAdjustmentRecord,
+  SalePaymentRecord,
   CashAdjustmentRecord,
   MoneyTransferNested,
 } from "./money.types";
@@ -52,5 +54,18 @@ export function toTransferDto(record: MoneyTransferNested): TransferDto {
     image: record.image,
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
+  };
+}
+
+export function toMoneySalePaymentDto(
+  record: SalePaymentRecord,
+): MoneySalePaymentDto {
+  return {
+    id: record.id,
+    saleId: record.saleId,
+    partyName: record.partyName,
+    date: record.date.toISOString(),
+    amount: record.amount,
+    description: record.description,
   };
 }

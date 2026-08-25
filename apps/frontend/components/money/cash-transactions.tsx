@@ -5,6 +5,7 @@ import type {
   AdjustmentDto,
   BankDto,
   TransferDto,
+  MoneySalePaymentDto,
 } from "shared";
 import { TransactionList, type TransactionItem } from "./transaction-list";
 import { AdjustCashDialog } from "./adjust-cash-dialog";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 interface CashTransactionsProps {
   readonly adjustments: AdjustmentDto[];
   readonly transfers: TransferDto[];
+  readonly salePayments: MoneySalePaymentDto[];
   readonly banks: BankDto[];
   readonly currencySymbol: string;
 }
@@ -25,6 +27,7 @@ interface CashTransactionsProps {
 export function CashTransactions({
   adjustments,
   transfers,
+  salePayments,
   banks,
   currencySymbol,
 }: CashTransactionsProps) {
@@ -60,6 +63,16 @@ export function CashTransactions({
       amount: t.toBankId === null ? t.amount : -t.amount,
       description: t.description,
       image: t.image,
+    })),
+    ...salePayments.map((s) => ({
+      id: s.id,
+      kind: "sale" as const,
+      label: `${s.partyName} · Sale payment`,
+      date: s.date,
+      amount: s.amount,
+      description: s.description,
+      image: null,
+      href: `/sales/${s.saleId}`,
     })),
   ];
 

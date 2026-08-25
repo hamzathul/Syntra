@@ -44,6 +44,13 @@ export const validateRequest =
       const result = validation.schema.safeParse(validation.value);
 
       if (result.success) {
+        if (validation.location === "body") {
+          request.body = result.data;
+        } else if (validation.location === "params") {
+          request.params = result.data as typeof request.params;
+        } else {
+          request.query = result.data as typeof request.query;
+        }
         return [];
       }
 

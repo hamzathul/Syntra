@@ -1,6 +1,7 @@
 import type { AdjustmentType } from "shared";
 import type {
   BankAdjustmentRecord,
+  SalePaymentRecord,
   CashAdjustmentRecord,
   MoneyTransferNested,
   TransferCreateData,
@@ -84,4 +85,10 @@ export interface IMoneyRepository {
     bankId: string | null,
     limit: number,
   ): Promise<MoneyTransferNested[]>;
+  listBankSalePayments(
+    companyId: string,
+    bankId: string,
+    limit: number,
+  ): Promise<SalePaymentRecord[]>;
+  listCashSalePayments(companyId: string, limit: number): Promise<SalePaymentRecord[]>;
 }

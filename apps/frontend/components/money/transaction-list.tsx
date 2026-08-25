@@ -9,10 +9,12 @@ import {
   HistoryIcon,
   Loader2Icon,
   PencilIcon,
+  ReceiptIcon,
   SlidersHorizontal,
   Trash2Icon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -25,12 +27,13 @@ import { toast } from "sonner";
 
 export interface TransactionItem {
   readonly id: string;
-  readonly kind: "adjustment" | "transfer";
+  readonly kind: "adjustment" | "transfer" | "sale";
   readonly label: string;
   readonly date: string;
   readonly amount: number;
   readonly description: string | null;
   readonly image: string | null;
+  readonly href?: string;
 }
 
 interface TransactionListProps {
@@ -91,6 +94,8 @@ export function TransactionList({
             >
               {item.kind === "adjustment" ? (
                 <SlidersHorizontal className="h-4 w-4" />
+              ) : item.kind === "sale" ? (
+                <ReceiptIcon className="h-4 w-4" />
               ) : item.amount >= 0 ? (
                 <ArrowDownLeft className="h-4 w-4" />
               ) : (
@@ -118,24 +123,40 @@ export function TransactionList({
                   {formatAmount(item.amount, currencySymbol)}
                 </span>
               </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={() => onEdit(item)}
-                aria-label="Edit transaction"
-              >
-                <PencilIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 hover:text-destructive"
-                onClick={() => setDeleteTarget(item)}
-                aria-label="Delete transaction"
-              >
-                <Trash2Icon className="h-4 w-4 text-destructive" />
-              </Button>
+              {item.href ? (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  asChild
+                  aria-label="View sale"
+                >
+                  <Link href={item.href}>
+                    <PencilIcon className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => onEdit(item)}
+                  aria-label="Edit transaction"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </Button>
+              )}
+              {!item.href && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 hover:text-destructive"
+                  onClick={() => setDeleteTarget(item)}
+                  aria-label="Delete transaction"
+                >
+                  <Trash2Icon className="h-4 w-4 text-destructive" />
+                </Button>
+              )}
             </div>
           </li>
         ))}

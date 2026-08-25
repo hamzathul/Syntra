@@ -11,6 +11,7 @@ import {
 } from "./money.record";
 import type {
   BankAdjustmentRecord,
+  SalePaymentRecord,
   CashAdjustmentRecord,
   MoneyTransferNested,
   TransferCreateData,
@@ -478,5 +479,50 @@ export class MoneyRepository implements IMoneyRepository {
       include: TRANSFER_INCLUDE,
     });
     return rows.map((row) => toTransferRecord(row as never));
+  }
+
+  async listBankSalePayments(
+    companyId: string,
+    bankId: string,
+    limit: number,
+  ): Promise<SalePaymentRecord[]> {
+    const rows = await this.db.salePayment.findMany({
+      where: { companyId, bankId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        sale: { include: { party: { select: { name: true } } } },
+      },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      saleId: row.saleId,
+      partyName: row.sale.party.name,
+      date: row.sale.saleDate,
+      amount: Number(row.amount),
+      description: row.description,
+    }));
+  }
+
+  async listCashSalePayments(
+    companyId: string,
+    limit: number,
+  ): Promise<SalePaymentRecord[]> {
+    const rows = await this.db.salePayment.findMany({
+      where: { companyId, bankId: null },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        sale: { include: { party: { select: { name: true } } } },
+      },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      saleId: row.saleId,
+      partyName: row.sale.party.name,
+      date: row.sale.saleDate,
+      amount: Number(row.amount),
+      description: row.description,
+    }));
   }
 }
