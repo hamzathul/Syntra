@@ -100,6 +100,17 @@ def _fallback_code(status_code: int) -> str:
     }.get(status_code, "INTERNAL_SERVER_ERROR")
 
 
+def _fallback_message(status_code: int) -> str:
+    return {
+        400: "Bad request",
+        401: "Authentication is required",
+        403: "You do not have permission to access this resource",
+        404: "Resource was not found",
+        409: "Resource already exists",
+        422: "Request validation failed",
+    }.get(status_code, "Something went wrong")
+
+
 def _log_error(request: Request, err: BaseException, message: str) -> None:
     # request_id is also attached via contextvars — included explicitly for grep-ability.
     log.error(
@@ -150,7 +161,9 @@ def register_exception_handlers(app: FastAPI, *, is_production: bool) -> None:
     @app.exception_handler(StarletteHTTPException)
     async def _handle_http(request: Request, err: StarletteHTTPException) -> JSONResponse:
         # Covers router 404s (the notFoundHandler equivalent) and auth rejections.
-        message = str(err.detail) if err.detail else "Not found"
+        # Never echo `err.detail` publicly — it can carry framework/internal
+        # strings. Internal detail stays in logs via `exc_info`.
+        message = _fallback_message(err.status_code)
         _log_error(request, err, message)
         return error_envelope(
             message=message,
