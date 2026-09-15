@@ -108,6 +108,7 @@ def _log_error(request: Request, err: BaseException, message: str) -> None:
         method=request.method,
         path=request.url.path,
         error_name=type(err).__name__,
+        exc_info=err,
     )
 
 
