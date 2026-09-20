@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Send, Sparkles, X } from "lucide-react";
+import { Loader2, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AssistantLogo } from "@/components/ai/assistant-logo";
 import { ChatMarkdown } from "@/components/ai/chat-markdown";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { useCompany } from "@/lib/company-context";
@@ -77,12 +78,12 @@ export function AiChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-3">
       {open && (
         <Card className="flex h-[480px] w-[min(380px,calc(100vw-3rem))] flex-col shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b p-4">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4" />
+              <AssistantLogo className="h-6 w-6" />
               Ask Syntra
             </CardTitle>
             <Button
@@ -171,14 +172,20 @@ export function AiChatWidget() {
         </Card>
       )}
 
-      <Button
-        size="icon"
-        className="h-12 w-12 rounded-full shadow-lg"
+      <button
+        type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-label={open ? "Hide AI assistant" : "Open AI assistant"}
+        className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
-      </Button>
+        {open ? (
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <X className="h-5 w-5" />
+          </span>
+        ) : (
+          <AssistantLogo className="h-12 w-12" />
+        )}
+      </button>
     </div>
   );
 }
