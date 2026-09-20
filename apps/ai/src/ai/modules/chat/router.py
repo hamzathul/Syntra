@@ -1,8 +1,9 @@
 """Chat routes — thin adapters: call the service, wrap in the V1 envelope."""
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 from ai.core.envelope import SuccessEnvelope, success_envelope
+from ai.modules.chat.auth import ChatAuth, get_chat_auth
 from ai.modules.chat.schemas import ChatRequest, ChatResponse
 from ai.modules.chat.service import handle_chat
 
@@ -14,5 +15,9 @@ router = APIRouter(tags=["chat"])
 @router.post(
     "/chat", response_model=SuccessEnvelope[ChatResponse], response_model_exclude_none=True
 )
-def post_chat(payload: ChatRequest, request: Request) -> SuccessEnvelope[ChatResponse]:
-    return success_envelope("Chat reply", handle_chat(payload), request)
+async def post_chat(
+    payload: ChatRequest,
+    request: Request,
+    auth: ChatAuth = Depends(get_chat_auth),  # noqa: B008 — canonical FastAPI DI
+) -> SuccessEnvelope[ChatResponse]:
+    return success_envelope("Chat reply", await handle_chat(payload, auth), request)
