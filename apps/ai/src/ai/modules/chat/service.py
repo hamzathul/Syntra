@@ -1,7 +1,7 @@
 """Chat service — plain functions, no HTTP concepts (`Request` never appears here).
 
-M3: echo fallback when no LLM key is configured, otherwise the LangGraph
-ReAct agent (`graph.run_agent`) with 4 ERP tools and thread memory.
+Echo fallback when no LLM key is configured (tests, local dev); otherwise
+the LangGraph ReAct agent (`graph.run_agent`) with ERP tools and thread memory.
 """
 
 import uuid
@@ -34,6 +34,6 @@ async def handle_chat(payload: ChatRequest, auth: ChatAuth) -> ChatResponse:
             payload.message, thread_id, auth.bearer_token, auth.company_id
         )
     except Exception as exc:
-        log.error("chat llm failed", error=str(exc))
+        # Logged once by the global error handler — don't log here too.
         raise InternalServerError("Assistant is temporarily unavailable") from exc
     return ChatResponse(reply=reply, thread_id=thread_id, tool_calls=used_tools)

@@ -1,4 +1,4 @@
-"""Stock tool tests — aggregation only; `fetch_items` is monkeypatched."""
+"""Stock aggregation tests — pure `summarize_stock` (fetchers need live ERP)."""
 
 from ai.modules.chat.tools.erp_stock import summarize_stock
 

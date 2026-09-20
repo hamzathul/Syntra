@@ -1,4 +1,4 @@
-"""Cash tool tests — aggregation only; fetchers are monkeypatched."""
+"""Cash aggregation tests — pure `summarize_cash` (fetchers need live ERP)."""
 
 from ai.modules.chat.tools.erp_cash import summarize_cash
 

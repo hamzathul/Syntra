@@ -1,4 +1,4 @@
-"""Chat graph — the LangGraph ReAct loop (M3 learning target).
+"""Chat graph — the LangGraph ReAct loop.
 
 Shape: `START → agent ⇄ tools → END`.
 * `agent` — `ChatOpenAI.bind_tools(tools)` over `[SystemMessage] + history`.
@@ -8,13 +8,12 @@ Shape: `START → agent ⇄ tools → END`.
 * `should_continue` — last `AIMessage` has `tool_calls` → loop, else finish.
 
 Memory: module-level `MemorySaver` shared by every per-request compilation,
-keyed by `thread_id`. In-memory = lost on restart AND requires a single
-uvicorn worker (documented limitation; Postgres checkpointer is the M4 path).
+keyed by `thread_id`. In-memory = lost on restart and requires a single
+uvicorn worker (a Postgres checkpointer is the future upgrade path).
 """
 
 from typing import Any, Literal
 
-import structlog
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
@@ -28,15 +27,13 @@ from ai.modules.chat.tools.erp_overdue import build_overdue_tool
 from ai.modules.chat.tools.erp_sales import build_sales_summary_tool
 from ai.modules.chat.tools.erp_stock import build_low_stock_tool
 
-log = structlog.get_logger(__name__)
-
 _SYSTEM_PROMPT = (
     "You are Syntra, a company-scoped ERP assistant. "
     "Never invent numbers — always call a tool for sales, stock, "
     "receivables, or cash questions. If a tool reports an error, relay it "
     "honestly. Keep replies short."
 )
-_RECURSION_LIMIT = 10  # ≈ 5 agent↔tool rounds, same budget as the M2 loop.
+_RECURSION_LIMIT = 10  # ≈ 5 agent↔tool rounds.
 
 # The only cross-request state: conversation history by thread_id.
 _checkpointer = MemorySaver()
@@ -93,7 +90,9 @@ def extract_reply(messages: list[Any]) -> tuple[str, list[str]]:
     used: list[str] = []
     for message in messages:
         if isinstance(message, AIMessage) and message.tool_calls:
-            used.extend(call.get("name", "") for call in message.tool_calls)
+            used.extend(
+                call.get("name", "") for call in message.tool_calls if isinstance(call, dict)
+            )
     reply = "I could not finish that, please try again."
     for message in reversed(messages):
         if isinstance(message, AIMessage) and isinstance(message.content, str) and message.content:

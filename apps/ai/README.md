@@ -1,6 +1,7 @@
 # Syntra AI service
 
-FastAPI service for the upcoming LangChain/LangGraph chatbot. Skeleton with `GET /health` only.
+FastAPI service for the LangChain/LangGraph chatbot: `GET /health` plus
+`POST /api/v1/chat` (LangGraph ReAct agent with ERP tools + thread memory).
 
 > Pure Python (`uv`) project — intentionally **no `package.json`**, so `pnpm`/`turbo`
 > ignore it. Conventions live in `apps/ai/AGENTS.md`.

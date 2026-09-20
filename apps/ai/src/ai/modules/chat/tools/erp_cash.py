@@ -1,50 +1,25 @@
-"""ERP cash tool — read-only aggregation.
+"""ERP cash tool — read-only aggregation over `GET /api/v1/money/cash` + `/banks`.
 
-Fetches `GET /api/v1/money/cash` (cash `balance`) and `GET /api/v1/banks`
-(each bank's `currentBalance`), then reports cash + per-bank + combined
-total. Small, truthful numbers — never raw movement lists.
+Reports cash-on-hand plus per-bank balances and the combined total.
+Small, truthful numbers — never raw movement lists.
 """
 
 from typing import Any
 
-import httpx
-import structlog
 from langchain_core.tools import tool
 
-from ai.core.config import get_settings
-
-log = structlog.get_logger(__name__)
-
-_TIMEOUT_SECONDS = 5.0
-
-
-def _headers(bearer_token: str, company_id: str) -> dict[str, str]:
-    return {"Authorization": f"Bearer {bearer_token}", "X-Company-Id": company_id}
+from ai.modules.chat.tools._erp import ErpError, erp_get
 
 
 def fetch_cash(bearer_token: str, company_id: str) -> dict[str, Any]:
-    """Fetch the cash summary from ERP. Separated for testability (monkeypatch me)."""
-    settings = get_settings()
-    response = httpx.get(
-        f"{settings.ERP_API_URL}/api/v1/money/cash",
-        headers=_headers(bearer_token, company_id),
-        timeout=_TIMEOUT_SECONDS,
-    )
-    response.raise_for_status()
-    data = response.json()["data"]
+    """Fetch the cash summary from ERP. Separated for testability."""
+    data = erp_get("/api/v1/money/cash", bearer_token, company_id, label="cash")
     return data if isinstance(data, dict) else {}
 
 
 def fetch_banks(bearer_token: str, company_id: str) -> list[dict[str, Any]]:
-    """Fetch banks from ERP. Separated for testability (monkeypatch me)."""
-    settings = get_settings()
-    response = httpx.get(
-        f"{settings.ERP_API_URL}/api/v1/banks",
-        headers=_headers(bearer_token, company_id),
-        timeout=_TIMEOUT_SECONDS,
-    )
-    response.raise_for_status()
-    data = response.json()["data"]
+    """Fetch banks from ERP. Separated for testability."""
+    data = erp_get("/api/v1/banks", bearer_token, company_id, label="banks")
     return data if isinstance(data, list) else []
 
 
@@ -78,12 +53,8 @@ def build_cash_tool(bearer_token: str, company_id: str):  # type: ignore[no-unty
         try:
             cash = fetch_cash(bearer_token, company_id)
             banks = fetch_banks(bearer_token, company_id)
-        except httpx.HTTPStatusError as exc:
-            log.warn("cash tool erp rejected", status_code=exc.response.status_code)
-            return "ERP rejected the request (invalid token or company)."
-        except httpx.HTTPError as exc:
-            log.warn("cash tool erp unreachable", error=str(exc))
-            return "ERP is currently unreachable, try again shortly."
+        except ErpError as exc:
+            return exc.message
         return summarize_cash(cash, banks)
 
     return get_cash_balance

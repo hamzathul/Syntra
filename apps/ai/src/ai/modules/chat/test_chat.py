@@ -1,4 +1,4 @@
-"""Chat endpoint tests — echo slice with auth gate; LLM/tools arrive in M3."""
+"""Chat endpoint tests — echo path (no LLM key) behind the auth gate (overridden here)."""
 
 from collections.abc import Generator
 

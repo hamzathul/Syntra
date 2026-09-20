@@ -43,38 +43,36 @@ async def get_chat_auth(request: Request) -> ChatAuth:
     settings = get_settings()
     token = _bearer_token(request)
 
-    try:
-        async with httpx.AsyncClient(timeout=_TIMEOUT_SECONDS) as client:
+    async with httpx.AsyncClient(timeout=_TIMEOUT_SECONDS) as client:
+        try:
             me = await client.get(
                 f"{settings.CORE_API_URL}/api/v1/auth/me",
                 headers={"Authorization": f"Bearer {token}"},
             )
-    except httpx.HTTPError as exc:
-        log.warn("chat auth core unreachable", error=str(exc))
-        raise InternalServerError("Authentication service is unavailable") from exc
+        except httpx.HTTPError as exc:
+            log.warn("chat auth core unreachable", error=str(exc))
+            raise InternalServerError("Authentication service is unavailable") from exc
+        if me.status_code != 200:
+            log.warn("chat auth rejected", status_code=me.status_code)
+            raise UnauthorizedError("Invalid or expired token")
+        try:
+            user_id = str(me.json()["data"]["id"])
+        except (KeyError, TypeError, ValueError) as exc:
+            log.warn("chat auth bad core payload", error=str(exc))
+            raise UnauthorizedError("Invalid or expired token") from exc
 
-    if me.status_code != 200:
-        log.warn("chat auth rejected", status_code=me.status_code)
-        raise UnauthorizedError("Invalid or expired token")
-    try:
-        user_id = str(me.json()["data"]["id"])
-    except (KeyError, TypeError, ValueError) as exc:
-        log.warn("chat auth bad core payload", error=str(exc))
-        raise UnauthorizedError("Invalid or expired token") from exc
+        company_id = request.headers.get("x-company-id", "").strip()
+        if not company_id:
+            raise BadRequestError("X-Company-Id header is required")
 
-    company_id = request.headers.get("x-company-id", "").strip()
-    if not company_id:
-        raise BadRequestError("X-Company-Id header is required")
-
-    try:
-        async with httpx.AsyncClient(timeout=_TIMEOUT_SECONDS) as client:
+        try:
             companies = await client.get(
                 f"{settings.ERP_API_URL}/api/v1/companies",
                 headers={"Authorization": f"Bearer {token}"},
             )
-    except httpx.HTTPError as exc:
-        log.warn("chat company check unreachable", error=str(exc))
-        raise InternalServerError("Company service is unavailable") from exc
+        except httpx.HTTPError as exc:
+            log.warn("chat company check unreachable", error=str(exc))
+            raise InternalServerError("Company service is unavailable") from exc
 
     if companies.status_code != 200:
         log.warn("chat company check rejected", status_code=companies.status_code)

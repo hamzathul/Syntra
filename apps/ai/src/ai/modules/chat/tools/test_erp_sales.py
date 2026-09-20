@@ -1,4 +1,4 @@
-"""Sales tool tests — aggregation only; `fetch_sales` is monkeypatched."""
+"""Sales aggregation tests — pure `summarize_sales` (fetchers need live ERP)."""
 
 from ai.modules.chat.tools.erp_sales import summarize_sales
 

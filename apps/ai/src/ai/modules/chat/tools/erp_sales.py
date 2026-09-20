@@ -1,23 +1,16 @@
-"""ERP sales tool — first LangChain `@tool` (M2). Read-only aggregation.
+"""ERP sales tool — read-only aggregation over `GET /api/v1/sales`.
 
-Calls ERP `GET /api/v1/sales?limit=100` with the request's Bearer token +
-`X-Company-Id`, then aggregates in Python (ERP has no summary endpoint).
-Period filtering happens here so the model gets small, truthful numbers —
-never raw sale lists.
+Aggregates in Python (ERP has no summary endpoint). Period filtering happens
+here so the model gets small, truthful numbers — never raw sale lists.
 """
 
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
-import httpx
-import structlog
 from langchain_core.tools import tool
 
-from ai.core.config import get_settings
+from ai.modules.chat.tools._erp import ErpError, erp_get
 
-log = structlog.get_logger(__name__)
-
-_TIMEOUT_SECONDS = 5.0
 _MAX_SALES = 100
 
 Period = Literal["last_7d", "last_30d", "this_month"]
@@ -44,17 +37,11 @@ def _parse_date(value: Any) -> datetime | None:
 
 
 def fetch_sales(bearer_token: str, company_id: str) -> list[dict[str, Any]]:
-    """Fetch up to 100 sales from ERP. Separated for testability (monkeypatch me)."""
-    settings = get_settings()
-    response = httpx.get(
-        f"{settings.ERP_API_URL}/api/v1/sales",
-        params={"limit": _MAX_SALES},
-        headers={"Authorization": f"Bearer {bearer_token}", "X-Company-Id": company_id},
-        timeout=_TIMEOUT_SECONDS,
+    """Fetch up to 100 sales from ERP. Separated for testability."""
+    data = erp_get(
+        "/api/v1/sales", bearer_token, company_id, label="sales", params={"limit": _MAX_SALES}
     )
-    response.raise_for_status()
-    data = response.json()["data"]
-    items = data["items"] if isinstance(data, dict) else data
+    items = data.get("items", []) if isinstance(data, dict) else data
     return items if isinstance(items, list) else []
 
 
@@ -101,12 +88,8 @@ def build_sales_summary_tool(bearer_token: str, company_id: str):  # type: ignor
         """
         try:
             items = fetch_sales(bearer_token, company_id)
-        except httpx.HTTPStatusError as exc:
-            log.warn("sales tool erp rejected", status_code=exc.response.status_code)
-            return "ERP rejected the sales request (invalid token or company)."
-        except httpx.HTTPError as exc:
-            log.warn("sales tool erp unreachable", error=str(exc))
-            return "ERP is currently unreachable, try again shortly."
+        except ErpError as exc:
+            return exc.message
         return summarize_sales(items, period)
 
     return get_sales_summary

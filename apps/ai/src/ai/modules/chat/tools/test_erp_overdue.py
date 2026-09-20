@@ -1,4 +1,4 @@
-"""Overdue tool tests — aggregation only; fetchers are monkeypatched."""
+"""Overdue aggregation tests — pure `summarize_overdue` (fetchers need live ERP)."""
 
 from ai.modules.chat.tools.erp_overdue import summarize_overdue
 
