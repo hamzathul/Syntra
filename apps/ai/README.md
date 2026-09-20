@@ -1,6 +1,7 @@
 # Syntra AI service
 
-FastAPI service for the upcoming LangChain/LangGraph chatbot. Skeleton with `GET /health` only.
+FastAPI service for the LangChain/LangGraph chatbot: `GET /health` plus
+`POST /api/v1/chat` (LangGraph ReAct agent with ERP tools + thread memory).
 
 > Pure Python (`uv`) project — intentionally **no `package.json`**, so `pnpm`/`turbo`
 > ignore it. Conventions live in `apps/ai/AGENTS.md`.
@@ -36,8 +37,11 @@ src/ai/
   main.py            # create_app() + lifespan + middleware order
   core/              # config (fail-fast settings), logging, errors, envelope
   middlewares/       # request-id (+ structlog correlation), access log
-  api/router.py      # mounts public /health BEFORE /api; v1 placeholder
+  api/router.py      # mounts public /health BEFORE /api
+  api/v1/router.py   # mounts versioned routers (/v1 exactly once)
   modules/health/    # router (thin) + service (plain fns) + schemas + tests
+  modules/chat/      # chat router + service + auth + graph + schemas + tests
+  modules/chat/tools/ # read-only ERP tools (sales, stock, overdue, cash)
 ```
 
 ## Conventions (Python idioms, not ported TypeScript)
