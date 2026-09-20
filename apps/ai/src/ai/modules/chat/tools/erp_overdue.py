@@ -9,27 +9,19 @@ from typing import Any
 
 from langchain_core.tools import tool
 
-from ai.modules.chat.tools._erp import ErpError, erp_get
+from ai.modules.chat.tools._erp import ErpError, erp_get_all
 from ai.modules.chat.tools.erp_sales import fetch_sales
 
-_MAX_PARTIES = 100
 _MAX_LINES = 10
 
 
-def fetch_parties(bearer_token: str, company_id: str) -> list[dict[str, Any]]:
-    """Fetch up to 100 parties from ERP. Separated for testability."""
-    data = erp_get(
-        "/api/v1/parties",
-        bearer_token,
-        company_id,
-        label="parties",
-        params={"limit": _MAX_PARTIES},
-    )
-    items = data.get("items", []) if isinstance(data, dict) else data
-    return items if isinstance(items, list) else []
+def fetch_parties(bearer_token: str, company_id: str) -> tuple[list[dict[str, Any]], bool]:
+    """Fetch recent parties from ERP (paged). Returns `(parties, complete)`."""
+    items, complete = erp_get_all("/api/v1/parties", bearer_token, company_id, label="parties")
+    return [item for item in items if isinstance(item, dict)], complete
 
 
-def summarize_overdue(parties: list[Any], sales: list[Any]) -> str:
+def summarize_overdue(parties: list[Any], sales: list[Any], *, complete: bool = True) -> str:
     names: dict[str, str] = {}
     opening: dict[str, float] = {}
     for party in parties:
@@ -70,7 +62,8 @@ def summarize_overdue(parties: list[Any], sales: list[Any]) -> str:
     extra = f" (+{len(ranked) - _MAX_LINES} more)" if len(ranked) > _MAX_LINES else ""
     total = sum(dues.values())
     header = f"Outstanding receivables ({len(ranked)} parties, total={total:.2f}){extra}:\n"
-    return header + "\n".join(lines)
+    note = "" if complete else "\nNote: based on the most recent records; older ones excluded."
+    return header + "\n".join(lines) + note
 
 
 def build_overdue_tool(bearer_token: str, company_id: str):  # type: ignore[no-untyped-def]
@@ -80,10 +73,10 @@ def build_overdue_tool(bearer_token: str, company_id: str):  # type: ignore[no-u
     def list_overdue_parties() -> str:
         """List parties with unpaid balances, largest debtors first."""
         try:
-            parties = fetch_parties(bearer_token, company_id)
-            sales = fetch_sales(bearer_token, company_id)
+            parties, parties_complete = fetch_parties(bearer_token, company_id)
+            sales, sales_complete = fetch_sales(bearer_token, company_id)
         except ErpError as exc:
             return exc.message
-        return summarize_overdue(parties, sales)
+        return summarize_overdue(parties, sales, complete=parties_complete and sales_complete)
 
     return list_overdue_parties

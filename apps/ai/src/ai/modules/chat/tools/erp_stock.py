@@ -8,19 +8,15 @@ from typing import Any
 
 from langchain_core.tools import tool
 
-from ai.modules.chat.tools._erp import ErpError, erp_get
+from ai.modules.chat.tools._erp import ErpError, erp_get_all
 
-_MAX_ITEMS = 100
 _MAX_LINES = 10
 
 
-def fetch_items(bearer_token: str, company_id: str) -> list[dict[str, Any]]:
-    """Fetch up to 100 items from ERP. Separated for testability."""
-    data = erp_get(
-        "/api/v1/items", bearer_token, company_id, label="items", params={"limit": _MAX_ITEMS}
-    )
-    items = data.get("items", []) if isinstance(data, dict) else data
-    return items if isinstance(items, list) else []
+def fetch_items(bearer_token: str, company_id: str) -> tuple[list[dict[str, Any]], bool]:
+    """Fetch recent items from ERP (paged). Returns `(items, complete)`."""
+    items, complete = erp_get_all("/api/v1/items", bearer_token, company_id, label="items")
+    return [item for item in items if isinstance(item, dict)], complete
 
 
 def find_low_stock(items: list[Any]) -> list[dict[str, Any]]:
@@ -39,7 +35,7 @@ def find_low_stock(items: list[Any]) -> list[dict[str, Any]]:
     return low
 
 
-def summarize_stock(items: list[Any]) -> str:
+def summarize_stock(items: list[Any], *, complete: bool = True) -> str:
     low = find_low_stock(items)
     if not low:
         return "No low-stock items found."
@@ -49,7 +45,8 @@ def summarize_stock(items: list[Any]) -> str:
         for item in low[:_MAX_LINES]
     ]
     extra = f" (+{len(low) - _MAX_LINES} more)" if len(low) > _MAX_LINES else ""
-    return f"Low-stock items ({len(low)}){extra}:\n" + "\n".join(lines)
+    note = "" if complete else f"\nNote: based on the {len(items)} most recent items."
+    return f"Low-stock items ({len(low)}){extra}:\n" + "\n".join(lines) + note
 
 
 def build_low_stock_tool(bearer_token: str, company_id: str):  # type: ignore[no-untyped-def]
@@ -59,9 +56,9 @@ def build_low_stock_tool(bearer_token: str, company_id: str):  # type: ignore[no
     def list_low_stock_items() -> str:
         """List items at or below their minimum stock quantity."""
         try:
-            items = fetch_items(bearer_token, company_id)
+            items, complete = fetch_items(bearer_token, company_id)
         except ErpError as exc:
             return exc.message
-        return summarize_stock(items)
+        return summarize_stock(items, complete=complete)
 
     return list_low_stock_items

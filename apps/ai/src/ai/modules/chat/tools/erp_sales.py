@@ -9,9 +9,8 @@ from typing import Any, Literal
 
 from langchain_core.tools import tool
 
-from ai.modules.chat.tools._erp import ErpError, erp_get
+from ai.modules.chat.tools._erp import MAX_RECORDS, ErpError, erp_get_all
 
-_MAX_SALES = 100
 _MAX_LINES = 10
 
 Period = Literal["last_7d", "last_30d", "this_month"]
@@ -37,16 +36,13 @@ def _parse_date(value: Any) -> datetime | None:
     return parsed
 
 
-def fetch_sales(bearer_token: str, company_id: str) -> list[dict[str, Any]]:
-    """Fetch up to 100 sales from ERP. Separated for testability."""
-    data = erp_get(
-        "/api/v1/sales", bearer_token, company_id, label="sales", params={"limit": _MAX_SALES}
-    )
-    items = data.get("items", []) if isinstance(data, dict) else data
-    return items if isinstance(items, list) else []
+def fetch_sales(bearer_token: str, company_id: str) -> tuple[list[dict[str, Any]], bool]:
+    """Fetch recent sales from ERP (paged). Returns `(items, complete)`."""
+    items, complete = erp_get_all("/api/v1/sales", bearer_token, company_id, label="sales")
+    return [item for item in items if isinstance(item, dict)], complete
 
 
-def summarize_sales(items: list[dict[str, Any]], period: Period) -> str:
+def summarize_sales(items: list[dict[str, Any]], period: Period, *, complete: bool = True) -> str:
     now = datetime.now(UTC)
     cutoff = _cutoff(period, now)
     count = 0
@@ -76,7 +72,12 @@ def summarize_sales(items: list[dict[str, Any]], period: Period) -> str:
             )
         )
     outstanding = total - received
-    scope = f"up to {_MAX_SALES} most recent sales" if count >= _MAX_SALES else f"{count} sales"
+    if complete:
+        scope = (
+            f"up to {MAX_RECORDS} most recent sales" if count >= MAX_RECORDS else f"{count} sales"
+        )
+    else:
+        scope = f"{len(items)} most recent sales (older records excluded)"
     summary = (
         f"Sales {period} ({scope}): "
         f"count={count}, total={total:.2f}, received={received:.2f}, "
@@ -112,9 +113,9 @@ def build_sales_summary_tool(bearer_token: str, company_id: str):  # type: ignor
             period: one of last_7d, last_30d, this_month.
         """
         try:
-            items = fetch_sales(bearer_token, company_id)
+            items, complete = fetch_sales(bearer_token, company_id)
         except ErpError as exc:
             return exc.message
-        return summarize_sales(items, period)
+        return summarize_sales(items, period, complete=complete)
 
     return get_sales_summary

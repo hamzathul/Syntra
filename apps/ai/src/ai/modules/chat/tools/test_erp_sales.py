@@ -60,3 +60,13 @@ def test_summarize_sales_empty_has_no_transactions() -> None:
 
     assert "count=0" in result
     assert "Recent transactions" not in result
+
+
+def test_summarize_sales_discloses_truncation() -> None:
+    items = [
+        {"saleDate": "2026-09-10T00:00:00Z", "totalAmount": 100, "receivedAmount": 100},
+    ]
+
+    result = summarize_sales(items, "last_30d", complete=False)
+
+    assert "older records excluded" in result
