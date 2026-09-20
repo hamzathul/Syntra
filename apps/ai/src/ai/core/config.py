@@ -24,6 +24,17 @@ class Settings(BaseSettings):
     LOG_LEVEL: LogLevel = "info"
     CORS_ORIGINS: str = "*"
 
+    # Upstream services (ERP read APIs + Core identity check).
+    CORE_API_URL: str = "http://localhost:3001"
+    ERP_API_URL: str = "http://localhost:3002"
+
+    # LLM via OpenRouter (OpenAI-compatible endpoint).
+    LLM_BASE_URL: str = "https://openrouter.ai/api/v1"
+    LLM_API_KEY: str = ""
+    LLM_MODEL: str = "openai/gpt-4o-mini"
+    LLM_APP_URL: str = ""
+    LLM_APP_TITLE: str = "Syntra"
+
     @property
     def cors_origins(self) -> list[str]:
         """Split comma list; wildcard stays a single `"*"` entry for CORSMiddleware."""

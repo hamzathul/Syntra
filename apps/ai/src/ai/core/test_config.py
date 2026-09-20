@@ -13,7 +13,20 @@ def _clean_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     # Hermetic: clear every var Settings reads AND run from an empty dir so a
     # local customized `.env` can't be picked up. (Uses only public APIs —
     # `_env_file=` isn't in the typed `__init__` signature.)
-    for var in ("ENVIRONMENT", "NODE_ENV", "PORT", "LOG_LEVEL", "CORS_ORIGINS"):
+    for var in (
+        "ENVIRONMENT",
+        "NODE_ENV",
+        "PORT",
+        "LOG_LEVEL",
+        "CORS_ORIGINS",
+        "CORE_API_URL",
+        "ERP_API_URL",
+        "LLM_BASE_URL",
+        "LLM_API_KEY",
+        "LLM_MODEL",
+        "LLM_APP_URL",
+        "LLM_APP_TITLE",
+    ):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.chdir(tmp_path)
 
