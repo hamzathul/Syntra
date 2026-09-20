@@ -19,9 +19,13 @@ log = structlog.get_logger(__name__)
 
 async def handle_chat(payload: ChatRequest, auth: ChatAuth) -> ChatResponse:
     thread_id = payload.thread_id or str(uuid.uuid4())
+    settings = get_settings()
 
-    # No key (tests, local dev): stay on the echo path, auth already verified.
-    if not get_settings().LLM_API_KEY:
+    # No key: echo only outside production (tests, local dev). Production
+    # without a key is a misconfiguration — fail loudly, never fake a reply.
+    if not settings.LLM_API_KEY:
+        if settings.is_production:
+            raise InternalServerError("Assistant is temporarily unavailable")
         log.debug("chat echo", action="chat.echo", thread_id=thread_id)
         return ChatResponse(
             reply=f"Echo: {payload.message}",

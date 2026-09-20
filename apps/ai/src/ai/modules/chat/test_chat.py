@@ -70,3 +70,31 @@ def test_post_chat_requires_auth() -> None:
 
     assert response.status_code == 401
     assert response.json()["status"] == "error"
+
+
+def test_post_chat_fails_loudly_without_key_in_production(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("LLM_API_KEY", "")
+    get_settings.cache_clear()
+    try:
+        app = create_app()
+
+        async def _fake_auth() -> ChatAuth:
+            return ChatAuth(user_id="user-1", bearer_token="test-token", company_id="company-1")
+
+        app.dependency_overrides[get_chat_auth] = _fake_auth
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(
+                "/api/v1/chat",
+                json={"message": "hi"},
+                headers={"Authorization": "Bearer test-token", "X-Company-Id": "company-1"},
+            )
+    finally:
+        get_settings.cache_clear()
+
+    assert response.status_code == 500
+    body = response.json()
+    assert body["status"] == "error"
+    assert body["message"] == "Assistant is temporarily unavailable"
