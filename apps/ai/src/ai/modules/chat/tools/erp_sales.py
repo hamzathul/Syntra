@@ -12,6 +12,7 @@ from langchain_core.tools import tool
 from ai.modules.chat.tools._erp import ErpError, erp_get
 
 _MAX_SALES = 100
+_MAX_LINES = 10
 
 Period = Literal["last_7d", "last_30d", "this_month"]
 
@@ -51,6 +52,7 @@ def summarize_sales(items: list[dict[str, Any]], period: Period) -> str:
     count = 0
     total = 0.0
     received = 0.0
+    kept: list[tuple[str, str, float, float]] = []
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -58,18 +60,38 @@ def summarize_sales(items: list[dict[str, Any]], period: Period) -> str:
         if sale_date is not None and sale_date < cutoff:
             continue
         try:
-            total += float(item.get("totalAmount", 0) or 0)
-            received += float(item.get("receivedAmount", 0) or 0)
+            item_total = float(item.get("totalAmount", 0) or 0)
+            item_received = float(item.get("receivedAmount", 0) or 0)
         except (TypeError, ValueError):
             continue
+        total += item_total
+        received += item_received
         count += 1
+        kept.append(
+            (
+                str(item.get("saleDate", ""))[:10] or "unknown date",
+                str(item.get("partyName") or "Unknown party"),
+                item_total,
+                item_received,
+            )
+        )
     outstanding = total - received
     scope = f"up to {_MAX_SALES} most recent sales" if count >= _MAX_SALES else f"{count} sales"
-    return (
+    summary = (
         f"Sales {period} ({scope}): "
         f"count={count}, total={total:.2f}, received={received:.2f}, "
         f"outstanding={outstanding:.2f}."
     )
+    if not kept:
+        return summary
+    kept.sort(key=lambda row: row[0], reverse=True)
+    lines = [
+        f"- {day} · {name}: total={item_total:.2f}, "
+        f"received={item_received:.2f}, due={item_total - item_received:.2f}"
+        for day, name, item_total, item_received in kept[:_MAX_LINES]
+    ]
+    extra = f" (+{len(kept) - _MAX_LINES} more)" if len(kept) > _MAX_LINES else ""
+    return summary + f"\nRecent transactions{extra}:\n" + "\n".join(lines)
 
 
 def build_sales_summary_tool(bearer_token: str, company_id: str):  # type: ignore[no-untyped-def]
@@ -81,7 +103,10 @@ def build_sales_summary_tool(bearer_token: str, company_id: str):  # type: ignor
 
     @tool
     def get_sales_summary(period: Period = "last_30d") -> str:
-        """Summarize company sales: count, total, received, outstanding.
+        """Summarize company sales AND list recent individual transactions.
+
+        Returns totals (count, total, received, outstanding) plus one line
+        per recent transaction with date, party, and amounts.
 
         Args:
             period: one of last_7d, last_30d, this_month.
