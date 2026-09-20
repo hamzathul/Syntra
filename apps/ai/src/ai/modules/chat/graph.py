@@ -155,14 +155,22 @@ def extract_reply(messages: list[Any]) -> tuple[str, list[str]]:
     return reply, used
 
 
+def checkpoint_key(user_id: str, company_id: str, thread_id: str) -> str:
+    """Namespace stored history by owner: a raw thread id alone opens nothing."""
+    return f"{user_id}:{company_id}:{thread_id}"
+
+
 async def run_agent(
-    message: str, thread_id: str, bearer_token: str, company_id: str
+    message: str, thread_id: str, bearer_token: str, company_id: str, user_id: str
 ) -> tuple[str, list[str]]:
     """Build the caller's graph, run it against their thread, extract the reply."""
     graph = build_graph(bearer_token, company_id)
     result = await graph.ainvoke(
         {"messages": [HumanMessage(content=message)]},
-        config={"configurable": {"thread_id": thread_id}, "recursion_limit": _RECURSION_LIMIT},
+        config={
+            "configurable": {"thread_id": checkpoint_key(user_id, company_id, thread_id)},
+            "recursion_limit": _RECURSION_LIMIT,
+        },
     )
     messages = result["messages"] if isinstance(result, dict) else []
     reply, used = extract_reply(messages if isinstance(messages, list) else [])

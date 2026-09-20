@@ -4,7 +4,7 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from ai.core.config import get_settings
-from ai.modules.chat.graph import build_graph, extract_reply, polish_reply
+from ai.modules.chat.graph import build_graph, checkpoint_key, extract_reply, polish_reply
 
 
 def test_extract_reply_picks_last_text_and_tool_names() -> None:
@@ -42,6 +42,14 @@ def test_polish_reply_hides_tool_names() -> None:
 
 def test_polish_reply_leaves_plain_text_alone() -> None:
     assert polish_reply("Total is 1500.") == "Total is 1500."
+
+
+def test_checkpoint_key_isolates_owner() -> None:
+    mine = checkpoint_key("user-1", "company-1", "thread-123")
+
+    assert mine != "thread-123"
+    assert mine != checkpoint_key("user-2", "company-1", "thread-123")
+    assert mine != checkpoint_key("user-1", "company-2", "thread-123")
 
 
 def test_build_graph_compiles_without_llm_call(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -31,7 +31,7 @@ async def handle_chat(payload: ChatRequest, auth: ChatAuth) -> ChatResponse:
 
     try:
         reply, used_tools = await run_agent(
-            payload.message, thread_id, auth.bearer_token, auth.company_id
+            payload.message, thread_id, auth.bearer_token, auth.company_id, auth.user_id
         )
     except Exception as exc:
         # Logged once by the global error handler — don't log here too.
