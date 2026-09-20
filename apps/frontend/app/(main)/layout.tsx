@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { CompanyGuard } from "@/components/layout/company-guard";
 import { CompanySwitcher } from "@/components/layout/company-switcher";
 import { UserNav } from "@/components/layout/user-nav";
+import { AiChatWidget } from "@/components/ai/ai-chat-widget";
 
 export default function MainLayout({
   children,
@@ -24,6 +25,7 @@ export default function MainLayout({
           </main>
         </div>
       </div>
+      <AiChatWidget />
     </CompanyGuard>
   );
 }

@@ -53,6 +53,11 @@ export const saleKeys = {
   detail: (id: string) => [...saleKeys.all, "detail", id] as const,
 };
 
+export const aiKeys = {
+  all: ["ai"] as const,
+  chat: () => [...aiKeys.all, "chat"] as const,
+};
+
 export const companyScopedQueryKeys = [
   settingsKeys.all,
   taxKeys.all,
@@ -61,4 +66,5 @@ export const companyScopedQueryKeys = [
   bankKeys.all,
   moneyKeys.all,
   saleKeys.all,
+  aiKeys.all,
 ] as const;
