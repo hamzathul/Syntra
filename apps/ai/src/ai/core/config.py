@@ -1,13 +1,24 @@
 """Environment config — mirrors backend-p `loadEnv`: validated once, fail fast."""
 
+import ipaddress
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, Self
+from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Environment = Literal["development", "production", "test"]
 LogLevel = Literal["trace", "debug", "info", "warn", "error", "fatal"]
+
+
+def _is_loopback(host: str) -> bool:
+    if host.lower() in {"localhost", "ip6-localhost"}:
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 class Settings(BaseSettings):
@@ -45,6 +56,25 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.ENVIRONMENT == "production"
+
+    @model_validator(mode="after")
+    def _require_https_upstreams_in_production(self) -> Self:
+        """Bearer tokens are forwarded to these upstreams — never over cleartext.
+
+        Fail-closed in production: `https` always passes, plaintext `http` only
+        for loopback (same-host traffic). Authenticated tunnels terminate TLS,
+        so they arrive as `https` and pass; plaintext-over-tunnel stays rejected.
+        """
+        if self.ENVIRONMENT != "production":
+            return self
+        for name in ("CORE_API_URL", "ERP_API_URL"):
+            url = urlsplit(getattr(self, name))
+            if url.scheme == "https":
+                continue
+            if url.scheme == "http" and _is_loopback(url.hostname or ""):
+                continue
+            raise ValueError(f"{name} must use https in production (http loopback allowed)")
+        return self
 
 
 @lru_cache(maxsize=1)

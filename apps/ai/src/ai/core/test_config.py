@@ -61,3 +61,33 @@ def test_invalid_environment_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None
 
     with pytest.raises(ValidationError):
         _settings()
+
+
+def test_production_rejects_plaintext_upstream(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("CORE_API_URL", "http://core.internal:3001")
+    monkeypatch.setenv("ERP_API_URL", "https://erp.internal:3002")
+
+    with pytest.raises(ValidationError):
+        _settings()
+
+
+def test_production_accepts_https_upstream(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("CORE_API_URL", "https://core.internal:3001")
+    monkeypatch.setenv("ERP_API_URL", "https://erp.internal:3002")
+
+    assert _settings().is_production is True
+
+
+def test_production_accepts_loopback_http(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("CORE_API_URL", "http://127.0.0.1:3001")
+
+    assert _settings().ERP_API_URL == "http://localhost:3002"
+
+
+def test_development_allows_plaintext_upstream(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CORE_API_URL", "http://core.internal:3001")
+
+    assert _settings().is_production is False
