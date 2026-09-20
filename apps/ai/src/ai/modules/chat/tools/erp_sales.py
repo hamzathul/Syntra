@@ -53,7 +53,7 @@ def summarize_sales(items: list[dict[str, Any]], period: Period, *, complete: bo
         if not isinstance(item, dict):
             continue
         sale_date = _parse_date(item.get("saleDate"))
-        if sale_date is None or sale_date < cutoff:
+        if sale_date is not None and sale_date < cutoff:
             continue
         try:
             item_total = float(item.get("totalAmount", 0) or 0)
@@ -85,7 +85,7 @@ def summarize_sales(items: list[dict[str, Any]], period: Period, *, complete: bo
     )
     if not kept:
         return summary
-    kept.sort(key=lambda row: row[0], reverse=True)
+    kept.sort(key=lambda row: (row[0] != "unknown date", row[0]), reverse=True)
     lines = [
         f"- {day} · {name}: total={item_total:.2f}, "
         f"received={item_received:.2f}, due={item_total - item_received:.2f}"
