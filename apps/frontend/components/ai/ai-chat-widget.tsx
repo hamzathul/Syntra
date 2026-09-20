@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChatMarkdown } from "@/components/ai/chat-markdown";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { useCompany } from "@/lib/company-context";
 import { cn } from "@/lib/utils";
@@ -121,13 +122,17 @@ export function AiChatWidget() {
                     <div
                       key={`${index}-${message.role}`}
                       className={cn(
-                        "max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm",
+                        "max-w-[85%] rounded-lg px-3 py-2 text-sm",
                         message.role === "user"
-                          ? "self-end bg-primary text-primary-foreground"
+                          ? "self-end whitespace-pre-wrap bg-primary text-primary-foreground"
                           : "self-start bg-muted",
                       )}
                     >
-                      {message.text}
+                      {message.role === "assistant" ? (
+                        <ChatMarkdown text={message.text} />
+                      ) : (
+                        message.text
+                      )}
                     </div>
                   ))}
                   {sendChat.isPending && (
