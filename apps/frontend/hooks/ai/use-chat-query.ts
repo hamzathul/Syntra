@@ -1,7 +1,7 @@
 "use client";
 
 import { createMutationHook } from "@/lib/api/client/hook-factory";
-import type { ChatRequestDto } from "@/lib/api/services/ai/ai.service";
+import type { ChatRequestDto } from "shared";
 import { aiChatService } from "@/lib/api/services/ai/ai.service";
 import { aiKeys } from "../query-keys";
 

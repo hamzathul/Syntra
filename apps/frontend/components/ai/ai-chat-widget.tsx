@@ -38,9 +38,13 @@ export function AiChatWidget() {
   const [threadId, setThreadId] = useState<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sendChat = useSendChatMutation();
+  // Tracks the selected company across renders so late callbacks can tell
+  // whether they still belong to the current company.
+  const companyIdRef = useRef(companyId);
 
   // Company-scoped thread: new company → fresh conversation.
   useEffect(() => {
+    companyIdRef.current = companyId;
     setMessages([]);
     setThreadId(
       companyId
@@ -56,19 +60,27 @@ export function AiChatWidget() {
   const send = (raw: string) => {
     const message = raw.trim();
     if (!message || sendChat.isPending) return;
+    const requestCompanyId = companyId;
     setMessages((prev) => [...prev, { role: "user", text: message }]);
     setInput("");
     sendChat.mutate(threadId ? { message, thread_id: threadId } : { message }, {
       onSuccess: (data) => {
+        // Company switched mid-flight: drop the stale response so another
+        // company's thread and answer never land in this conversation.
+        if (companyIdRef.current !== requestCompanyId) return;
         setThreadId(data.thread_id);
-        if (companyId)
-          localStorage.setItem(threadStorageKey(companyId), data.thread_id);
+        if (requestCompanyId)
+          localStorage.setItem(
+            threadStorageKey(requestCompanyId),
+            data.thread_id,
+          );
         setMessages((prev) => [
           ...prev,
           { role: "assistant", text: data.reply },
         ]);
       },
       onError: (error) => {
+        if (companyIdRef.current !== requestCompanyId) return;
         setMessages((prev) => [
           ...prev,
           { role: "assistant", text: `Sorry — ${getApiErrorMessage(error)}` },
