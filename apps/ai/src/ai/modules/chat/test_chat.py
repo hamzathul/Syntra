@@ -12,8 +12,8 @@ from ai.modules.chat.auth import ChatAuth, get_chat_auth
 
 @pytest.fixture()
 def authed_client(monkeypatch: pytest.MonkeyPatch) -> Generator[TestClient, None, None]:
-    # Force the echo path: no LLM key regardless of local `.env`.
-    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    # Force the echo path: empty key wins over both env AND the local `.env` file.
+    monkeypatch.setenv("LLM_API_KEY", "")
     get_settings.cache_clear()
     app = create_app()
 

@@ -14,7 +14,6 @@ import { useSendChatMutation } from "@/hooks/ai/use-chat-query";
 interface ChatMessage {
   readonly role: "user" | "assistant";
   readonly text: string;
-  readonly toolCalls?: string[];
 }
 
 const SUGGESTIONS = [
@@ -64,7 +63,7 @@ export function AiChatWidget() {
           localStorage.setItem(threadStorageKey(companyId), data.thread_id);
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", text: data.reply, toolCalls: data.tool_calls },
+          { role: "assistant", text: data.reply },
         ]);
       },
       onError: (error) => {
@@ -129,18 +128,6 @@ export function AiChatWidget() {
                       )}
                     >
                       {message.text}
-                      {message.toolCalls && message.toolCalls.length > 0 && (
-                        <div className="mt-1.5 flex flex-wrap gap-1">
-                          {message.toolCalls.map((tool) => (
-                            <span
-                              key={tool}
-                              className="rounded bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
-                            >
-                              {tool}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   ))}
                   {sendChat.isPending && (

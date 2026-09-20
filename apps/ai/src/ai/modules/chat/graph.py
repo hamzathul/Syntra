@@ -12,6 +12,7 @@ keyed by `thread_id`. In-memory = lost on restart and requires a single
 uvicorn worker (a Postgres checkpointer is the future upgrade path).
 """
 
+from datetime import date
 from typing import Any, Literal
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -27,12 +28,23 @@ from ai.modules.chat.tools.erp_overdue import build_overdue_tool
 from ai.modules.chat.tools.erp_sales import build_sales_summary_tool
 from ai.modules.chat.tools.erp_stock import build_low_stock_tool
 
-_SYSTEM_PROMPT = (
-    "You are Syntra, a company-scoped ERP assistant. "
-    "Never invent numbers — always call a tool for sales, stock, "
-    "receivables, or cash questions. If a tool reports an error, relay it "
-    "honestly. Keep replies short."
-)
+
+def _system_prompt() -> str:
+    today = date.today().isoformat()
+    return (
+        f"Today is {today}. "
+        "You are Syntra, a friendly business assistant for a shop owner. "
+        "Speak plain business language with currency amounts. "
+        "Use a data tool for every sales, stock, receivables, or cash question — "
+        "the tool matching the question, not all of them — "
+        "and call it again for each new question instead of reusing earlier results, "
+        "the data changes. "
+        "Never mention tool names, APIs, or technical internals. "
+        "Never say you lack access to data or tools; you have live tools. "
+        "If a tool reports an error, say that information is temporarily unavailable."
+    )
+
+
 _RECURSION_LIMIT = 10  # ≈ 5 agent↔tool rounds.
 
 # The only cross-request state: conversation history by thread_id.
@@ -67,7 +79,8 @@ def build_graph(bearer_token: str, company_id: str) -> Any:
     model = _build_model().bind_tools(tools)
 
     async def agent_node(state: MessagesState) -> dict[str, Any]:
-        response = await model.ainvoke([SystemMessage(content=_SYSTEM_PROMPT), *state["messages"]])
+        prompt = SystemMessage(content=_system_prompt())
+        response = await model.ainvoke([prompt, *state["messages"]])
         return {"messages": [response]}
 
     def should_continue(state: MessagesState) -> Literal["tools", "__end__"]:
@@ -83,6 +96,34 @@ def build_graph(bearer_token: str, company_id: str) -> Any:
     builder.add_conditional_edges("agent", should_continue)
     builder.add_edge("tools", "agent")
     return builder.compile(checkpointer=_checkpointer)
+
+
+_TOOL_NAME_FALLBACKS = {
+    "get_sales_summary": "sales records",
+    "list_low_stock_items": "stock levels",
+    "list_overdue_parties": "receivables",
+    "get_cash_balance": "cash and bank balances",
+}
+
+
+def _repair_mojibake(text: str) -> str:
+    """Fix UTF-8-decoded-as-latin-1 artifacts some providers emit.
+
+    Only applies when the whole string round-trips cleanly, so genuine
+    non-ASCII text (accents, other scripts, emoji) passes through untouched.
+    """
+    try:
+        return text.encode("latin-1").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return text
+
+
+def polish_reply(reply: str) -> str:
+    """User-facing cleanup: repair encoding artifacts, hide tool internals."""
+    fixed = _repair_mojibake(reply)
+    for name, fallback in _TOOL_NAME_FALLBACKS.items():
+        fixed = fixed.replace(name, fallback)
+    return fixed
 
 
 def extract_reply(messages: list[Any]) -> tuple[str, list[str]]:
@@ -111,4 +152,5 @@ async def run_agent(
         config={"configurable": {"thread_id": thread_id}, "recursion_limit": _RECURSION_LIMIT},
     )
     messages = result["messages"] if isinstance(result, dict) else []
-    return extract_reply(messages if isinstance(messages, list) else [])
+    reply, used = extract_reply(messages if isinstance(messages, list) else [])
+    return polish_reply(reply), used
