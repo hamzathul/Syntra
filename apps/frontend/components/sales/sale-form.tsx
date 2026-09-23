@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AlertTriangleIcon,
   BanknoteIcon,
+  CopyIcon,
   Loader2Icon,
   LockIcon,
   PlusIcon,
@@ -79,9 +80,15 @@ const saleTypeCopy: Record<"CASH" | "CREDIT", string> = {
 
 interface SaleFormProps {
   sale?: SaleDto;
+  initialValues?: SaleFormValues;
+  isDuplicate?: boolean;
 }
 
-export function SaleForm({ sale }: SaleFormProps) {
+export function SaleForm({
+  sale,
+  initialValues,
+  isDuplicate = false,
+}: SaleFormProps) {
   const router = useRouter();
   const isEdit = Boolean(sale);
 
@@ -114,7 +121,9 @@ export function SaleForm({ sale }: SaleFormProps) {
     formState: { errors },
   } = useForm<SaleFormValues>({
     resolver: zodResolver(saleFormSchema),
-    defaultValues: sale ? saleFormValuesFromDto(sale) : emptySaleFormValues(),
+    defaultValues: sale
+      ? saleFormValuesFromDto(sale)
+      : (initialValues ?? emptySaleFormValues()),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -129,6 +138,19 @@ export function SaleForm({ sale }: SaleFormProps) {
       reset(saleFormValuesFromDto(sale));
     }
   }, [sale, reset]);
+
+  const syncedInitial = useRef<SaleFormValues | undefined>(undefined);
+  useEffect(() => {
+    if (!sale && initialValues && syncedInitial.current !== initialValues) {
+      syncedInitial.current = initialValues;
+      reset(initialValues);
+    }
+  }, [sale, initialValues, reset]);
+
+  const handleDuplicate = useCallback(() => {
+    if (!sale) return;
+    router.push(`/sales/new?duplicateFrom=${sale.id}`);
+  }, [sale, router]);
 
   const saleType = watch("saleType");
   const totalAmount = watch("totalAmount");
@@ -221,10 +243,16 @@ export function SaleForm({ sale }: SaleFormProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            {isEdit ? "Edit Sale" : "New Sale"}
+            {isEdit
+              ? "Edit Sale"
+              : isDuplicate
+                ? "New Sale (duplicated)"
+                : "New Sale"}
           </h1>
           <p className="text-muted-foreground">
-            Record a cash or credit sale with its payments
+            {isDuplicate
+              ? "Pre-filled from an existing sale — review and save as a new sale"
+              : "Record a cash or credit sale with its payments"}
           </p>
         </div>
       </div>
@@ -497,16 +525,27 @@ export function SaleForm({ sale }: SaleFormProps) {
 
       <div className="flex justify-end gap-2">
         {isEdit && (
-          <Button
-            type="button"
-            variant="destructive"
-            className="gap-2"
-            onClick={() => setDeleteOpen(true)}
-            disabled={deleteMutation.isPending}
-          >
-            <Trash2Icon className="h-4 w-4" />
-            Delete
-          </Button>
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              onClick={handleDuplicate}
+            >
+              <CopyIcon className="h-4 w-4" />
+              Duplicate
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="gap-2"
+              onClick={() => setDeleteOpen(true)}
+              disabled={deleteMutation.isPending}
+            >
+              <Trash2Icon className="h-4 w-4" />
+              Delete
+            </Button>
+          </>
         )}
         <Button
           type="button"

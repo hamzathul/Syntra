@@ -48,6 +48,7 @@ export default function SalesPage() {
                 <table className="table-shell w-full text-sm">
                   <thead>
                     <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                      <th className="px-5 py-3.5 font-semibold">#</th>
                       <th className="px-5 py-3.5 font-semibold">Date</th>
                       <th className="px-4 py-3.5 font-semibold">Customer</th>
                       <th className="px-4 py-3.5 font-semibold">Type</th>
@@ -64,8 +65,8 @@ export default function SalesPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
-                    {result.items.map((sale) => (
-                      <SaleRow key={sale.id} sale={sale} />
+                    {result.items.map((sale, index) => (
+                      <SaleRow key={sale.id} sale={sale} index={index} />
                     ))}
                   </tbody>
                 </table>
@@ -92,7 +93,7 @@ export default function SalesPage() {
   );
 }
 
-function SaleRow({ sale }: { sale: SaleDto }) {
+function SaleRow({ sale, index }: { sale: SaleDto; index: number }) {
   const router = useRouter();
   const navigate = () => router.push(`/sales/${sale.id}`);
 
@@ -110,6 +111,9 @@ function SaleRow({ sale }: { sale: SaleDto }) {
         }
       }}
     >
+      <td className="px-5 py-3.5 text-muted-foreground tabular-nums">
+        {index + 1}
+      </td>
       <td className="px-5 py-3.5 font-semibold tabular-nums">
         {sale.saleDate.slice(0, 10)}
       </td>
