@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getCompanyId, getParamId } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getCompanyId,
+  getParamId,
+} from "backend-p";
 import type { CreateSaleDto, UpdateSaleDto } from "shared";
 import type { ISaleService } from "./sale.service.port";
 

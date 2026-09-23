@@ -5,7 +5,10 @@ import {
   toItemCategoryRecord,
   type ItemCategoryRow,
 } from "./item-category.record";
-import { toTaxRateRecord, type TaxRateRow } from "../settings/taxes/tax-rate.record";
+import {
+  toTaxRateRecord,
+  type TaxRateRow,
+} from "../settings/taxes/tax-rate.record";
 
 export interface TaxGroupRow {
   readonly id: string;

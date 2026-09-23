@@ -33,7 +33,12 @@ export interface IMoneyRepository {
   findBank(bankId: string, companyId: string): Promise<{ id: string } | null>;
   createCashAdjustment(
     companyId: string,
-    data: { date: Date; type: AdjustmentType; amount: number; description?: string | null },
+    data: {
+      date: Date;
+      type: AdjustmentType;
+      amount: number;
+      description?: string | null;
+    },
   ): Promise<CashAdjustmentRecord>;
   createBankAdjustment(
     companyId: string,
@@ -55,7 +60,10 @@ export interface IMoneyRepository {
     adjustmentId: string,
     data: CashAdjustmentUpdateData,
   ): Promise<CashAdjustmentRecord | null>;
-  deleteCashAdjustment(companyId: string, adjustmentId: string): Promise<boolean>;
+  deleteCashAdjustment(
+    companyId: string,
+    adjustmentId: string,
+  ): Promise<boolean>;
   updateBankAdjustment(
     companyId: string,
     bankId: string,
@@ -73,13 +81,19 @@ export interface IMoneyRepository {
     data: TransferUpdateData,
   ): Promise<MoneyTransferNested | null>;
   deleteTransfer(companyId: string, transferId: string): Promise<boolean>;
-  listCashAdjustments(companyId: string, limit: number): Promise<CashAdjustmentRecord[]>;
+  listCashAdjustments(
+    companyId: string,
+    limit: number,
+  ): Promise<CashAdjustmentRecord[]>;
   listBankAdjustments(
     companyId: string,
     bankId: string | null,
     limit: number,
   ): Promise<BankAdjustmentRecord[]>;
-  listCashTransfers(companyId: string, limit: number): Promise<MoneyTransferNested[]>;
+  listCashTransfers(
+    companyId: string,
+    limit: number,
+  ): Promise<MoneyTransferNested[]>;
   listBankTransfers(
     companyId: string,
     bankId: string | null,
@@ -90,5 +104,8 @@ export interface IMoneyRepository {
     bankId: string,
     limit: number,
   ): Promise<SalePaymentRecord[]>;
-  listCashSalePayments(companyId: string, limit: number): Promise<SalePaymentRecord[]>;
+  listCashSalePayments(
+    companyId: string,
+    limit: number,
+  ): Promise<SalePaymentRecord[]>;
 }

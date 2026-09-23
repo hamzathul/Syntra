@@ -7,7 +7,10 @@ export interface ItemListParams {
 }
 
 export interface IItemService {
-  list(companyId: string, params?: ItemListParams): Promise<CursorPaginationResult<ItemDto>>;
+  list(
+    companyId: string,
+    params?: ItemListParams,
+  ): Promise<CursorPaginationResult<ItemDto>>;
   get(id: string, companyId: string): Promise<ItemDto>;
   create(companyId: string, dto: CreateItemDto): Promise<ItemDto>;
   update(id: string, companyId: string, dto: UpdateItemDto): Promise<ItemDto>;

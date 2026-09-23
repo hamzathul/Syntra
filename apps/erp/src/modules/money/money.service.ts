@@ -64,12 +64,16 @@ export class MoneyService implements IMoneyService {
     adjustmentId: string,
     dto: AdjustCashDto,
   ): Promise<AdjustmentDto> {
-    const record = await this.repo.updateCashAdjustment(companyId, adjustmentId, {
-      date: new Date(dto.date),
-      type: dto.type,
-      amount: dto.amount,
-      description: dto.description,
-    });
+    const record = await this.repo.updateCashAdjustment(
+      companyId,
+      adjustmentId,
+      {
+        date: new Date(dto.date),
+        type: dto.type,
+        amount: dto.amount,
+        description: dto.description,
+      },
+    );
     if (!record) throw new NotFoundError("Cash adjustment");
 
     this.logCashAdjustment(companyId, dto.type, dto.amount, "updated");
@@ -81,7 +85,10 @@ export class MoneyService implements IMoneyService {
     companyId: string,
     adjustmentId: string,
   ): Promise<void> {
-    const deleted = await this.repo.deleteCashAdjustment(companyId, adjustmentId);
+    const deleted = await this.repo.deleteCashAdjustment(
+      companyId,
+      adjustmentId,
+    );
     if (!deleted) throw new NotFoundError("Cash adjustment");
 
     this.logger.info(
@@ -238,7 +245,10 @@ export class MoneyService implements IMoneyService {
     );
   }
 
-  async getBankHistory(companyId: string, bankId: string): Promise<BankHistoryDto> {
+  async getBankHistory(
+    companyId: string,
+    bankId: string,
+  ): Promise<BankHistoryDto> {
     const bank = await this.repo.findBank(bankId, companyId);
     if (!bank) throw new NotFoundError("Bank");
 

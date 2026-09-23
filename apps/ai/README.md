@@ -8,7 +8,7 @@ FastAPI service for the LangChain/LangGraph chatbot: `GET /health` plus
 
 ## Prerequisites
 
-* Python 3.12, [`uv`](https://docs.astral.sh/uv/) installed.
+- Python 3.12, [`uv`](https://docs.astral.sh/uv/) installed.
 
 ## Quickstart
 
@@ -46,12 +46,12 @@ src/ai/
 
 ## Conventions (Python idioms, not ported TypeScript)
 
-* **Logging**: `log = structlog.get_logger(__name__)` per module; `configure_logging()`
+- **Logging**: `log = structlog.get_logger(__name__)` per module; `configure_logging()`
   runs once in `create_app`. `request_id` is auto-attached via contextvars.
-* **DI**: module-level `router` objects; plain service functions. Reach for FastAPI
+- **DI**: module-level `router` objects; plain service functions. Reach for FastAPI
   `Depends()` only when something genuinely needs per-request construction.
-* **Responses**: success goes through `response_model=SuccessEnvelope[T]` (OpenAPI stays
+- **Responses**: success goes through `response_model=SuccessEnvelope[T]` (OpenAPI stays
   truthful); the wire shape matches the Node V1 envelope so the frontend proxy
   unwraps uniformly. Errors: raise `AppError`, handlers format the envelope.
-* **No timeout middleware**: `asyncio.wait_for` around ASGI `call_next` can't cancel
+- **No timeout middleware**: `asyncio.wait_for` around ASGI `call_next` can't cancel
   reliably. Enforce timeouts at uvicorn/gateway level instead.

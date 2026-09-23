@@ -1,5 +1,8 @@
 import type { DiscountType, ItemType } from "shared";
-import type { TaxGroupRecord, TaxRateRecord } from "../settings/taxes/taxes.types";
+import type {
+  TaxGroupRecord,
+  TaxRateRecord,
+} from "../settings/taxes/taxes.types";
 
 export interface UnitRecord {
   readonly id: string;

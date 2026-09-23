@@ -126,11 +126,15 @@ export function CashTransactions({
 }
 
 function toBankName(bankId: string | null, banks: BankDto[]): string | null {
-  return bankId === null ? null : (banks.find((b) => b.id === bankId)?.name ?? null);
+  return bankId === null
+    ? null
+    : (banks.find((b) => b.id === bankId)?.name ?? null);
 }
 
 function transferMode(transfer: TransferDto): TransferMode {
-  if (transfer.fromBankId === null && transfer.toBankId !== null) return "TO_BANK";
-  if (transfer.toBankId === null && transfer.fromBankId !== null) return "FROM_BANK";
+  if (transfer.fromBankId === null && transfer.toBankId !== null)
+    return "TO_BANK";
+  if (transfer.toBankId === null && transfer.fromBankId !== null)
+    return "FROM_BANK";
   return "BETWEEN_BANKS";
 }

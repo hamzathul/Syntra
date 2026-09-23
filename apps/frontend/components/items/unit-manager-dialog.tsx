@@ -67,7 +67,10 @@ export function UnitManagerDialog({
   const newName = watch("name");
   const [deleteTarget, setDeleteTarget] = useState<UnitDto | null>(null);
 
-  const resetForm = useCallback(() => reset({ name: "", shortName: "" }), [reset]);
+  const resetForm = useCallback(
+    () => reset({ name: "", shortName: "" }),
+    [reset],
+  );
 
   const handleCreate = useCallback(
     async (values: UnitFormValues) => {
@@ -155,7 +158,12 @@ export function UnitManagerDialog({
               >
                 <CheckIcon className="h-4 w-4 text-green-600" />
               </Button>
-              <Button size="icon" variant="ghost" type="button" onClick={resetForm}>
+              <Button
+                size="icon"
+                variant="ghost"
+                type="button"
+                onClick={resetForm}
+              >
                 <XIcon className="h-4 w-4" />
               </Button>
             </div>

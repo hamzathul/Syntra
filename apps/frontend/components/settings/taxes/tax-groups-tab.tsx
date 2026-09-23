@@ -235,7 +235,9 @@ export function TaxGroupsTab() {
                 {...register("name")}
               />
               {errors.name && (
-                <p className="text-xs text-destructive">{errors.name.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 
@@ -288,10 +290,7 @@ export function TaxGroupsTab() {
               <Button variant="outline" type="button" onClick={closeDialog}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={!groupName.trim()}
-              >
+              <Button type="submit" disabled={!groupName.trim()}>
                 {editingGroup ? "Update" : "Create"}
               </Button>
             </DialogFooter>

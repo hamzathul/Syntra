@@ -36,12 +36,10 @@ const formSchema = z.object({
   date: z.string().min(1, "Date is required"),
   type: z.enum(["INCREASE", "DECREASE"]),
   bankId: z.string().min(1, "Bank is required"),
-  amount: z
-    .string()
-    .refine((v) => {
-      const n = Number(v);
-      return Number.isFinite(n) && n > 0;
-    }, "Amount must be a positive number"),
+  amount: z.string().refine((v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0;
+  }, "Amount must be a positive number"),
   description: z.string().max(500, "Description too long"),
 });
 
@@ -174,7 +172,15 @@ export function AdjustBankDialog({
         toast.error(getApiErrorMessage(err));
       }
     },
-    [adjustMutation, updateMutation, isEdit, editing, onOpenChange, reset, image],
+    [
+      adjustMutation,
+      updateMutation,
+      isEdit,
+      editing,
+      onOpenChange,
+      reset,
+      image,
+    ],
   );
 
   return (
@@ -186,7 +192,9 @@ export function AdjustBankDialog({
               <SlidersHorizontal className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{isEdit ? "Edit Bank Adjustment" : "Adjust Bank Balance"}</DialogTitle>
+              <DialogTitle>
+                {isEdit ? "Edit Bank Adjustment" : "Adjust Bank Balance"}
+              </DialogTitle>
               <DialogDescription>
                 {isEdit
                   ? "Update this one-time balance adjustment for the bank account."
@@ -203,7 +211,9 @@ export function AdjustBankDialog({
             </Label>
             <Select
               value={watch("bankId")}
-              onValueChange={(v) => setValue("bankId", v, { shouldValidate: true })}
+              onValueChange={(v) =>
+                setValue("bankId", v, { shouldValidate: true })
+              }
               disabled={isEdit}
             >
               <SelectTrigger id="adjust-bank-select">
@@ -252,7 +262,9 @@ export function AdjustBankDialog({
                 aria-invalid={!!errors.date}
               />
               {errors.date && (
-                <p className="text-xs text-destructive">{errors.date.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.date.message}
+                </p>
               )}
             </div>
           </div>
@@ -271,13 +283,16 @@ export function AdjustBankDialog({
               aria-invalid={!!errors.amount}
             />
             {errors.amount && (
-              <p className="text-xs text-destructive">{errors.amount.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.amount.message}
+              </p>
             )}
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="adjust-bank-desc" className="text-sm font-medium">
-              Description <span className="text-muted-foreground">(optional)</span>
+              Description{" "}
+              <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="adjust-bank-desc"
@@ -286,7 +301,9 @@ export function AdjustBankDialog({
               aria-invalid={!!errors.description}
             />
             {errors.description && (
-              <p className="text-xs text-destructive">{errors.description.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -300,11 +317,7 @@ export function AdjustBankDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={pending}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={pending} className="gap-2">
               {pending ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (

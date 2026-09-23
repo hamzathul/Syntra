@@ -1,8 +1,4 @@
-import type {
-  ChequeRecord,
-  SalePaymentRecord,
-  SaleRecord,
-} from "./sale.types";
+import type { ChequeRecord, SalePaymentRecord, SaleRecord } from "./sale.types";
 
 export interface ChequeRow {
   readonly id: string;

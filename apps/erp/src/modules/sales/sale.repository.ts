@@ -5,21 +5,14 @@ import {
   paginateResult,
 } from "backend-p";
 import type { DbClient } from "../../database/db-client";
-import type {
-  ISaleRepository,
-  SaleListOptions,
-} from "./sale.repository.port";
+import type { ISaleRepository, SaleListOptions } from "./sale.repository.port";
 import type {
   PaymentCreateData,
   SaleCreateData,
   SaleRecord,
   SaleUpdateData,
 } from "./sale.types";
-import {
-  toSaleRecord,
-  toSaleRow,
-  type SaleWithPartyRow,
-} from "./sale.record";
+import { toSaleRecord, toSaleRow, type SaleWithPartyRow } from "./sale.record";
 
 const DEFAULT_LIST_LIMIT = 25;
 const MAX_LIST_LIMIT = 100;
@@ -42,7 +35,10 @@ export class SaleRepository implements ISaleRepository {
   constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string, options?: SaleListOptions) {
-    const limit = Math.min(options?.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
+    const limit = Math.min(
+      options?.limit ?? DEFAULT_LIST_LIMIT,
+      MAX_LIST_LIMIT,
+    );
     const rawSales = await this.db.sale.findMany({
       where: { companyId },
       take: limit + 1,

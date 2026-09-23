@@ -116,7 +116,12 @@ export class ItemService implements IItemService {
       record = await this.repo.update(id, companyId, this.toUpdateData(dto));
     } catch (error) {
       if (isPrismaUniqueViolation(error)) {
-        throw await this.uniqueConflict(companyId, dto.itemCode, dto.barcode, id);
+        throw await this.uniqueConflict(
+          companyId,
+          dto.itemCode,
+          dto.barcode,
+          id,
+        );
       }
       throw error;
     }
@@ -249,7 +254,10 @@ export class ItemService implements IItemService {
     companyId: string,
   ): Promise<void> {
     if (dto.categoryId) {
-      const count = await this.categoryRepo.countByIds([dto.categoryId], companyId);
+      const count = await this.categoryRepo.countByIds(
+        [dto.categoryId],
+        companyId,
+      );
       if (count !== 1) {
         throw new ConflictError(
           "Selected category does not exist or does not belong to this company",
@@ -271,7 +279,10 @@ export class ItemService implements IItemService {
     }
 
     if (dto.taxRateId) {
-      const count = await this.taxRateRepo.countByIds([dto.taxRateId], companyId);
+      const count = await this.taxRateRepo.countByIds(
+        [dto.taxRateId],
+        companyId,
+      );
       if (count !== 1) {
         throw new ConflictError(
           "Selected tax rate does not exist or does not belong to this company",
@@ -295,10 +306,16 @@ export class ItemService implements IItemService {
     barcode: string | null | undefined,
     excludeId?: string,
   ): Promise<ConflictError> {
-    if (barcode && (await this.repo.existsBarcode(barcode, companyId, excludeId))) {
+    if (
+      barcode &&
+      (await this.repo.existsBarcode(barcode, companyId, excludeId))
+    ) {
       return new ConflictError("An item with this barcode already exists");
     }
-    if (itemCode && (await this.repo.existsCode(itemCode, companyId, excludeId))) {
+    if (
+      itemCode &&
+      (await this.repo.existsCode(itemCode, companyId, excludeId))
+    ) {
       return new ConflictError("An item with this code already exists");
     }
     return new ConflictError("An item with this name already exists");

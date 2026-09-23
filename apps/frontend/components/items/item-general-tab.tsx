@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Wand2Icon, Settings2Icon } from "lucide-react";
 import { Controller, useWatch } from "react-hook-form";
-import type { Control, FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import type {
+  Control,
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,7 +20,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useUnits, useGenerateItemCode, useGenerateItemBarcode } from "@/hooks/items/use-items-query";
+import {
+  useUnits,
+  useGenerateItemCode,
+  useGenerateItemBarcode,
+} from "@/hooks/items/use-items-query";
 import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { toast } from "sonner";
 import type { ItemFormValues } from "./item-form-values";
@@ -178,10 +187,7 @@ export function ItemGeneralTab({
           control={control}
           name="categoryId"
           render={({ field }) => (
-            <CategoryCombobox
-              value={field.value}
-              onChange={field.onChange}
-            />
+            <CategoryCombobox value={field.value} onChange={field.onChange} />
           )}
         />
       </div>
@@ -197,7 +203,9 @@ export function ItemGeneralTab({
             {...register("hsnSac")}
           />
           {errors.hsnSac && (
-            <p className="text-xs text-destructive mt-1">{errors.hsnSac.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.hsnSac.message}
+            </p>
           )}
         </div>
         <div className="grid gap-1.5">
@@ -210,7 +218,9 @@ export function ItemGeneralTab({
             {...register("location")}
           />
           {errors.location && (
-            <p className="text-xs text-destructive mt-1">{errors.location.message}</p>
+            <p className="text-xs text-destructive mt-1">
+              {errors.location.message}
+            </p>
           )}
         </div>
       </div>
@@ -273,7 +283,9 @@ export function ItemGeneralTab({
                     <SelectValue placeholder="Select primary unit..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">Select primary unit...</SelectItem>
+                    <SelectItem value="__none__">
+                      Select primary unit...
+                    </SelectItem>
                     {unitItems}
                   </SelectContent>
                 </Select>

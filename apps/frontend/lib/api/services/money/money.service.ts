@@ -30,10 +30,7 @@ export const moneyService = {
       .get<BankHistoryDto>(`/money/banks/${bankId}/movements`)
       .then((r) => r.data),
 
-  cashAdjustments: createCrud<AdjustmentDto>(
-    erpApi,
-    "/money/cash/adjustments",
-  ),
+  cashAdjustments: createCrud<AdjustmentDto>(erpApi, "/money/cash/adjustments"),
 
   transfers: createCrud<TransferDto>(erpApi, "/money/transfers"),
 

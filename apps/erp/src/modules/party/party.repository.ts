@@ -18,7 +18,10 @@ export class PartyRepository implements IPartyRepository {
   constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string, options?: PartyListOptions) {
-    const limit = Math.min(options?.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
+    const limit = Math.min(
+      options?.limit ?? DEFAULT_LIST_LIMIT,
+      MAX_LIST_LIMIT,
+    );
     const rawParties = await this.db.party.findMany({
       where: { companyId },
       take: limit + 1,
@@ -26,9 +29,7 @@ export class PartyRepository implements IPartyRepository {
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     });
     return paginateResult(
-      rawParties.map((party) =>
-        toPartyRecord(party as unknown as PartyRow),
-      ),
+      rawParties.map((party) => toPartyRecord(party as unknown as PartyRow)),
       limit,
       options?.cursor,
     );

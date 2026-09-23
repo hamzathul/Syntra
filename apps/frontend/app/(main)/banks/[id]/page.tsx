@@ -25,11 +25,7 @@ import { useBankHistory } from "@/hooks/money/use-money-query";
 
 export default function BankDetailPage() {
   const params = useParams<{ id: string }>();
-  const {
-    data: history,
-    isLoading,
-    error,
-  } = useBankHistory(params.id);
+  const { data: history, isLoading, error } = useBankHistory(params.id);
   const { data: banks = [] } = useBanks();
   const { data: settings } = useGeneralSettings();
 
@@ -80,7 +76,9 @@ export default function BankDetailPage() {
               </div>
               <p className="text-muted-foreground">
                 {bank?.branchName ? `${bank.branchName} · ` : ""}
-                {bank?.accountNumber ? `Account ${bank.accountNumber}` : "Bank account"}
+                {bank?.accountNumber
+                  ? `Account ${bank.accountNumber}`
+                  : "Bank account"}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -89,7 +87,11 @@ export default function BankDetailPage() {
                 label="Deposit / Withdraw"
                 defaultBankId={params.id}
               />
-              <Button variant="outline" className="gap-2" onClick={() => setEditOpen(true)}>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => setEditOpen(true)}
+              >
                 <PencilIcon className="h-4 w-4" />
                 Edit Bank
               </Button>
@@ -115,7 +117,8 @@ export default function BankDetailPage() {
               })}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {bank?.openingBalance !== null && bank?.openingBalance !== undefined
+              {bank?.openingBalance !== null &&
+              bank?.openingBalance !== undefined
                 ? `Opening balance ${currencySymbol}${bank.openingBalance.toLocaleString("en-IN")}`
                 : "No opening balance recorded"}
             </p>

@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { taxRateResponseSchema, taxGroupResponseSchema } from "./tax-settings.contract";
+import {
+  taxRateResponseSchema,
+  taxGroupResponseSchema,
+} from "./tax-settings.contract";
 
 export const itemTypes = ["GOODS", "SERVICE"] as const;
 export type ItemType = (typeof itemTypes)[number];
@@ -139,37 +142,42 @@ export const createItemSchema = z
     path: conversionRefine.path,
   });
 
-export const updateItemSchema = z
-  .object({
-    name: trimmedString.min(1).max(200).optional(),
-    itemType: z.enum(itemTypes).optional(),
-    itemCode: trimmedString.max(50).nullable().optional(),
-    barcode: trimmedString.max(100).nullable().optional(),
-    categoryId: z.string().min(1).nullable().optional(),
-    hsnSac: trimmedString.max(50).nullable().optional(),
-    description: trimmedString.max(5000).nullable().optional(),
-    image: z.string().max(800_000, "Image too large").nullable().optional(),
-    unitPrimaryId: z.string().min(1).optional(),
-    unitSecondaryId: z.string().min(1).nullable().optional(),
-    unitConversionRate: positiveAmount("Conversion rate").nullable().optional(),
-    salePriceExclTax: amount("Sale price excluding tax").nullable().optional(),
-    salePriceInclTax: amount("Sale price including tax").nullable().optional(),
-    saleDiscountType: z.enum(discountTypes).nullable().optional(),
-    saleDiscountValue: amount("Sale discount value").nullable().optional(),
-    purchasePriceExclTax: amount("Purchase price excluding tax").nullable().optional(),
-    purchasePriceInclTax: amount("Purchase price including tax").nullable().optional(),
-    taxRateId: z.string().min(1).nullable().optional(),
-    taxGroupId: z.string().min(1).nullable().optional(),
-    openingStock: amount("Opening stock").nullable().optional(),
-    openingStockDate: z
-      .string()
-      .refine((v) => !Number.isNaN(Date.parse(v)), "Invalid date")
-      .nullable()
-      .optional(),
-    openingStockValuePerUnit: amount("Opening stock value per unit").nullable().optional(),
-    minStockQuantity: amount("Minimum stock quantity").nullable().optional(),
-    location: trimmedString.max(200).nullable().optional(),
-  });
+export const updateItemSchema = z.object({
+  name: trimmedString.min(1).max(200).optional(),
+  itemType: z.enum(itemTypes).optional(),
+  itemCode: trimmedString.max(50).nullable().optional(),
+  barcode: trimmedString.max(100).nullable().optional(),
+  categoryId: z.string().min(1).nullable().optional(),
+  hsnSac: trimmedString.max(50).nullable().optional(),
+  description: trimmedString.max(5000).nullable().optional(),
+  image: z.string().max(800_000, "Image too large").nullable().optional(),
+  unitPrimaryId: z.string().min(1).optional(),
+  unitSecondaryId: z.string().min(1).nullable().optional(),
+  unitConversionRate: positiveAmount("Conversion rate").nullable().optional(),
+  salePriceExclTax: amount("Sale price excluding tax").nullable().optional(),
+  salePriceInclTax: amount("Sale price including tax").nullable().optional(),
+  saleDiscountType: z.enum(discountTypes).nullable().optional(),
+  saleDiscountValue: amount("Sale discount value").nullable().optional(),
+  purchasePriceExclTax: amount("Purchase price excluding tax")
+    .nullable()
+    .optional(),
+  purchasePriceInclTax: amount("Purchase price including tax")
+    .nullable()
+    .optional(),
+  taxRateId: z.string().min(1).nullable().optional(),
+  taxGroupId: z.string().min(1).nullable().optional(),
+  openingStock: amount("Opening stock").nullable().optional(),
+  openingStockDate: z
+    .string()
+    .refine((v) => !Number.isNaN(Date.parse(v)), "Invalid date")
+    .nullable()
+    .optional(),
+  openingStockValuePerUnit: amount("Opening stock value per unit")
+    .nullable()
+    .optional(),
+  minStockQuantity: amount("Minimum stock quantity").nullable().optional(),
+  location: trimmedString.max(200).nullable().optional(),
+});
 
 export const itemResponseSchema = z.object({
   id: z.string(),

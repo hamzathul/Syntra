@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { BankAdjustmentDto, BankDto, BankHistoryDto, MoneySalePaymentDto, TransferDto } from "shared";
-import { TransactionList, type TransactionItem } from "../money/transaction-list";
+import type {
+  BankAdjustmentDto,
+  BankDto,
+  BankHistoryDto,
+  MoneySalePaymentDto,
+  TransferDto,
+} from "shared";
+import {
+  TransactionList,
+  type TransactionItem,
+} from "../money/transaction-list";
 import { AdjustBankDialog } from "../money/adjust-bank-dialog";
 import { TransferDialog, type TransferMode } from "../money/transfer-dialog";
 import {
@@ -159,7 +168,9 @@ function toBankName(bankId: string, banks: BankDto[]): string | null {
 }
 
 function transferMode(transfer: TransferDto): TransferMode {
-  if (transfer.fromBankId === null && transfer.toBankId !== null) return "TO_BANK";
-  if (transfer.toBankId === null && transfer.fromBankId !== null) return "FROM_BANK";
+  if (transfer.fromBankId === null && transfer.toBankId !== null)
+    return "TO_BANK";
+  if (transfer.toBankId === null && transfer.fromBankId !== null)
+    return "FROM_BANK";
   return "BETWEEN_BANKS";
 }

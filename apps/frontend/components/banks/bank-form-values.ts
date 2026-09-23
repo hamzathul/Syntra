@@ -2,19 +2,14 @@ import { z } from "zod";
 import type { BankDto, CreateBankDto, UpdateBankDto } from "shared";
 
 const money = (label: string) =>
-  z
-    .string()
-    .refine(
-      (v) => {
-        if (v.trim() === "") return true;
-        const [int = "", frac] = v.trim().split(".");
-        if (int.length > 11) return false;
-        if (frac !== undefined && frac.length > 4) return false;
-        const n = Number(v);
-        return Number.isFinite(n) && n >= 0;
-      },
-      `${label} must be a valid non-negative amount (max 11 integer digits, 4 decimal places)`,
-    );
+  z.string().refine((v) => {
+    if (v.trim() === "") return true;
+    const [int = "", frac] = v.trim().split(".");
+    if (int.length > 11) return false;
+    if (frac !== undefined && frac.length > 4) return false;
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0;
+  }, `${label} must be a valid non-negative amount (max 11 integer digits, 4 decimal places)`);
 
 export const bankFormSchema = z
   .object({

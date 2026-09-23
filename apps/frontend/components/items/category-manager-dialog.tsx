@@ -64,7 +64,9 @@ export function CategoryManagerDialog({
   });
 
   const newName = watch("name");
-  const [deleteTarget, setDeleteTarget] = useState<ItemCategoryDto | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ItemCategoryDto | null>(
+    null,
+  );
 
   const resetForm = useCallback(() => reset({ name: "" }), [reset]);
 
@@ -139,7 +141,12 @@ export function CategoryManagerDialog({
               >
                 <CheckIcon className="h-4 w-4 text-green-600" />
               </Button>
-              <Button size="icon" variant="ghost" type="button" onClick={resetForm}>
+              <Button
+                size="icon"
+                variant="ghost"
+                type="button"
+                onClick={resetForm}
+              >
                 <XIcon className="h-4 w-4" />
               </Button>
             </div>

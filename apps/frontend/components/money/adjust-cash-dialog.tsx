@@ -34,12 +34,10 @@ import { toast } from "sonner";
 const formSchema = z.object({
   date: z.string().min(1, "Date is required"),
   type: z.enum(["INCREASE", "DECREASE"]),
-  amount: z
-    .string()
-    .refine((v) => {
-      const n = Number(v);
-      return Number.isFinite(n) && n > 0;
-    }, "Amount must be a positive number"),
+  amount: z.string().refine((v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0;
+  }, "Amount must be a positive number"),
   description: z.string().max(500, "Description too long"),
 });
 
@@ -73,7 +71,12 @@ export function AdjustCashDialog({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { date: today(), type: "INCREASE", amount: "", description: "" },
+    defaultValues: {
+      date: today(),
+      type: "INCREASE",
+      amount: "",
+      description: "",
+    },
   });
 
   useEffect(() => {
@@ -93,7 +96,8 @@ export function AdjustCashDialog({
 
   const handleOpenChange = useCallback(
     (next: boolean) => {
-      if (!next) reset({ date: today(), type: "INCREASE", amount: "", description: "" });
+      if (!next)
+        reset({ date: today(), type: "INCREASE", amount: "", description: "" });
       onOpenChange(next);
     },
     [onOpenChange, reset],
@@ -147,7 +151,9 @@ export function AdjustCashDialog({
               <SlidersHorizontal className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>{isEdit ? "Edit Cash Adjustment" : "Adjust Cash"}</DialogTitle>
+              <DialogTitle>
+                {isEdit ? "Edit Cash Adjustment" : "Adjust Cash"}
+              </DialogTitle>
               <DialogDescription>
                 {isEdit
                   ? "Update this cash balance adjustment."
@@ -166,11 +172,9 @@ export function AdjustCashDialog({
               <Select
                 value={watch("type")}
                 onValueChange={(v) =>
-                  setValue(
-                    "type",
-                    v as "INCREASE" | "DECREASE",
-                    { shouldValidate: true },
-                  )
+                  setValue("type", v as "INCREASE" | "DECREASE", {
+                    shouldValidate: true,
+                  })
                 }
               >
                 <SelectTrigger id="cash-adjust-type">
@@ -193,7 +197,9 @@ export function AdjustCashDialog({
                 aria-invalid={!!errors.date}
               />
               {errors.date && (
-                <p className="text-xs text-destructive">{errors.date.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.date.message}
+                </p>
               )}
             </div>
           </div>
@@ -212,13 +218,16 @@ export function AdjustCashDialog({
               aria-invalid={!!errors.amount}
             />
             {errors.amount && (
-              <p className="text-xs text-destructive">{errors.amount.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.amount.message}
+              </p>
             )}
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="cash-adjust-desc" className="text-sm font-medium">
-              Description <span className="text-muted-foreground">(optional)</span>
+              Description{" "}
+              <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="cash-adjust-desc"
@@ -241,11 +250,7 @@ export function AdjustCashDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={pending}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={pending} className="gap-2">
               {pending ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (

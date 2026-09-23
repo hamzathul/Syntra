@@ -23,7 +23,8 @@ export function toBankRecord(row: BankRow): BankRecord {
     id: row.id,
     companyId: row.companyId,
     name: row.name,
-    openingBalance: row.openingBalance === null ? null : Number(row.openingBalance),
+    openingBalance:
+      row.openingBalance === null ? null : Number(row.openingBalance),
     currentBalance: Number(row.currentBalance),
     openingBalanceDate: row.openingBalanceDate,
     printBankDetails: row.printBankDetails,

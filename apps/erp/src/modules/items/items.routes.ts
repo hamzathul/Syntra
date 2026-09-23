@@ -18,7 +18,11 @@ export function createItemsRouter(controller: ItemsController): Router {
 
   // Static routes must be registered before "/:id" so they are not captured
   router.get("/", controller.listItems);
-  router.post("/", validateRequest({ body: createItemSchema }), controller.createItem);
+  router.post(
+    "/",
+    validateRequest({ body: createItemSchema }),
+    controller.createItem,
+  );
 
   router.get("/next-code", controller.generateItemCode);
   router.get("/next-barcode", controller.generateItemBarcode);
@@ -37,7 +41,11 @@ export function createItemsRouter(controller: ItemsController): Router {
     controller.createUnit,
   );
 
-  router.get("/:id", validateRequest({ params: paramsWithId }), controller.getItem);
+  router.get(
+    "/:id",
+    validateRequest({ params: paramsWithId }),
+    controller.getItem,
+  );
   router.patch(
     "/:id",
     validateRequest({ params: paramsWithId, body: updateItemSchema }),

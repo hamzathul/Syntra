@@ -1,11 +1,7 @@
 import { NotFoundError, paginateResult } from "backend-p";
 import type { DbClient } from "../../database/db-client";
 import type { IItemRepository, ItemListOptions } from "./item.repository.port";
-import type {
-  ItemCreateData,
-  ItemRecord,
-  ItemUpdateData,
-} from "./items.types";
+import type { ItemCreateData, ItemRecord, ItemUpdateData } from "./items.types";
 import { toItemRecord, type ItemRow } from "./item.record";
 
 const DEFAULT_LIST_LIMIT = 25;
@@ -29,7 +25,10 @@ export class ItemRepository implements IItemRepository {
   constructor(private readonly db: DbClient) {}
 
   async findAll(companyId: string, options?: ItemListOptions) {
-    const limit = Math.min(options?.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
+    const limit = Math.min(
+      options?.limit ?? DEFAULT_LIST_LIMIT,
+      MAX_LIST_LIMIT,
+    );
     const rawItems = await this.db.item.findMany({
       where: {
         companyId,
@@ -40,7 +39,9 @@ export class ItemRepository implements IItemRepository {
       take: limit + 1,
     });
     return paginateResult(
-      rawItems.map((item) => toItemRecord(item as unknown as ItemRow, { excludeImage: true })),
+      rawItems.map((item) =>
+        toItemRecord(item as unknown as ItemRow, { excludeImage: true }),
+      ),
       limit,
       options?.cursor,
     );
@@ -63,7 +64,11 @@ export class ItemRepository implements IItemRepository {
     return toItemRecord(item as unknown as ItemRow);
   }
 
-  async update(id: string, companyId: string, data: ItemUpdateData): Promise<ItemRecord> {
+  async update(
+    id: string,
+    companyId: string,
+    data: ItemUpdateData,
+  ): Promise<ItemRecord> {
     const { count } = await this.db.item.updateMany({
       where: { id, companyId },
       data,
@@ -78,7 +83,9 @@ export class ItemRepository implements IItemRepository {
   }
 
   async delete(id: string, companyId: string): Promise<void> {
-    const { count } = await this.db.item.deleteMany({ where: { id, companyId } });
+    const { count } = await this.db.item.deleteMany({
+      where: { id, companyId },
+    });
     if (count === 0) throw new NotFoundError("Item");
   }
 

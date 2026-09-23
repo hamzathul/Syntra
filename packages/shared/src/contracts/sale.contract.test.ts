@@ -14,7 +14,10 @@ describe("createSaleSchema", () => {
   it("accepts a credit sale with payments matching received amount", () => {
     const result = createSaleSchema.safeParse({
       ...baseSale,
-      payments: [{ mode: "CASH", amount: 3000 }, { mode: "BANK", amount: 1000, bankId: "bank_123" }],
+      payments: [
+        { mode: "CASH", amount: 3000 },
+        { mode: "BANK", amount: 1000, bankId: "bank_123" },
+      ],
     });
     expect(result.success).toBe(true);
   });

@@ -6,7 +6,10 @@ import type {
 
 export interface IItemCategoryService {
   list(companyId: string): Promise<ItemCategoryDto[]>;
-  create(companyId: string, dto: CreateItemCategoryDto): Promise<ItemCategoryDto>;
+  create(
+    companyId: string,
+    dto: CreateItemCategoryDto,
+  ): Promise<ItemCategoryDto>;
   update(
     id: string,
     companyId: string,

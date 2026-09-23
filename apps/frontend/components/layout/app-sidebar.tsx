@@ -25,16 +25,49 @@ import {
 
 const STORAGE_KEY = "sidebar-collapsed";
 
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/sales", label: "Sales", icon: TrendingUp },
-  { href: "/purchases", label: "Purchases", icon: ShoppingCart },
-  { href: "/items", label: "Items", icon: Package },
-  { href: "/parties", label: "Party", icon: Users },
-  { href: "/banks", label: "Bank", icon: Landmark },
-  { href: "/cash", label: "Cash", icon: Wallet },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
+const sections: {
+  label: string;
+  items: {
+    href: string;
+    label: string;
+    icon: typeof LayoutDashboard;
+    exact?: boolean;
+  }[];
+}[] = [
+  {
+    label: "Overview",
+    items: [
+      {
+        href: "/dashboard",
+        label: "Overview",
+        icon: LayoutDashboard,
+        exact: true,
+      },
+    ],
+  },
+  {
+    label: "Manage",
+    items: [
+      { href: "/sales", label: "Sales", icon: TrendingUp },
+      { href: "/purchases", label: "Purchases", icon: ShoppingCart },
+      { href: "/items", label: "Items", icon: Package },
+      { href: "/parties", label: "Parties", icon: Users },
+    ],
+  },
+  {
+    label: "Money",
+    items: [
+      { href: "/banks", label: "Banks", icon: Landmark },
+      { href: "/cash", label: "Cash", icon: Wallet },
+    ],
+  },
+  {
+    label: "General",
+    items: [
+      { href: "/reports", label: "Reports", icon: BarChart3 },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ];
 
 export function AppSidebar() {
@@ -56,112 +89,142 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "relative flex h-full flex-col border-r transition-all duration-200 ease-in-out",
-        "bg-sidebar border-sidebar-border",
-        mounted ? (collapsed ? "w-[68px]" : "w-60") : "w-60",
+        "flex h-full shrink-0 flex-col overflow-hidden rounded-[24px] border border-border/60 bg-sidebar",
+        "shadow-[0_1px_2px_rgb(16_16_40/0.04),0_12px_32px_-16px_rgb(16_16_40/0.16)]",
+        "transition-all duration-300 ease-out",
+        mounted && collapsed ? "w-[84px]" : "w-[248px]",
       )}
     >
-      {/* Logo */}
-      <div className="flex h-14 shrink-0 items-center border-b border-sidebar-border px-4">
-        <div
-          className={cn(
-            "flex items-center gap-2.5 overflow-hidden",
-            collapsed && "justify-center",
-          )}
-        >
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">
-            S
-          </div>
-          {!collapsed && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-base font-semibold tracking-tight text-sidebar-foreground">
-                Syntra
-              </span>
-              <span className="rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-semibold uppercase text-accent-foreground">
-                ERP
-              </span>
+        {/* Logo */}
+        <div className="flex h-[68px] shrink-0 items-center px-4">
+          <div
+            className={cn(
+              "flex items-center gap-2.5 overflow-hidden",
+              collapsed && "w-full justify-center",
+            )}
+          >
+            <div className="brand-gradient flex h-9 w-9 shrink-0 items-center justify-center rounded-[13px] text-[15px] font-bold text-white shadow-[0_6px_16px_-4px_hsl(var(--primary)/0.55)]">
+              S
             </div>
-          )}
+            {!collapsed && (
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[17px] font-semibold tracking-tight text-sidebar-foreground">
+                  Syntra
+                </span>
+                <span className="rounded-full bg-primary/[0.1] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                  ERP
+                </span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3">
-        <ul className="space-y-0.5">
-          {navItems.map(({ href, label, icon: Icon, exact }) => {
-            const isActive = exact
-              ? pathname === href
-              : pathname.startsWith(href);
+        {/* Nav */}
+        <nav className="no-scrollbar flex-1 overflow-y-auto px-3 pb-3">
+          <ul className="space-y-4">
+            {sections.map((section) => (
+              <li key={section.label}>
+                {!collapsed && (
+                  <p className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70">
+                    {section.label}
+                  </p>
+                )}
+                <ul className="space-y-1">
+                  {section.items.map(({ href, label, icon: Icon, exact }) => {
+                    const isActive = exact
+                      ? pathname === href
+                      : pathname.startsWith(href);
 
-            const linkContent = (
-              <Link
-                href={href}
+                    const linkContent = (
+                      <Link
+                        href={href}
+                        className={cn(
+                          "group flex items-center gap-3 rounded-2xl px-2.5 py-2 text-sm transition-all duration-200 ease-out",
+                          collapsed && "justify-center px-2",
+                          isActive
+                            ? "bg-primary/[0.09] font-semibold text-foreground"
+                            : "font-medium text-sidebar-foreground/80 hover:bg-muted/70 hover:text-foreground active:scale-[0.98]",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-200",
+                            isActive
+                              ? "brand-gradient text-white shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.5)]"
+                              : "bg-muted/80 text-muted-foreground group-hover:bg-card group-hover:text-foreground group-hover:shadow-sm",
+                          )}
+                        >
+                          <Icon
+                            className="h-4 w-4"
+                            strokeWidth={isActive ? 2.2 : 1.9}
+                          />
+                        </span>
+                        {!collapsed && (
+                          <span className="truncate">{label}</span>
+                        )}
+                        {!collapsed && isActive && (
+                          <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                        )}
+                      </Link>
+                    );
+
+                    return (
+                      <li key={href}>
+                        {collapsed ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              {linkContent}
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="right"
+                              className="font-medium"
+                            >
+                              {label}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          linkContent
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Collapse toggle */}
+        <div className="shrink-0 p-3 pt-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggle}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+                  "flex w-full items-center gap-3 rounded-2xl px-2.5 py-2 text-[13px] font-medium transition-all duration-200",
+                  "text-muted-foreground hover:bg-muted/70 hover:text-foreground active:scale-[0.98]",
                   collapsed && "justify-center px-2",
-                  isActive
-                    ? "bg-accent text-accent-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
-                <Icon
-                  className={cn(
-                    "shrink-0 transition-colors",
-                    collapsed ? "h-5 w-5" : "h-4 w-4",
-                    isActive ? "text-primary" : "text-muted-foreground",
-                  )}
-                />
-                {!collapsed && <span className="truncate">{label}</span>}
-              </Link>
-            );
-
-            return (
-              <li key={href}>
                 {collapsed ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-                    <TooltipContent side="right" className="font-medium">
-                      {label}
-                    </TooltipContent>
-                  </Tooltip>
+                  <PanelLeft className="h-4 w-4 shrink-0" />
                 ) : (
-                  linkContent
+                  <>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted/80">
+                      <ChevronLeft className="h-4 w-4 shrink-0" />
+                    </span>
+                    <span>Collapse</span>
+                  </>
                 )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      {/* Collapse toggle */}
-      <div className="shrink-0 border-t border-sidebar-border p-3">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={toggle}
-              className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
-                "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                collapsed && "justify-center px-2",
-              )}
-            >
-              {collapsed ? (
-                <PanelLeft className="h-4 w-4 shrink-0" />
-              ) : (
-                <>
-                  <ChevronLeft className="h-4 w-4 shrink-0" />
-                  <span>Collapse</span>
-                </>
-              )}
-            </button>
-          </TooltipTrigger>
-          {collapsed && (
-            <TooltipContent side="right" className="font-medium">
-              Expand sidebar
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </div>
+              </button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right" className="font-medium">
+                Expand sidebar
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
     </aside>
   );
 }

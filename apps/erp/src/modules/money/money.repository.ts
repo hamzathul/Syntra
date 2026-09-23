@@ -41,7 +41,10 @@ export class MoneyRepository implements IMoneyRepository {
     return bank ? Number(bank.currentBalance) : 0;
   }
 
-  async findBank(bankId: string, companyId: string): Promise<{ id: string } | null> {
+  async findBank(
+    bankId: string,
+    companyId: string,
+  ): Promise<{ id: string } | null> {
     return this.db.bank.findFirst({
       where: { id: bankId, companyId },
       select: { id: true },
@@ -151,7 +154,12 @@ export class MoneyRepository implements IMoneyRepository {
   async updateCashAdjustment(
     companyId: string,
     adjustmentId: string,
-    data: { date: Date; type: AdjustmentType; amount: number; description?: string | null },
+    data: {
+      date: Date;
+      type: AdjustmentType;
+      amount: number;
+      description?: string | null;
+    },
   ): Promise<CashAdjustmentRecord | null> {
     const updated = await this.db.$transaction(async (tx) => {
       const existing = await tx.cashAdjustment.findFirst({
@@ -326,7 +334,10 @@ export class MoneyRepository implements IMoneyRepository {
     return toTransferRecord(updated as never);
   }
 
-  async deleteTransfer(companyId: string, transferId: string): Promise<boolean> {
+  async deleteTransfer(
+    companyId: string,
+    transferId: string,
+  ): Promise<boolean> {
     const deleted = await this.db.$transaction(async (tx) => {
       const existing = await tx.moneyTransfer.findFirst({
         where: { id: transferId, companyId },
@@ -348,7 +359,11 @@ export class MoneyRepository implements IMoneyRepository {
   private async applyBalanceDeltas(
     tx: DbClient,
     companyId: string,
-    deltas: { fromBankId: string | null; toBankId: string | null; amount: number },
+    deltas: {
+      fromBankId: string | null;
+      toBankId: string | null;
+      amount: number;
+    },
   ): Promise<void> {
     if (deltas.fromBankId === null) {
       await this.applyCashDelta(tx, companyId, -deltas.amount);
@@ -372,7 +387,11 @@ export class MoneyRepository implements IMoneyRepository {
   private async revertBalanceDeltas(
     tx: DbClient,
     companyId: string,
-    deltas: { fromBankId: string | null; toBankId: string | null; amount: number },
+    deltas: {
+      fromBankId: string | null;
+      toBankId: string | null;
+      amount: number;
+    },
   ): Promise<void> {
     if (deltas.fromBankId === null) {
       await this.applyCashDelta(tx, companyId, deltas.amount);

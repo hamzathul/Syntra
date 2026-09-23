@@ -88,39 +88,42 @@ export function BankAccountsSection() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm text-muted-foreground">
-          {banks?.length ?? 0} bank{(banks?.length ?? 0) !== 1 ? "s" : ""}{" "}
-          added
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-[13px] text-muted-foreground">
+          {banks?.length ?? 0} bank{(banks?.length ?? 0) !== 1 ? "s" : ""} added
         </p>
         <div className="flex items-center gap-2">
           <MoneyActionsPanel banks={banks ?? []} />
           <Button
             variant="outline"
             size="sm"
-            className="gap-1"
+            className="gap-1 rounded-xl"
             onClick={openCreate}
           >
             <PlusIcon className="h-4 w-4" />
-            Add Bank
+            Add bank
           </Button>
         </div>
       </div>
 
-      <div className="border rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
         {banks && banks.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="table-shell w-full text-sm">
               <thead>
-                <tr className="border-b bg-muted/40 text-left text-muted-foreground">
-                  <th className="px-4 py-3 font-medium">Bank</th>
-                  <th className="px-4 py-3 font-medium">Opening Balance</th>
-                  <th className="px-4 py-3 font-medium">Current Balance</th>
-                  <th className="px-4 py-3 font-medium">Print On Invoice</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
+                <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                  <th className="px-5 py-3.5 font-semibold">Bank</th>
+                  <th className="px-4 py-3.5 font-semibold">Opening balance</th>
+                  <th className="px-4 py-3.5 font-semibold">Current balance</th>
+                  <th className="px-4 py-3.5 font-semibold">
+                    Print on invoice
+                  </th>
+                  <th className="px-5 py-3.5 text-right font-semibold">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-border/50">
                 {banks.map((bank) => (
                   <BankRow
                     key={bank.id}
@@ -133,19 +136,31 @@ export function BankAccountsSection() {
             </table>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <LandmarkIcon className="h-6 w-6 text-primary" />
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+            <div className="relative">
+              <div className="absolute -inset-3 rounded-[28px] bg-primary/[0.07] blur-md" />
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-[20px] border border-primary/15 bg-gradient-to-br from-primary/[0.14] to-primary/[0.04]">
+                <LandmarkIcon
+                  className="h-6 w-6 text-primary"
+                  strokeWidth={1.8}
+                />
+              </div>
             </div>
             <div>
-              <p className="font-medium">No banks yet</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[15px] font-semibold tracking-tight">
+                No banks yet
+              </p>
+              <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">
                 Add a bank account to print its details or UPI QR on invoices.
               </p>
             </div>
-            <Button variant="outline" className="gap-1" onClick={openCreate}>
+            <Button
+              variant="outline"
+              className="mt-1 rounded-2xl gap-1"
+              onClick={openCreate}
+            >
               <PlusIcon className="h-4 w-4" />
-              Add Bank
+              Add bank
             </Button>
           </div>
         )}
@@ -226,8 +241,8 @@ function BankRow({
         }`;
 
   return (
-    <tr className="transition-colors hover:bg-muted/30">
-      <td className="px-4 py-3">
+    <tr className="transition-colors duration-150 hover:bg-primary/[0.04]">
+      <td className="px-5 py-3.5">
         <Link
           href={`/banks/${bank.id}`}
           className="font-medium transition-colors hover:text-primary hover:underline"
@@ -241,8 +256,8 @@ function BankRow({
           </p>
         )}
       </td>
-      <td className="px-4 py-3 text-muted-foreground">{balanceLabel}</td>
-      <td className="px-4 py-3">
+      <td className="px-4 py-3.5 text-muted-foreground">{balanceLabel}</td>
+      <td className="px-4 py-3.5">
         <span className="font-semibold tabular-nums">
           {bank.currentBalance.toLocaleString("en-IN", {
             minimumFractionDigits: 2,
@@ -250,7 +265,7 @@ function BankRow({
           })}
         </span>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-4 py-3.5">
         <div className="flex gap-1.5">
           <Badge
             variant={bank.printBankDetails ? "secondary" : "outline"}
@@ -267,7 +282,7 @@ function BankRow({
           )}
         </div>
       </td>
-      <td className="px-4 py-3">
+      <td className="px-5 py-3.5">
         <div className="flex justify-end gap-1">
           <Button size="icon" variant="ghost" onClick={() => onEdit(bank)}>
             <PencilIcon className="h-4 w-4" />

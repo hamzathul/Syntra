@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon, Loader2Icon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronsUpDownIcon,
+  PlusIcon,
+  Loader2Icon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -77,12 +82,7 @@ export function CategoryCombobox({
         onClick={() => setOpen((v) => !v)}
         className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        <span
-          className={cn(
-            "truncate",
-            !selected && "text-muted-foreground",
-          )}
-        >
+        <span className={cn("truncate", !selected && "text-muted-foreground")}>
           {selected ? selected.name : placeholder}
         </span>
         <ChevronsUpDownIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -113,9 +113,7 @@ export function CategoryCombobox({
                 )}
               >
                 <span>{category.name}</span>
-                {category.id === value && (
-                  <CheckIcon className="h-4 w-4" />
-                )}
+                {category.id === value && <CheckIcon className="h-4 w-4" />}
               </button>
             ))}
             {filtered.length === 0 && (

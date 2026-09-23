@@ -119,7 +119,9 @@ export const bankHistoryResponseSchema = z.object({
 export type AdjustmentDto = z.infer<typeof adjustmentResponseSchema>;
 export type BankAdjustmentDto = z.infer<typeof bankAdjustmentResponseSchema>;
 export type TransferDto = z.infer<typeof transferResponseSchema>;
-export type MoneySalePaymentDto = z.infer<typeof moneySalePaymentResponseSchema>;
+export type MoneySalePaymentDto = z.infer<
+  typeof moneySalePaymentResponseSchema
+>;
 export type CashSummaryDto = z.infer<typeof cashSummaryResponseSchema>;
 export type BankHistoryDto = z.infer<typeof bankHistoryResponseSchema>;
 export type AdjustCashDto = z.infer<typeof adjustCashSchema>;

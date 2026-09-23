@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PlusIcon, ReceiptIcon } from "lucide-react";
+import { Plus, ReceiptText } from "lucide-react";
 import type { SaleDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageState } from "@/components/ui/page-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useSales } from "@/hooks/sales/use-sales-query";
 
 const formatAmount = (value: number) =>
@@ -27,41 +29,41 @@ export default function SalesPage() {
     >
       {(result) => (
         <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Sales</h1>
-              <p className="text-muted-foreground">
-                Manage and track all sales
-              </p>
-            </div>
-            <Button asChild className="gap-1">
-              <Link href="/sales/new">
-                <PlusIcon className="h-4 w-4" />
-                New Sale
-              </Link>
-            </Button>
-          </div>
+          <PageHeader
+            title="Sales"
+            description="Manage and track every sale in one place."
+            actions={
+              <Button asChild className="rounded-2xl">
+                <Link href="/sales/new">
+                  <Plus className="h-4 w-4" />
+                  New sale
+                </Link>
+              </Button>
+            }
+          />
 
-          <div className="border rounded-xl overflow-hidden">
+          <div className="animate-fade-up stagger-1 overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
             {result.items.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="table-shell w-full text-sm">
                   <thead>
-                    <tr className="border-b bg-muted/40 text-left text-muted-foreground">
-                      <th className="px-4 py-3 font-medium">Date</th>
-                      <th className="px-4 py-3 font-medium">Customer</th>
-                      <th className="px-4 py-3 font-medium">Type</th>
-                      <th className="px-4 py-3 font-medium text-right">Total</th>
-                      <th className="px-4 py-3 font-medium text-right">
+                    <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                      <th className="px-5 py-3.5 font-semibold">Date</th>
+                      <th className="px-4 py-3.5 font-semibold">Customer</th>
+                      <th className="px-4 py-3.5 font-semibold">Type</th>
+                      <th className="px-4 py-3.5 text-right font-semibold">
+                        Total
+                      </th>
+                      <th className="px-4 py-3.5 text-right font-semibold">
                         Received
                       </th>
-                      <th className="px-4 py-3 font-medium text-right">
-                        Balance Due
+                      <th className="px-4 py-3.5 text-right font-semibold">
+                        Balance due
                       </th>
-                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-5 py-3.5 font-semibold">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-border/50">
                     {result.items.map((sale) => (
                       <SaleRow key={sale.id} sale={sale} />
                     ))}
@@ -69,24 +71,19 @@ export default function SalesPage() {
                 </table>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <ReceiptIcon className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">No sales yet</p>
-                  <p className="text-sm text-muted-foreground">
-                    Create your first sale to start recording cash and credit
-                    transactions.
-                  </p>
-                </div>
-                <Button asChild variant="outline" className="gap-1">
-                  <Link href="/sales/new">
-                    <PlusIcon className="h-4 w-4" />
-                    New Sale
-                  </Link>
-                </Button>
-              </div>
+              <EmptyState
+                icon={ReceiptText}
+                title="No sales yet"
+                description="Create your first sale to start recording cash and credit transactions."
+                actions={
+                  <Button asChild variant="outline" className="rounded-2xl">
+                    <Link href="/sales/new">
+                      <Plus className="h-4 w-4" />
+                      New sale
+                    </Link>
+                  </Button>
+                }
+              />
             )}
           </div>
         </div>
@@ -101,7 +98,7 @@ function SaleRow({ sale }: { sale: SaleDto }) {
 
   return (
     <tr
-      className="cursor-pointer transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40"
+      className="cursor-pointer transition-colors duration-150 hover:bg-primary/[0.04] focus-visible:outline-none focus-visible:bg-primary/[0.06]"
       role="link"
       tabIndex={0}
       aria-label={`View sale for ${sale.partyName}`}
@@ -113,28 +110,37 @@ function SaleRow({ sale }: { sale: SaleDto }) {
         }
       }}
     >
-      <td className="px-4 py-3 font-medium">{sale.saleDate.slice(0, 10)}</td>
-      <td className="px-4 py-3">{sale.partyName}</td>
-      <td className="px-4 py-3">
-        <Badge variant={sale.saleType === "CREDIT" ? "secondary" : "outline"}>
+      <td className="px-5 py-3.5 font-semibold tabular-nums">
+        {sale.saleDate.slice(0, 10)}
+      </td>
+      <td className="px-4 py-3.5">{sale.partyName}</td>
+      <td className="px-4 py-3.5">
+        <Badge variant={sale.saleType === "CREDIT" ? "secondary" : "default"}>
           {sale.saleType}
         </Badge>
       </td>
-      <td className="px-4 py-3 text-right">{formatAmount(sale.totalAmount)}</td>
-      <td className="px-4 py-3 text-right text-muted-foreground">
+      <td className="px-4 py-3.5 text-right font-medium tabular-nums">
+        {formatAmount(sale.totalAmount)}
+      </td>
+      <td className="px-4 py-3.5 text-right text-muted-foreground tabular-nums">
         {formatAmount(sale.receivedAmount)}
       </td>
-      <td className="px-4 py-3 text-right">
+      <td className="px-4 py-3.5 text-right tabular-nums">
         <span
           className={
-            sale.balanceDue > 0 ? "font-medium text-destructive" : undefined
+            sale.balanceDue > 0
+              ? "font-semibold text-destructive"
+              : "text-muted-foreground"
           }
         >
           {formatAmount(sale.balanceDue)}
         </span>
       </td>
-      <td className="px-4 py-3">
-        <Badge variant={sale.paid ? "outline" : "destructive"}>
+      <td className="px-5 py-3.5">
+        <Badge variant={sale.paid ? "success" : "warning"}>
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${sale.paid ? "bg-emerald-500" : "bg-amber-500"}`}
+          />
           {sale.paid ? "Paid" : "Due"}
         </Badge>
       </td>

@@ -10,13 +10,21 @@ export function createBanksRouter(controller: BanksController): Router {
   const router = Router();
 
   router.get("/", controller.list);
-  router.post("/", validateRequest({ body: createBankSchema }), controller.create);
+  router.post(
+    "/",
+    validateRequest({ body: createBankSchema }),
+    controller.create,
+  );
   router.patch(
     "/:id",
     validateRequest({ params: paramsWithId, body: updateBankSchema }),
     controller.update,
   );
-  router.delete("/:id", validateRequest({ params: paramsWithId }), controller.delete);
+  router.delete(
+    "/:id",
+    validateRequest({ params: paramsWithId }),
+    controller.delete,
+  );
 
   return router;
 }

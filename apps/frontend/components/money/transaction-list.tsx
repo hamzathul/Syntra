@@ -51,7 +51,9 @@ export function TransactionList({
   onDelete,
   emptyText = "No transactions yet.",
 }: TransactionListProps) {
-  const [deleteTarget, setDeleteTarget] = useState<TransactionItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TransactionItem | null>(
+    null,
+  );
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {

@@ -163,7 +163,10 @@ export function ItemForm({ item }: ItemFormProps) {
     }`;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, handleInvalid)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, handleInvalid)}
+      className="space-y-6"
+    >
       <div className="flex items-center justify-between">
         <div className="flex gap-0 border-b">
           {TABS.map((tab) => (
@@ -192,12 +195,18 @@ export function ItemForm({ item }: ItemFormProps) {
           />
         )}
         {activeTab === "pricing" && (
-          <ItemPricingTab register={register} control={control} errors={errors} />
+          <ItemPricingTab
+            register={register}
+            control={control}
+            errors={errors}
+          />
         )}
         {activeTab === "tax" && (
           <ItemTaxTab control={control} setValue={setValue} />
         )}
-        {activeTab === "stock" && <ItemStockTab register={register} errors={errors} />}
+        {activeTab === "stock" && (
+          <ItemStockTab register={register} errors={errors} />
+        )}
       </div>
 
       <Separator />
@@ -216,7 +225,11 @@ export function ItemForm({ item }: ItemFormProps) {
             )}
             {isEdit ? "Save Changes" : "Create Item"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.push("/items")}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/items")}
+          >
             Cancel
           </Button>
         </div>
@@ -245,7 +258,9 @@ export function ItemForm({ item }: ItemFormProps) {
                 <DialogTitle>Delete Item</DialogTitle>
                 <DialogDescription>
                   Are you sure you want to delete{" "}
-                  <span className="font-medium text-foreground">{item?.name}</span>
+                  <span className="font-medium text-foreground">
+                    {item?.name}
+                  </span>
                   ?
                 </DialogDescription>
               </div>

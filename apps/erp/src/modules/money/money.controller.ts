@@ -5,11 +5,7 @@ import {
   getCompanyId,
   getParamId,
 } from "backend-p";
-import type {
-  AdjustBankDto,
-  AdjustCashDto,
-  CreateTransferDto,
-} from "shared";
+import type { AdjustBankDto, AdjustCashDto, CreateTransferDto } from "shared";
 import type { IMoneyService } from "./money.service.port";
 
 export class MoneyController extends BaseController {
@@ -80,7 +76,11 @@ export class MoneyController extends BaseController {
     const companyId = getCompanyId(res.locals);
     const bankId = getParamId(req, "bankId");
     const dto = req.body as AdjustBankDto;
-    const adjustment = await this.moneyService.adjustBank(companyId, bankId, dto);
+    const adjustment = await this.moneyService.adjustBank(
+      companyId,
+      bankId,
+      dto,
+    );
 
     this.v1.success(res, {
       request: req,

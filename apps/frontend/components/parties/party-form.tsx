@@ -129,7 +129,10 @@ export function PartyForm({ party }: PartyFormProps) {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, handleInvalid)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, handleInvalid)}
+      className="space-y-6"
+    >
       <div className="flex items-center justify-between">
         <div className="flex gap-0 border-b">
           {TABS.map((tab) => (
@@ -150,7 +153,11 @@ export function PartyForm({ party }: PartyFormProps) {
 
       <div className="max-w-3xl">
         {activeTab === "general" && (
-          <PartyGeneralTab register={register} control={control} errors={errors} />
+          <PartyGeneralTab
+            register={register}
+            control={control}
+            errors={errors}
+          />
         )}
         {activeTab === "address" && (
           <PartyAddressTab register={register} errors={errors} />
@@ -173,7 +180,11 @@ export function PartyForm({ party }: PartyFormProps) {
             )}
             {isEdit ? "Save Changes" : "Create Party"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.push("/parties")}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/parties")}
+          >
             Cancel
           </Button>
         </div>
@@ -202,7 +213,9 @@ export function PartyForm({ party }: PartyFormProps) {
                 <DialogTitle>Delete Party</DialogTitle>
                 <DialogDescription>
                   Are you sure you want to delete{" "}
-                  <span className="font-medium text-foreground">{party?.name}</span>
+                  <span className="font-medium text-foreground">
+                    {party?.name}
+                  </span>
                   ?
                 </DialogDescription>
               </div>

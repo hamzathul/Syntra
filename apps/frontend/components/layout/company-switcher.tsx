@@ -20,19 +20,21 @@ export function CompanySwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-9 gap-2 px-2.5 max-w-55 font-normal hover:bg-accent"
+          className="h-11 gap-2.5 rounded-2xl px-3 max-w-60 font-normal hover:bg-muted/70"
         >
           {isLoading ? (
             <>
-              <div className="h-5 w-5 shrink-0 rounded bg-muted animate-pulse" />
-              <div className="h-3.5 w-24 rounded bg-muted animate-pulse" />
+              <div className="skeleton-shimmer h-8 w-8 shrink-0 rounded-xl" />
+              <div className="skeleton-shimmer h-3.5 w-24 rounded-lg" />
             </>
           ) : (
             <>
-              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-primary/10">
-                <Building2 className="h-3 w-3 text-primary" />
+              <div className="brand-gradient flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white text-xs font-bold shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.5)]">
+                {activeCompany?.name?.charAt(0).toUpperCase() ?? (
+                  <Building2 className="h-3.5 w-3.5" />
+                )}
               </div>
-              <span className="truncate text-sm font-medium">
+              <span className="truncate text-sm font-semibold tracking-tight">
                 {activeCompany?.name ?? "Select company"}
               </span>
               <ChevronsUpDown className="ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -41,7 +43,7 @@ export function CompanySwitcher() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-60" align="start">
+      <DropdownMenuContent className="w-64 rounded-2xl" align="start">
         <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
           Your companies
         </DropdownMenuLabel>
@@ -61,9 +63,9 @@ export function CompanySwitcher() {
             <DropdownMenuItem
               key={company.id}
               onClick={() => switchCompany(company)}
-              className="gap-2.5 cursor-pointer"
+              className="gap-2.5 rounded-xl cursor-pointer p-2"
             >
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-primary/10 text-primary text-xs font-semibold">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/[0.1] text-primary text-xs font-bold">
                 {company.name.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">

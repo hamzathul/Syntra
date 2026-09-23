@@ -2,12 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-  useWatch,
-} from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import type {
   Control,
   FieldErrors,
@@ -144,7 +139,7 @@ export function SaleForm({ sale }: SaleFormProps) {
     (acc, _, index) => acc + (Number(watch(`payments.${index}.amount`)) || 0),
     0,
   );
-  const received = saleType === "CASH" ? total : (Number(receivedAmount) || 0);
+  const received = saleType === "CASH" ? total : Number(receivedAmount) || 0;
   const balanceDue = total - received;
 
   const lockedIndices = useMemo(() => {
@@ -609,9 +604,13 @@ function PaymentRow({
 
   const handleModeChange = useCallback(
     (next: string) => {
-      setValue(`payments.${index}.mode`, next as SalePaymentFormValues["mode"], {
-        shouldValidate: true,
-      });
+      setValue(
+        `payments.${index}.mode`,
+        next as SalePaymentFormValues["mode"],
+        {
+          shouldValidate: true,
+        },
+      );
       setValue(`payments.${index}.bankId`, "", { shouldValidate: true });
     },
     [setValue, index],

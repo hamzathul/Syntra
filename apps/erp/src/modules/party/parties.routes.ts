@@ -24,7 +24,11 @@ export function createPartiesRouter(controller: PartiesController): Router {
     controller.createParty,
   );
 
-  router.get("/:id", validateRequest({ params: paramsWithId }), controller.getParty);
+  router.get(
+    "/:id",
+    validateRequest({ params: paramsWithId }),
+    controller.getParty,
+  );
   router.patch(
     "/:id",
     validateRequest({ params: paramsWithId, body: updatePartySchema }),

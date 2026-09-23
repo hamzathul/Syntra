@@ -27,10 +27,7 @@ export const useAdjustCashMutation = createMutationHook(
 export const useUpdateCashAdjustmentMutation = createMutationHook(
   moneyKeys.cash,
   (variables: { adjustmentId: string; dto: AdjustCashDto }) =>
-    moneyService.cashAdjustments.update(
-      variables.adjustmentId,
-      variables.dto,
-    ),
+    moneyService.cashAdjustments.update(variables.adjustmentId, variables.dto),
 );
 
 export const useDeleteCashAdjustmentMutation = createMutationHook(
@@ -66,11 +63,7 @@ export const useAdjustBankMutation = createMutationHook(
 
 export const useUpdateBankAdjustmentMutation = createMutationHook(
   () => moneyKeys.all,
-  (variables: {
-    adjustmentId: string;
-    bankId: string;
-    dto: AdjustBankDto;
-  }) =>
+  (variables: { adjustmentId: string; bankId: string; dto: AdjustBankDto }) =>
     moneyService.banks
       .adjustments(variables.bankId)
       .update(variables.adjustmentId, variables.dto),
@@ -80,11 +73,14 @@ export const useUpdateBankAdjustmentMutation = createMutationHook(
 export const useDeleteBankAdjustmentMutation = createMutationHook(
   () => moneyKeys.all,
   (variables: { adjustmentId: string; bankId: string }) =>
-    moneyService.banks.adjustments(variables.bankId).remove(variables.adjustmentId),
+    moneyService.banks
+      .adjustments(variables.bankId)
+      .remove(variables.adjustmentId),
   [bankKeys.list],
 );
 
 export const useBankHistory = createGetDetailQueryHook(
   moneyKeys.bankHistory,
-  (bankId: string): Promise<BankHistoryDto> => moneyService.getBankHistory(bankId),
+  (bankId: string): Promise<BankHistoryDto> =>
+    moneyService.getBankHistory(bankId),
 );

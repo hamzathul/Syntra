@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getCompanyId, getParamId } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getCompanyId,
+  getParamId,
+} from "backend-p";
 import type { CreateBankDto, UpdateBankDto } from "shared";
 import type { IBankService } from "./bank.service.port";
 

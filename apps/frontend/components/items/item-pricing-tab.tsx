@@ -4,7 +4,13 @@ import { Controller, useWatch } from "react-hook-form";
 import type { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import type { ItemFormValues } from "./item-form-values";
 
@@ -53,7 +59,11 @@ function PriceInput({
   );
 }
 
-export function ItemPricingTab({ register, control, errors }: ItemPricingTabProps) {
+export function ItemPricingTab({
+  register,
+  control,
+  errors,
+}: ItemPricingTabProps) {
   const saleDiscountType = useWatch({ control, name: "saleDiscountType" });
 
   return (

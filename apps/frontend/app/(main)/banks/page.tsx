@@ -1,21 +1,18 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
+import { PageHeader } from "@/components/ui/page-header";
 import { BankAccountsSection } from "@/components/banks/bank-accounts-section";
 
 export default function BanksPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Banks</h1>
-        <p className="text-muted-foreground">
-          Manage bank accounts and how they appear on your invoices
-        </p>
+      <PageHeader
+        title="Banks"
+        description="Manage bank accounts and how they appear on your invoices."
+      />
+      <div className="animate-fade-up stagger-1">
+        <BankAccountsSection />
       </div>
-
-      <Separator />
-
-      <BankAccountsSection />
     </div>
   );
 }

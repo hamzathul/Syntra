@@ -271,7 +271,12 @@ export function TaxRatesTab() {
             >
               <CheckIcon className="h-4 w-4 text-green-600" />
             </Button>
-            <Button size="icon" variant="ghost" type="button" onClick={resetAddForm}>
+            <Button
+              size="icon"
+              variant="ghost"
+              type="button"
+              onClick={resetAddForm}
+            >
               <XIcon className="h-4 w-4" />
             </Button>
           </div>
@@ -286,7 +291,9 @@ export function TaxRatesTab() {
                 <TaxRateEditRow rate={rate} onCancel={cancelEdit} />
               ) : (
                 <>
-                  <span className="flex-1 text-sm font-medium">{rate.name}</span>
+                  <span className="flex-1 text-sm font-medium">
+                    {rate.name}
+                  </span>
                   <span className="w-24 text-sm text-muted-foreground">
                     {rate.rate}%
                   </span>

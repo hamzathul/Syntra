@@ -2,20 +2,19 @@ import { z } from "zod";
 import type { CreateItemDto, ItemDto, UpdateItemDto } from "shared";
 
 const money = (label: string) =>
-  z
-    .string()
-    .refine(
-      (v) => {
-        if (v.trim() === "") return true;
-        const n = Number(v);
-        return Number.isFinite(n) && n >= 0 && n <= 999_999_999_999;
-      },
-      `${label} must be a valid non-negative amount`,
-    );
+  z.string().refine((v) => {
+    if (v.trim() === "") return true;
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 && n <= 999_999_999_999;
+  }, `${label} must be a valid non-negative amount`);
 
 export const itemFormSchema = z
   .object({
-    name: z.string().trim().min(1, "Item name is required").max(200, "Item name too long"),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Item name is required")
+      .max(200, "Item name too long"),
     itemType: z.enum(["GOODS", "SERVICE"]),
     itemCode: z.string().max(50, "Item code too long"),
     barcode: z.string().max(100, "Barcode too long"),
@@ -65,11 +64,15 @@ export const itemFormSchema = z
         message: "Both discount type and discount value are required together",
       });
     }
-    if (values.unitSecondaryId !== "" && values.unitConversionRate.trim() === "") {
+    if (
+      values.unitSecondaryId !== "" &&
+      values.unitConversionRate.trim() === ""
+    ) {
       ctx.addIssue({
         code: "custom",
         path: ["unitConversionRate"],
-        message: "Conversion rate is required when a secondary unit is selected",
+        message:
+          "Conversion rate is required when a secondary unit is selected",
       });
     }
   });

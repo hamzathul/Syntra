@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { BaseController, V1Response, getCompanyId, getParamId } from "backend-p";
+import {
+  BaseController,
+  V1Response,
+  getCompanyId,
+  getParamId,
+} from "backend-p";
 import type { CreatePartyDto, UpdatePartyDto } from "shared";
 import type { IPartyService } from "./party.service.port";
 
@@ -14,7 +19,8 @@ export class PartiesController extends BaseController {
     const companyId = getCompanyId(res.locals);
     const limit =
       req.query["limit"] === undefined ? undefined : Number(req.query["limit"]);
-    const cursor = typeof req.query["cursor"] === "string" ? req.query["cursor"] : undefined;
+    const cursor =
+      typeof req.query["cursor"] === "string" ? req.query["cursor"] : undefined;
     const result = await this.partyService.list(companyId, { limit, cursor });
 
     this.v1.success(res, {

@@ -43,7 +43,10 @@ export function createMoneyRouter(controller: MoneyController): Router {
   );
   router.patch(
     "/transfers/:transferId",
-    validateRequest({ params: paramsWithTransferId, body: createTransferSchema }),
+    validateRequest({
+      params: paramsWithTransferId,
+      body: createTransferSchema,
+    }),
     controller.updateTransfer,
   );
   router.delete(

@@ -54,10 +54,7 @@ export function ItemStockTab({ register, errors }: ItemStockTabProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
         <div className="grid gap-1.5">
-          <Label
-            htmlFor="opening-value"
-            className="text-sm font-medium"
-          >
+          <Label htmlFor="opening-value" className="text-sm font-medium">
             Opening Stock Value (per unit)
           </Label>
           <Input

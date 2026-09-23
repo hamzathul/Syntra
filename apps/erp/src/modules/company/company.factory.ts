@@ -17,11 +17,7 @@ export class CompanyModuleFactory {
     if (CompanyModuleFactory.controller === null) {
       const prisma = getPrismaClient();
       const repo = new CompanyRepository(prisma);
-      const service = new CompanyService(
-        repo,
-        getTransactionRunner(),
-        logger,
-      );
+      const service = new CompanyService(repo, getTransactionRunner(), logger);
       CompanyModuleFactory.controller = new CompanyController(service);
       CompanyModuleFactory.companyContextMw = createCompanyContextMiddleware(
         repo,

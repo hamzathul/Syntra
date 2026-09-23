@@ -127,7 +127,10 @@ export class SaleService implements ISaleService {
     const bankIds = (data.payments ?? existing?.payments ?? [])
       .filter((payment) => payment.mode === "BANK" && payment.bankId)
       .map((payment) => payment.bankId as string);
-    if (bankIds.length > 0 && !(await this.repo.banksExist(companyId, bankIds))) {
+    if (
+      bankIds.length > 0 &&
+      !(await this.repo.banksExist(companyId, bankIds))
+    ) {
       throw new BadRequestError("Selected bank does not exist");
     }
   }

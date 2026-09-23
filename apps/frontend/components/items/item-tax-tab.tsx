@@ -108,13 +108,17 @@ export function ItemTaxTab({ control, setValue }: ItemTaxTabProps) {
               render={({ field }) => (
                 <Select
                   value={field.value || "__none__"}
-                  onValueChange={(v) => field.onChange(v === "__none__" ? "" : v)}
+                  onValueChange={(v) =>
+                    field.onChange(v === "__none__" ? "" : v)
+                  }
                 >
                   <SelectTrigger id="tax-rate">
                     <SelectValue placeholder="Select a tax rate..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="__none__">Select a tax rate...</SelectItem>
+                    <SelectItem value="__none__">
+                      Select a tax rate...
+                    </SelectItem>
                     {(rates ?? []).map((rate) => (
                       <SelectItem key={rate.id} value={rate.id}>
                         {rate.name} ({rate.rate}%)
@@ -147,7 +151,9 @@ export function ItemTaxTab({ control, setValue }: ItemTaxTabProps) {
                       <SelectValue placeholder="Select a tax group..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__none__">Select a tax group...</SelectItem>
+                      <SelectItem value="__none__">
+                        Select a tax group...
+                      </SelectItem>
                       {(groups ?? []).map((group) => (
                         <SelectItem key={group.id} value={group.id}>
                           {group.name} ({group.totalRate}%)

@@ -33,14 +33,14 @@ uv run uvicorn ai.main:app --port 3003 --reload
 
 ## Workspaces
 
-| Package     | Location           | Purpose                                          |
-| ----------- | ------------------ | ------------------------------------------------ |
-| `core`      | `apps/backend`     | Auth & user service (Express + Prisma)           |
-| `erp`       | `apps/erp`         | ERP business logic (Express + Prisma)            |
-| `frontend`  | `apps/frontend`    | Next.js application (port 3000)                  |
-| `syntra-ai` | `apps/ai`          | AI chatbot API (FastAPI + LangGraph, port 3003)* |
-| `backend-p` | `packages/backend` | Reusable Express abstractions                    |
-| `shared`    | `packages/shared`  | Zod schemas + TypeScript types                   |
+| Package     | Location           | Purpose                                           |
+| ----------- | ------------------ | ------------------------------------------------- |
+| `core`      | `apps/backend`     | Auth & user service (Express + Prisma)            |
+| `erp`       | `apps/erp`         | ERP business logic (Express + Prisma)             |
+| `frontend`  | `apps/frontend`    | Next.js application (port 3000)                   |
+| `syntra-ai` | `apps/ai`          | AI chatbot API (FastAPI + LangGraph, port 3003)\* |
+| `backend-p` | `packages/backend` | Reusable Express abstractions                     |
+| `shared`    | `packages/shared`  | Zod schemas + TypeScript types                    |
 
 > \*`apps/ai` is a pure Python (`uv`) project with intentionally **no `package.json`** — `pnpm`/`turbo` ignore it, so start it separately (see Quick Start).
 

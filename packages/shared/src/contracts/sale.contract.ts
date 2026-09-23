@@ -92,7 +92,10 @@ export const createSaleSchema = z
       });
     }
 
-    const sum = value.payments.reduce((acc, payment) => acc + payment.amount, 0);
+    const sum = value.payments.reduce(
+      (acc, payment) => acc + payment.amount,
+      0,
+    );
     if (Math.abs(sum - received) > 0.00001) {
       ctx.addIssue({
         code: "custom",
@@ -141,17 +144,17 @@ export const updateSaleSchema = z
     saleDate: dateString.optional(),
     totalAmount: positiveAmount("Total amount").optional(),
     receivedAmount: amount("Received amount").optional(),
-    description: trimmedString.max(5000, "Description too long").nullable().optional(),
+    description: trimmedString
+      .max(5000, "Description too long")
+      .nullable()
+      .optional(),
     image: imageString.nullable().optional(),
     document: documentString.nullable().optional(),
     payments: z.array(salePaymentSchema).optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
-    if (
-      value.receivedAmount !== undefined &&
-      value.payments === undefined
-    ) {
+    if (value.receivedAmount !== undefined && value.payments === undefined) {
       ctx.addIssue({
         code: "custom",
         path: ["receivedAmount"],
@@ -164,7 +167,10 @@ export const updateSaleSchema = z
 
     const totalAmount = value.totalAmount;
     const receivedAmount = value.receivedAmount;
-    const sum = value.payments.reduce((acc, payment) => acc + payment.amount, 0);
+    const sum = value.payments.reduce(
+      (acc, payment) => acc + payment.amount,
+      0,
+    );
 
     if (receivedAmount === undefined) {
       ctx.addIssue({

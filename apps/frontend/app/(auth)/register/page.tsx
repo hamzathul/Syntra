@@ -11,23 +11,23 @@ import {
 export default function RegisterPage() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-lg shadow-primary/25">
+      <div className="flex flex-col items-center gap-3 text-center lg:hidden">
+        <div className="brand-gradient flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-bold text-white shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.6)]">
           S
         </div>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Create your account
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Get started with Syntra ERP for free
-          </p>
-        </div>
+      </div>
+      <div className="text-center lg:text-left">
+        <h1 className="text-[28px] font-semibold tracking-tight">
+          Create your account
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Get started with Syntra — free, no card needed
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Register</CardTitle>
+      <Card className="p-2">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-[17px]">Register</CardTitle>
           <CardDescription>Fill in your details to get started</CardDescription>
         </CardHeader>
         <CardContent>
@@ -39,7 +39,7 @@ export default function RegisterPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-primary underline-offset-4 hover:underline"
+          className="font-semibold text-primary underline-offset-4 hover:underline"
         >
           Sign in
         </Link>

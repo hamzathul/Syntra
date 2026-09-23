@@ -15,7 +15,10 @@ const validItem = {
 
 describe("createUnitSchema", () => {
   it("accepts valid unit with shortName", () => {
-    const result = createUnitSchema.safeParse({ name: "Kilogram", shortName: "kg" });
+    const result = createUnitSchema.safeParse({
+      name: "Kilogram",
+      shortName: "kg",
+    });
     expect(result.success).toBe(true);
   });
 
@@ -83,7 +86,10 @@ describe("createItemSchema", () => {
   });
 
   it("rejects empty item name", () => {
-    const result = createItemSchema.safeParse({ name: "", unitPrimaryId: "u1" });
+    const result = createItemSchema.safeParse({
+      name: "",
+      unitPrimaryId: "u1",
+    });
     expect(result.success).toBe(false);
   });
 

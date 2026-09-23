@@ -30,7 +30,9 @@ export interface BankAdjustmentRow {
   readonly updatedAt: Date;
 }
 
-export function toCashAdjustmentRecord(row: CashAdjustmentRow): CashAdjustmentRecord {
+export function toCashAdjustmentRecord(
+  row: CashAdjustmentRow,
+): CashAdjustmentRecord {
   return {
     id: row.id,
     companyId: row.companyId,
@@ -43,7 +45,9 @@ export function toCashAdjustmentRecord(row: CashAdjustmentRow): CashAdjustmentRe
   };
 }
 
-export function toBankAdjustmentRecord(row: BankAdjustmentRow): BankAdjustmentRecord {
+export function toBankAdjustmentRecord(
+  row: BankAdjustmentRow,
+): BankAdjustmentRecord {
   return {
     id: row.id,
     companyId: row.companyId,

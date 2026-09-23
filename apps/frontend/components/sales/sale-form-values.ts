@@ -2,27 +2,17 @@ import { z } from "zod";
 import type { CreateSaleDto, SaleDto, UpdateSaleDto } from "shared";
 
 const money = (label: string) =>
-  z
-    .string()
-    .refine(
-      (v) => {
-        if (v.trim() === "") return true;
-        const n = Number(v);
-        return Number.isFinite(n) && n >= 0 && n <= 999_999_999_999;
-      },
-      `${label} must be a valid non-negative amount`,
-    );
+  z.string().refine((v) => {
+    if (v.trim() === "") return true;
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 && n <= 999_999_999_999;
+  }, `${label} must be a valid non-negative amount`);
 
 const positiveMoney = (label: string) =>
-  z
-    .string()
-    .refine(
-      (v) => {
-        const n = Number(v);
-        return v.trim() !== "" && Number.isFinite(n) && n > 0;
-      },
-      `${label} must be a positive amount`,
-    );
+  z.string().refine((v) => {
+    const n = Number(v);
+    return v.trim() !== "" && Number.isFinite(n) && n > 0;
+  }, `${label} must be a positive amount`);
 
 const chequeFieldsSchema = z.object({
   drawBankName: z.string(),
@@ -63,7 +53,7 @@ export const saleFormSchema = z
 
     const total = Number(values.totalAmount) || 0;
     const received =
-      values.saleType === "CASH" ? total : (Number(values.receivedAmount) || 0);
+      values.saleType === "CASH" ? total : Number(values.receivedAmount) || 0;
     const sum = values.payments.reduce(
       (acc, payment) => acc + (Number(payment.amount) || 0),
       0,
@@ -134,7 +124,13 @@ export function emptySaleFormValues(): SaleFormValues {
         amount: "",
         bankId: "",
         description: "",
-        cheque: { drawBankName: "", chequeNumber: "", chequeDate: today(), notes: "", image: null },
+        cheque: {
+          drawBankName: "",
+          chequeNumber: "",
+          chequeDate: today(),
+          notes: "",
+          image: null,
+        },
       },
     ],
   };
@@ -146,8 +142,7 @@ export function saleFormValuesFromDto(sale: SaleDto): SaleFormValues {
     saleType: sale.saleType,
     saleDate: sale.saleDate.slice(0, 10),
     totalAmount: String(sale.totalAmount),
-    receivedAmount:
-      sale.saleType === "CASH" ? "" : String(sale.receivedAmount),
+    receivedAmount: sale.saleType === "CASH" ? "" : String(sale.receivedAmount),
     description: sale.description ?? "",
     image: sale.image,
     document: sale.document,
@@ -205,7 +200,7 @@ export function toCreateSalePayload(values: SaleFormValues): CreateSaleDto {
   const received =
     values.saleType === "CASH"
       ? Number(values.totalAmount)
-      : (Number(values.receivedAmount) || 0);
+      : Number(values.receivedAmount) || 0;
 
   const payload: Record<string, unknown> = {
     partyId: values.partyId,
@@ -237,7 +232,8 @@ export function toUpdateSalePayload(values: SaleFormValues): UpdateSaleDto {
     payload.receivedAmount = Number(values.receivedAmount) || 0;
   }
 
-  payload.description = values.description.trim() === "" ? null : values.description.trim();
+  payload.description =
+    values.description.trim() === "" ? null : values.description.trim();
   payload.image = values.image;
   payload.document = values.document;
 

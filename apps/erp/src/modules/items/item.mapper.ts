@@ -21,7 +21,9 @@ export function toItemDto(record: ItemRecord): ItemDto {
     unitPrimaryId: record.unitPrimaryId,
     unitSecondaryId: record.unitSecondaryId,
     unitPrimary: toUnitDto(record.unitPrimary),
-    unitSecondary: record.unitSecondary ? toUnitDto(record.unitSecondary) : null,
+    unitSecondary: record.unitSecondary
+      ? toUnitDto(record.unitSecondary)
+      : null,
     unitConversionRate: record.unitConversionRate,
     salePriceExclTax: record.salePriceExclTax,
     salePriceInclTax: record.salePriceInclTax,

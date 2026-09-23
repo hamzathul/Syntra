@@ -11,7 +11,12 @@ import {
   Loader2Icon,
   SaveIcon,
 } from "lucide-react";
-import { CASH, type BankDto, type CreateTransferDto, type TransferDto } from "shared";
+import {
+  CASH,
+  type BankDto,
+  type CreateTransferDto,
+  type TransferDto,
+} from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,12 +47,10 @@ const formSchema = z.object({
   date: z.string().min(1, "Date is required"),
   from: z.string().min(1, "From is required"),
   to: z.string().min(1, "To is required"),
-  amount: z
-    .string()
-    .refine((v) => {
-      const n = Number(v);
-      return Number.isFinite(n) && n > 0;
-    }, "Amount must be a positive number"),
+  amount: z.string().refine((v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0;
+  }, "Amount must be a positive number"),
   description: z.string().max(500, "Description too long"),
 });
 
@@ -228,7 +231,16 @@ export function TransferDialog({
         toast.error(getApiErrorMessage(err));
       }
     },
-    [transferMutation, updateMutation, isEdit, editing, onOpenChange, reset, copy.title, image],
+    [
+      transferMutation,
+      updateMutation,
+      isEdit,
+      editing,
+      onOpenChange,
+      reset,
+      copy.title,
+      image,
+    ],
   );
 
   const actionLabel =
@@ -255,9 +267,7 @@ export function TransferDialog({
             <div>
               <DialogTitle>{isEdit ? "Edit Transfer" : copy.title}</DialogTitle>
               <DialogDescription>
-                {isEdit
-                  ? "Update this money transfer."
-                  : copy.description}
+                {isEdit ? "Update this money transfer." : copy.description}
               </DialogDescription>
             </div>
           </div>
@@ -331,7 +341,9 @@ export function TransferDialog({
                 aria-invalid={!!errors.date}
               />
               {errors.date && (
-                <p className="text-xs text-destructive">{errors.date.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.date.message}
+                </p>
               )}
             </div>
             <div className="grid gap-1.5">
@@ -348,14 +360,17 @@ export function TransferDialog({
                 aria-invalid={!!errors.amount}
               />
               {errors.amount && (
-                <p className="text-xs text-destructive">{errors.amount.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.amount.message}
+                </p>
               )}
             </div>
           </div>
 
           <div className="grid gap-1.5">
             <Label htmlFor="transfer-desc" className="text-sm font-medium">
-              Description <span className="text-muted-foreground">(optional)</span>
+              Description{" "}
+              <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="transfer-desc"
@@ -364,7 +379,9 @@ export function TransferDialog({
               aria-invalid={!!errors.description}
             />
             {errors.description && (
-              <p className="text-xs text-destructive">{errors.description.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -378,11 +395,7 @@ export function TransferDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={pending}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={pending} className="gap-2">
               {pending ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (

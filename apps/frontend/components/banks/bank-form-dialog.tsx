@@ -156,7 +156,10 @@ export function BankFormDialog({
               )}
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="bank-opening-date" className="text-sm font-medium">
+              <Label
+                htmlFor="bank-opening-date"
+                className="text-sm font-medium"
+              >
                 As On Date
               </Label>
               <Input
@@ -172,7 +175,10 @@ export function BankFormDialog({
           <div className="flex items-center justify-between gap-4">
             <div className="grid gap-1">
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="print-bank-details" className="text-sm font-medium">
+                <Label
+                  htmlFor="print-bank-details"
+                  className="text-sm font-medium"
+                >
                   Print bank details on invoices
                 </Label>
                 <TooltipProvider delayDuration={100}>
@@ -187,12 +193,14 @@ export function BankFormDialog({
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p className="font-medium">Print bank details on invoices</p>
+                      <p className="font-medium">
+                        Print bank details on invoices
+                      </p>
                       <p className="text-muted-foreground">
                         When enabled, your account holder name, account number,
                         IFSC code, and branch name are printed on invoices so
-                        customers can pay you by bank transfer. The account number
-                        is required when this is turned on.
+                        customers can pay you by bank transfer. The account
+                        number is required when this is turned on.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -286,12 +294,14 @@ export function BankFormDialog({
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p className="font-medium">Print UPI QR code on invoices</p>
+                      <p className="font-medium">
+                        Print UPI QR code on invoices
+                      </p>
                       <p className="text-muted-foreground">
                         When enabled, a UPI payment QR code is printed on your
-                        invoices. Add your UPI ID to point the QR directly to it;
-                        if left empty, the QR is generated from the account number
-                        and IFSC code when available.
+                        invoices. Add your UPI ID to point the QR directly to
+                        it; if left empty, the QR is generated from the account
+                        number and IFSC code when available.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -314,7 +324,8 @@ export function BankFormDialog({
             <div className="rounded-lg border bg-muted/30 p-4">
               <div className="grid gap-1.5 max-w-xs">
                 <Label htmlFor="bank-upi" className="text-sm font-medium">
-                  UPI ID <span className="text-muted-foreground">(optional)</span>
+                  UPI ID{" "}
+                  <span className="text-muted-foreground">(optional)</span>
                 </Label>
                 <Input
                   id="bank-upi"
@@ -322,8 +333,8 @@ export function BankFormDialog({
                   {...register("upiId")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Leave empty to auto-generate the QR from the account number and
-                  IFSC code.
+                  Leave empty to auto-generate the QR from the account number
+                  and IFSC code.
                 </p>
               </div>
             </div>

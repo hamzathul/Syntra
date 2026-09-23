@@ -9,20 +9,30 @@ export default function MainLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <CompanyGuard>
-      <div className="flex h-screen overflow-hidden bg-background">
-        <AppSidebar />
+      <div className="mesh-bg relative h-screen overflow-hidden bg-background">
+        {/* Dot texture fading toward the bottom */}
+        <div
+          aria-hidden
+          className="bg-dots pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_90%_80%_at_50%_0%,black_30%,transparent_100%)]"
+        />
 
-        <div className="flex flex-1 flex-col overflow-hidden min-w-0">
-          <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background/95 backdrop-blur px-5 gap-4">
-            <CompanySwitcher />
-            <div className="flex items-center gap-2">
-              <UserNav />
-            </div>
-          </header>
+        <div className="relative z-10 flex h-full gap-3 p-3">
+          <AppSidebar />
 
-          <main className="flex-1 overflow-auto">
-            <div className="p-6">{children}</div>
-          </main>
+          <div className="flex min-w-0 flex-1 flex-col gap-3 overflow-hidden">
+            <header className="glass z-20 flex h-[68px] shrink-0 items-center justify-between gap-4 rounded-[24px] border border-border/60 px-4 shadow-[0_1px_2px_rgb(16_16_40/0.04),0_12px_32px_-16px_rgb(16_16_40/0.16)] sm:px-5">
+              <CompanySwitcher />
+              <div className="flex items-center gap-2">
+                <UserNav />
+              </div>
+            </header>
+
+            <main className="min-h-0 flex-1 overflow-y-auto rounded-[24px] border border-white/60 bg-white/55 shadow-[0_1px_2px_rgb(16_16_40/0.04),0_12px_32px_-16px_rgb(16_16_40/0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <div className="w-full px-4 py-5 sm:px-6 sm:py-6">
+                {children}
+              </div>
+            </main>
+          </div>
         </div>
       </div>
       <AiChatWidget />

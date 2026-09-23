@@ -24,7 +24,11 @@ export function createSalesRouter(controller: SalesController): Router {
     controller.createSale,
   );
 
-  router.get("/:id", validateRequest({ params: paramsWithId }), controller.getSale);
+  router.get(
+    "/:id",
+    validateRequest({ params: paramsWithId }),
+    controller.getSale,
+  );
   router.patch(
     "/:id",
     validateRequest({ params: paramsWithId, body: updateSaleSchema }),
