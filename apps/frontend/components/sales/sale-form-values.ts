@@ -170,6 +170,24 @@ export function saleFormValuesFromDto(sale: SaleDto): SaleFormValues {
   };
 }
 
+export function duplicateSaleFormValues(source: SaleDto): SaleFormValues {
+  const base = saleFormValuesFromDto(source);
+  return {
+    ...base,
+    saleDate: today(),
+    image: null,
+    document: null,
+    payments: base.payments.map((payment) => ({
+      ...payment,
+      cheque: {
+        ...payment.cheque,
+        chequeDate: today(),
+        image: null,
+      },
+    })),
+  };
+}
+
 function paymentPayload(
   payment: SalePaymentFormValues,
 ): Record<string, unknown> {

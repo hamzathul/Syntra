@@ -1,14 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, ReceiptText } from "lucide-react";
+import { Eye, Plus, ReceiptText } from "lucide-react";
 import type { SaleDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageState } from "@/components/ui/page-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SaleInvoiceDialog } from "@/components/sales/sale-invoice-dialog";
 import { useSales } from "@/hooks/sales/use-sales-query";
 
 const formatAmount = (value: number) =>
@@ -19,6 +21,7 @@ const formatAmount = (value: number) =>
 
 export default function SalesPage() {
   const { data, isLoading, error } = useSales();
+  const [previewSale, setPreviewSale] = useState<SaleDto | null>(null);
 
   return (
     <PageState
@@ -29,6 +32,13 @@ export default function SalesPage() {
     >
       {(result) => (
         <div className="space-y-6">
+          <SaleInvoiceDialog
+            open={previewSale !== null}
+            onOpenChange={(open) => {
+              if (!open) setPreviewSale(null);
+            }}
+            sale={previewSale}
+          />
           <PageHeader
             title="Sales"
             description="Manage and track every sale in one place."
@@ -48,6 +58,7 @@ export default function SalesPage() {
                 <table className="table-shell w-full text-sm">
                   <thead>
                     <tr className="border-b border-border/60 bg-muted/40 text-left text-muted-foreground">
+                      <th className="px-5 py-3.5 font-semibold">#</th>
                       <th className="px-5 py-3.5 font-semibold">Date</th>
                       <th className="px-4 py-3.5 font-semibold">Customer</th>
                       <th className="px-4 py-3.5 font-semibold">Type</th>
@@ -61,11 +72,19 @@ export default function SalesPage() {
                         Balance due
                       </th>
                       <th className="px-5 py-3.5 font-semibold">Status</th>
+                      <th className="px-5 py-3.5 text-right font-semibold">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
-                    {result.items.map((sale) => (
-                      <SaleRow key={sale.id} sale={sale} />
+                    {result.items.map((sale, index) => (
+                      <SaleRow
+                        key={sale.id}
+                        sale={sale}
+                        index={index}
+                        onPreview={() => setPreviewSale(sale)}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -92,7 +111,15 @@ export default function SalesPage() {
   );
 }
 
-function SaleRow({ sale }: { sale: SaleDto }) {
+function SaleRow({
+  sale,
+  index,
+  onPreview,
+}: {
+  sale: SaleDto;
+  index: number;
+  onPreview: () => void;
+}) {
   const router = useRouter();
   const navigate = () => router.push(`/sales/${sale.id}`);
 
@@ -110,6 +137,9 @@ function SaleRow({ sale }: { sale: SaleDto }) {
         }
       }}
     >
+      <td className="px-5 py-3.5 text-muted-foreground tabular-nums">
+        {index + 1}
+      </td>
       <td className="px-5 py-3.5 font-semibold tabular-nums">
         {sale.saleDate.slice(0, 10)}
       </td>
@@ -143,6 +173,21 @@ function SaleRow({ sale }: { sale: SaleDto }) {
           />
           {sale.paid ? "Paid" : "Due"}
         </Badge>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          aria-label={`View invoice for ${sale.partyName}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onPreview();
+          }}
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
       </td>
     </tr>
   );
