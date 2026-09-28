@@ -185,6 +185,7 @@ function SaleRow({
             event.stopPropagation();
             onPreview();
           }}
+          onKeyDown={(event) => event.stopPropagation()}
         >
           <Eye className="h-4 w-4" />
         </Button>
