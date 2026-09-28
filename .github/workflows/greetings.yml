@@ -13,10 +13,13 @@ permissions:
 jobs:
   welcome:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.repository == 'hamzathul/Syntra'
     steps:
-      - uses: actions/checkout@v4
-      - uses: EddieHubCommunity/gh-action-community/src/welcome@main
+      # No checkout here on purpose: the welcome action only needs the
+      # GitHub API (first-time check + comment), never repository code.
+      # Keep it that way — especially on pull_request_target (fork code).
+      - uses: EddieHubCommunity/gh-action-community/src/welcome@v2.1.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-message: '<h3>Hey contributor, thank you for opening an issue 🎉.</h3>'
