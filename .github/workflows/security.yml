@@ -1,0 +1,78 @@
+name: Security
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev]
+  schedule:
+    # Weekly CodeQL refresh even without pushes.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      # No build step: JS/TS and Python need no compilation for CodeQL.
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+
+  trufflehog-pr:
+    name: TruffleHog (PR diff)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan PR diff for verified secrets
+        uses: trufflesecurity/trufflehog@v3.97.9
+        with:
+          path: ./
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+          extra_args: --only-verified
+
+  trufflehog-push:
+    name: TruffleHog (pushed commits)
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan pushed commits for verified secrets
+        uses: trufflesecurity/trufflehog@v3.97.9
+        with:
+          path: ./
+          base: ${{ github.event.before }}
+          head: ${{ github.event.after }}
+          extra_args: --only-verified

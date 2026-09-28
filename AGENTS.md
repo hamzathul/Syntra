@@ -208,6 +208,12 @@ Every feature/fix must keep the community files in sync — docs rot is a bug.
 ### Labels — Keep in Sync
 
 - Issue-template labels (`bug`, `enhancement`, `question`, `documentation`, `chore`) feed `.github/release-drafter.yml` categories. If you add/rename a label, update **both** files.
+- PR area labels (`frontend`, `core`, `erp`, `ai`, `shared`, `backend-p`, `database`, `docs`, `dependencies`, `infra`) are applied automatically from `.github/labeler.yml` path rules — never hand-label areas. New app/package → add a labeler entry; new release-notes section → add a matching `release-drafter.yml` category.
+
+### Security Checks (CI)
+
+- `security.yml`: CodeQL (`javascript-typescript` + `python`; push/PR/weekly), TruffleHog verified-secrets scan (PR diff + pushed commits).
+- `ci.yml` `docker` job: builds `apps/ai` image (no push) + Trivy `CRITICAL,HIGH` scan, report-only SARIF upload. Keep it non-blocking (base-image CVEs aren't ours to fix).
 
 ### Dependency Updates — Do Not Re-add npm to Dependabot
 

@@ -1,0 +1,42 @@
+# Area labels, applied automatically by .github/workflows/labeler.yml.
+# Keep in sync with release-drafter categories when adding new areas.
+frontend:
+  - apps/frontend/**
+
+core:
+  - apps/backend/**
+
+erp:
+  - apps/erp/**
+
+ai:
+  - apps/ai/**
+
+shared:
+  - packages/shared/**
+
+backend-p:
+  - packages/backend/**
+
+database:
+  - apps/**/prisma/**
+  - scripts/**
+
+docs:
+  - "**/*.md"
+
+dependencies:
+  - pnpm-lock.yaml
+  - apps/ai/uv.lock
+  - apps/ai/pyproject.toml
+
+infra:
+  - .github/**
+  - .devcontainer/**
+  - docker-compose*.yml
+  - turbo.json
+  - pnpm-workspace.yaml
+  - package.json
+  - renovate.json
+  - .editorconfig
+  - .gitattributes

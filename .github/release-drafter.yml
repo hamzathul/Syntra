@@ -10,6 +10,7 @@ categories:
   - title: "📖 Documentation"
     labels:
       - "documentation"
+      - "docs"
   - title: "🧰 Maintenance"
     labels:
       - "chore"

@@ -160,6 +160,7 @@ Questions? Start with [SUPPORT.md](SUPPORT.md) or open a
 ## Security
 
 Do not open public issues for vulnerabilities — see [SECURITY.md](SECURITY.md).
+Every PR is scanned automatically (CodeQL + secret detection).
 
 ## License
 
