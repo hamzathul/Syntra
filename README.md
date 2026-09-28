@@ -165,3 +165,4 @@ Do not open public issues for vulnerabilities — see [SECURITY.md](SECURITY.md)
 
 Licensed under the [Apache License 2.0](LICENSE).
 Copyright 2026 Hamzathul Favas E. See [LICENSE](LICENSE) for details.
+
