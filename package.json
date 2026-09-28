@@ -1,6 +1,30 @@
 {
   "name": "Syntra",
+  "version": "0.1.0",
   "private": true,
+  "description": "Syntra ERP — open-source microservice ERP with Next.js frontend, Express Core/ERP APIs, and an AI chatbot",
+  "license": "Apache-2.0",
+  "author": "Hamzathul Favas E",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hamzathul/Syntra.git"
+  },
+  "homepage": "https://github.com/hamzathul/Syntra#readme",
+  "bugs": {
+    "url": "https://github.com/hamzathul/Syntra/issues"
+  },
+  "keywords": [
+    "erp",
+    "erp-system",
+    "nextjs",
+    "express",
+    "prisma",
+    "postgresql",
+    "microservices",
+    "fastapi",
+    "ai-chatbot",
+    "typescript"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -19,7 +43,9 @@
   },
   "packageManager": "pnpm@11.1.1",
   "pnpm": {
-    "onlyBuiltDependencies": ["sharp"]
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   },
   "engines": {
     "node": ">=20.9.0"

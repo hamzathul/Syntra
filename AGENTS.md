@@ -179,6 +179,60 @@ To target a single workspace, use `--filter <package-name>`:
   - Service logic (in `apps/backend` and `apps/erp`)
 - Run with: `pnpm --filter <package> test` or `pnpm test` for all workspaces.
 
+## 7. Open-Source & Docs Maintenance
+
+Every feature/fix must keep the community files in sync — docs rot is a bug.
+
+### CHANGELOG.md (required)
+
+- Add an entry under `[Unreleased]` for every user-facing change (`Added` / `Changed` / `Fixed`).
+- On release (from `main`), move entries into a new versioned section with the date.
+
+### README.md (required)
+
+- New app/package/port/script/route → update the matching section: `Architecture`, `Workspaces` table, `Project Structure` tree, `Scripts` table, `Prerequisites`, `Quick Start`.
+- Keep the `Contents` TOC anchors in sync with headings.
+
+### New Workspace Package
+
+- Set `description` + `keywords` in its `package.json`.
+- Library packages: `"license": "Apache-2.0"`.
+- Add a row to the README `Workspaces` table.
+
+### Ports & Public Routes
+
+- New port → update README arch bullets + `Quick Start` + `CONTRIBUTING.md` + `.devcontainer/devcontainer.json` `forwardPorts`.
+- New public frontend route → add to `app/robots.ts` `allow`. (`app/sitemap.ts` is intentionally absent until a production domain exists — see the `metadataBase` TODO in `app/layout.tsx`.)
+- Product scope changes → update `app/layout.tsx` metadata (`description`, `keywords`).
+
+### Labels — Keep in Sync
+
+- Issue-template labels (`bug`, `enhancement`, `question`, `documentation`, `chore`) feed `.github/release-drafter.yml` categories. If you add/rename a label, update **both** files.
+- PR area labels (`frontend`, `core`, `erp`, `ai`, `shared`, `backend-p`, `database`, `docs`, `dependencies`, `infra`) are applied automatically from `.github/labeler.yml` path rules — never hand-label areas. New app/package → add a labeler entry; new release-notes section → add a matching `release-drafter.yml` category.
+
+### Security Checks (CI)
+
+- `security.yml`: CodeQL (`javascript-typescript` + `python`; push/PR/weekly), TruffleHog verified-secrets scan (PR diff + pushed commits).
+- `ci.yml` `docker` job: builds `apps/ai` image (no push) + Trivy `CRITICAL,HIGH` scan, report-only SARIF upload. Keep it non-blocking (base-image CVEs aren't ours to fix).
+
+### Dependency Updates — Do Not Re-add npm to Dependabot
+
+- JS/TS updates: Renovate (`renovate.json`, npm manager — reads `pnpm-lock.yaml` natively).
+- GitHub Actions + Python (`apps/ai`): Dependabot (`.github/dependabot.yml`).
+- Dependabot has no pnpm ecosystem and cannot resolve `workspace:*` — never add an `npm` block to `dependabot.yml`.
+
+### Release Flow
+
+- PRs target `dev`; releases cut from `main`. Release Drafter auto-drafts notes — still update `CHANGELOG.md` manually on release.
+
+### Do Not Touch Without Explicit Approval
+
+- `LICENSE` (Apache License 2.0), `CODEOWNERS`, `.github/workflows/*` triggers, `.github/ISSUE_TEMPLATE/config.yml` URLs.
+
+### GitHub UI (not in code — remind the user)
+
+- Topics, About description, social preview image, Discussions, pinning, `good first issue` labels live in GitHub settings — flag them in your summary when relevant instead of editing files.
+
 ## 6. Key Reminders
 
 - **Ports vs. Concrete Classes**: Always import interfaces (`*.port.ts`). Avoid concrete class imports where a port suffices.

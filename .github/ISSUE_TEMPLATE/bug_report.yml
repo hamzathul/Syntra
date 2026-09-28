@@ -1,0 +1,78 @@
+name: Bug report
+description: Report a reproducible problem
+title: "fix: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please fill in everything relevant — incomplete reports may be closed.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: false
+      options:
+        - frontend (port 3000)
+        - core API (port 3001)
+        - erp API (port 3002)
+        - ai API (port 3003)
+        - shared / backend-p package
+        - docs / infra / CI
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What happened? What did you expect instead?
+      placeholder: Exiting company switch shows previous company's data for a second…
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, minimal setup.
+      placeholder: |
+        1. pnpm install && docker compose up -d
+        2. …
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Paste relevant server logs, stack traces, or screenshots. Redact secrets.
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Branch + commit hash, e.g. dev @ abc1234
+      placeholder: dev @ abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node, pnpm, Docker, Python/uv versions.
+      placeholder: |
+        OS: Windows 11
+        Node: 24.x, pnpm: 11.1.1
+        Docker: 27.x, Python: 3.12 + uv
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and did not find a duplicate
+          required: true
+        - label: I followed the Quick Start in README/CONTRIBUTING
+          required: false
+        - label: This is not a security vulnerability (see SECURITY.md)
+          required: true

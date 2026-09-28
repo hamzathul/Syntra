@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # NOTE: no `npm` ecosystem here on purpose — Dependabot cannot read
+  # pnpm-lock.yaml or resolve `workspace:*` deps. JS updates are handled
+  # by Renovate (see renovate.json).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /apps/ai
+    schedule:
+      interval: weekly

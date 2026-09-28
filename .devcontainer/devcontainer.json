@@ -1,0 +1,32 @@
+// One-click dev environment for GitHub Codespaces / VS Code Remote.
+// Opens the repo with Node 24 + pnpm + Docker (for the Postgres compose stack).
+{
+  "name": "Syntra ERP",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:24",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+  "forwardPorts": [3000, 3001, 3002, 3003, 5432],
+  "portsAttributes": {
+    "3000": { "label": "Frontend", "onAutoForward": "notify" },
+    "3001": { "label": "Core API", "onAutoForward": "silent" },
+    "3002": { "label": "ERP API", "onAutoForward": "silent" },
+    "3003": { "label": "AI API", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@11.1.1 --activate && pnpm install && docker compose up -d",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "remoteUser": "node"
+}

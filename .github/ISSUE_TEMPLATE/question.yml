@@ -1,0 +1,38 @@
+name: Question
+description: Ask about setup, usage, or architecture
+title: "question: "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For large ideas, ask first before building — it saves rework.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: false
+      options:
+        - setup / install
+        - frontend (port 3000)
+        - core API (port 3001)
+        - erp API (port 3002)
+        - ai API (port 3003)
+        - contributing / architecture
+        - licensing
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What did you try? What docs did you read?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Commands run, config, logs (redact secrets).
+      render: shell
