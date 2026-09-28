@@ -84,9 +84,10 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
   const dateFormat = settings?.dateFormat ?? "DD/MM/YYYY";
 
   const buildQrDataUrls = useCallback(async () => {
+    const amount = invoiceQrAmount(sale.balanceDue);
+    if (amount === null) return {};
     const { toDataURL } = await import("qrcode");
     const { upiBanks } = groupInvoiceBanks(banks);
-    const amount = invoiceQrAmount(sale.totalAmount, sale.balanceDue);
     const entries = await Promise.all(
       upiBanks.map(async (b) => {
         const upiId = (b.upiId ?? "").trim();
@@ -106,7 +107,7 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
       if (entry) qrDataUrls[entry[0]] = entry[1];
     }
     return qrDataUrls;
-  }, [banks, sale.totalAmount, sale.balanceDue, company?.name, currencyCode]);
+  }, [banks, sale.balanceDue, company?.name, currencyCode]);
 
   const renderPdfBlob = useCallback(
     async (partyValue: PartyDto | null | undefined) => {

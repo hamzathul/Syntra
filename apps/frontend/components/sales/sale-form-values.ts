@@ -105,7 +105,10 @@ export type SaleFormValues = z.infer<typeof saleFormSchema>;
 export type SalePaymentFormValues = SaleFormValues["payments"][number];
 
 export function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const month = `${d.getMonth() + 1}`.padStart(2, "0");
+  const day = `${d.getDate()}`.padStart(2, "0");
+  return `${d.getFullYear()}-${month}-${day}`;
 }
 
 export function emptySaleFormValues(): SaleFormValues {
@@ -181,6 +184,7 @@ export function duplicateSaleFormValues(source: SaleDto): SaleFormValues {
       ...payment,
       cheque: {
         ...payment.cheque,
+        chequeNumber: "",
         chequeDate: today(),
         image: null,
       },

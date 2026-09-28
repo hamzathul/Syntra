@@ -96,9 +96,13 @@ export function buildUpiPayload(
   return `upi://pay?${params.toString()}`;
 }
 
-/** Amount the QR should request: outstanding balance, falling back to total. */
-export function invoiceQrAmount(total: number, balanceDue: number): number {
-  return balanceDue > 0 ? balanceDue : total;
+/**
+ * Amount the QR should request: the positive outstanding balance.
+ * Returns null when nothing is due, so callers skip the QR code
+ * (a paid invoice must not encode a payment request for the total).
+ */
+export function invoiceQrAmount(balanceDue: number): number | null {
+  return balanceDue > 0 ? balanceDue : null;
 }
 
 export function bankNameById(

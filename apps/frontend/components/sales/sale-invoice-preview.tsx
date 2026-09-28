@@ -60,7 +60,7 @@ export function SaleInvoicePreview({
       (show.length === 0 || show.includes(i === 0 ? "phone1" : "phone2")),
   );
   const { detailBanks, upiBanks } = groupInvoiceBanks(banks);
-  const qrAmount = invoiceQrAmount(sale.totalAmount, sale.balanceDue);
+  const qrAmount = invoiceQrAmount(sale.balanceDue);
 
   return (
     <div className="overflow-hidden rounded-xl border bg-white text-gray-900">
@@ -255,15 +255,18 @@ export function SaleInvoicePreview({
             ))}
             {upiBanks.map((b) => {
               const upiId = (b.upiId ?? "").trim();
-              const payload = buildUpiPayload(
-                upiId,
-                qrAmount,
-                company?.name ?? "Merchant",
-                currencyCode,
-              );
+              const payload =
+                qrAmount === null
+                  ? null
+                  : buildUpiPayload(
+                      upiId,
+                      qrAmount,
+                      company?.name ?? "Merchant",
+                      currencyCode,
+                    );
               return (
                 <div key={b.id} className="mt-2 flex items-center gap-3">
-                  <QRCodeSVG value={payload} size={72} />
+                  {payload ? <QRCodeSVG value={payload} size={72} /> : null}
                   <div className="text-sm">
                     <p className="font-semibold">{b.name}</p>
                     <p className="text-xs text-gray-500">UPI: {upiId}</p>

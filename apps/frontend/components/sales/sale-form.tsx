@@ -139,10 +139,10 @@ export function SaleForm({
     }
   }, [sale, reset]);
 
-  const syncedInitial = useRef<SaleFormValues | undefined>(undefined);
+  const initialSynced = useRef(false);
   useEffect(() => {
-    if (!sale && initialValues && syncedInitial.current !== initialValues) {
-      syncedInitial.current = initialValues;
+    if (!sale && initialValues && !initialSynced.current) {
+      initialSynced.current = true;
       reset(initialValues);
     }
   }, [sale, initialValues, reset]);
