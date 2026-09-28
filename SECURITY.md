@@ -2,14 +2,12 @@
 
 ## Reporting a Vulnerability
 
-**Do not open a public issue for security vulnerabilities.**
-
-Email ehamzathulfavas@gmail.com with:
+**Do not open a public issue for security vulnerabilities.** Instead, use
+GitHub's [private vulnerability reporting](../../security/advisories/new) with:
 
 - Description of the vulnerability
 - Steps to reproduce / proof of concept
 - Affected version / commit and environment
-- Your contact details
 
 You will receive an acknowledgment within 72 hours. We will keep you informed
 of the fix timeline and credit you (unless you prefer to stay anonymous).
@@ -37,4 +35,5 @@ setup docs.
 ## Handling Secrets
 
 Never commit secrets (`.env`, tokens, keys, certificates). If you accidentally
-push one, rotate it immediately and notify us at the email above.
+push one, rotate it immediately and report it via private vulnerability
+reporting (see above).

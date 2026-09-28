@@ -196,7 +196,7 @@ Every feature/fix must keep the community files in sync — docs rot is a bug.
 ### New Workspace Package
 
 - Set `description` + `keywords` in its `package.json`.
-- Library packages: `"license": "SEE LICENSE IN ../../LICENSE"`. Never `"MIT"` — the repo is PolyForm Noncommercial.
+- Library packages: `"license": "Apache-2.0"`.
 - Add a row to the README `Workspaces` table.
 
 ### Ports & Public Routes
@@ -215,7 +215,7 @@ Every feature/fix must keep the community files in sync — docs rot is a bug.
 
 ### Do Not Touch Without Explicit Approval
 
-- `LICENSE` (PolyForm Noncommercial 1.0.0, commercial contact ehamzathulfavas@gmail.com), `CODEOWNERS`, `.github/workflows/*` triggers, `.github/ISSUE_TEMPLATE/config.yml` URLs.
+- `LICENSE` (Apache License 2.0), `CODEOWNERS`, `.github/workflows/*` triggers, `.github/ISSUE_TEMPLATE/config.yml` URLs.
 
 ### GitHub UI (not in code — remind the user)
 

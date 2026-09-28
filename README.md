@@ -1,7 +1,7 @@
 # Syntra ERP
 
 [![CI](https://github.com/hamzathul/Syntra/actions/workflows/ci.yml/badge.svg)](https://github.com/hamzathul/Syntra/actions/workflows/ci.yml)
-[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Node >= 20.9](https://img.shields.io/badge/node-%3E%3D20.9-339933?logo=node.js&logoColor=white)](package.json)
 [![pnpm 11](https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white)](package.json)
@@ -160,12 +160,8 @@ Questions? Start with [SUPPORT.md](SUPPORT.md) or open a
 ## Security
 
 Do not open public issues for vulnerabilities — see [SECURITY.md](SECURITY.md).
-Contact: ehamzathulfavas@gmail.com.
 
 ## License
 
-Source-available under [PolyForm Noncommercial 1.0.0](LICENSE),
-Copyright (c) 2026 Hamzathul Favas E.
-
-Free for noncommercial use and contributions. Commercial use (selling, business
-use, SaaS hosting) requires prior written permission: ehamzathulfavas@gmail.com.
+Licensed under the [Apache License 2.0](LICENSE).
+Copyright 2026 Hamzathul Favas E. See [LICENSE](LICENSE) for details.

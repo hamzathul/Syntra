@@ -19,7 +19,7 @@ body:
         - erp API (port 3002)
         - ai API (port 3003)
         - contributing / architecture
-        - licensing (commercial use)
+        - licensing
         - other
     validations:
       required: true

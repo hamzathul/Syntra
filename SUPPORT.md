@@ -6,10 +6,8 @@
    [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md).
 2. **Question issue:** [open a question](../../issues/new?template=question.yml) —
    include commands run, expected vs actual, and logs (redact secrets).
-3. **Commercial licensing:** ehamzathulfavas@gmail.com — selling, business use,
-   or SaaS hosting requires prior written permission (see [LICENSE](LICENSE)).
-4. **Security vulnerabilities:** do NOT open a public issue — see
-   [SECURITY.md](SECURITY.md) and email ehamzathulfavas@gmail.com.
+3. **Security vulnerabilities:** do NOT open a public issue — see
+   [SECURITY.md](SECURITY.md).
 
 ## Response Expectations
 

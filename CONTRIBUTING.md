@@ -2,10 +2,8 @@
 
 Thanks for your interest in contributing to Syntra ERP. All noncommercial contributions are welcome.
 
-> **License note:** Syntra ERP is source-available under [PolyForm Noncommercial 1.0.0](LICENSE).
+> **License note:** Syntra ERP is open source under the [Apache License 2.0](LICENSE).
 > By contributing you agree your contributions will be licensed under the same terms.
-> Commercial use (selling, business use, SaaS hosting) requires prior written permission:
-> ehamzathulfavas@gmail.com.
 
 Please also read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md).
 
@@ -125,4 +123,4 @@ Security vulnerabilities: do **not** open a public issue — see [SECURITY.md](S
 
 ## Questions?
 
-Open a [question issue](../../issues/new?template=question.yml) or email ehamzathulfavas@gmail.com.
+Open a [question issue](../../issues/new?template=question.yml).

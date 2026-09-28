@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "Syntra ERP — open-source microservice ERP with Next.js frontend, Express Core/ERP APIs, and an AI chatbot",
-  "license": "SEE LICENSE IN LICENSE",
-  "author": "Hamzathul Favas E <ehamzathulfavas@gmail.com>",
+  "license": "Apache-2.0",
+  "author": "Hamzathul Favas E",
   "repository": {
     "type": "git",
     "url": "https://github.com/hamzathul/Syntra.git"

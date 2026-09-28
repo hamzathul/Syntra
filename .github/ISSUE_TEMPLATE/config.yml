@@ -2,7 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
     url: https://github.com/hamzathul/Syntra/blob/main/SECURITY.md
-    about: Do not open public issues for security problems. Email ehamzathulfavas@gmail.com instead.
-  - name: Commercial licensing question
-    url: https://github.com/hamzathul/Syntra/blob/main/LICENSE
-    about: Selling, business use, or SaaS hosting requires prior written permission (see LICENSE for contact email).
+    about: Do not open public issues for security problems. Use private vulnerability reporting instead.

@@ -51,8 +51,8 @@ an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to ehamzathulfavas@gmail.com. All complaints will be reviewed and
-investigated promptly and fairly.
+reported to the project maintainers via a private message to [@hamzathul](https://github.com/hamzathul).
+All complaints will be reviewed and investigated promptly and fairly.
 
 ## Attribution
 
