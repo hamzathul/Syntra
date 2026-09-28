@@ -1,0 +1,61 @@
+name: Feature request
+description: Suggest an idea or improvement
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Small, focused requests get reviewed fastest.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: false
+      options:
+        - frontend (port 3000)
+        - core API (port 3001)
+        - erp API (port 3002)
+        - ai API (port 3003)
+        - shared / backend-p package
+        - docs / infra / CI
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve? Who is affected?
+      placeholder: As an accountant I can't…
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should change? API shape, UI flow, examples.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches or workarounds you tried.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope / acceptance criteria
+      description: How do we know it's done? Keep it testable.
+      placeholder: |
+        - [ ] …
+        - [ ] …
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and did not find a duplicate
+          required: true
+        - label: I am willing to contribute a PR for this (optional)
+          required: false

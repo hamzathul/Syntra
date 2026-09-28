@@ -1,0 +1,21 @@
+name: Documentation
+description: Fix or improve docs (README, AGENTS.md, comments)
+title: "docs: "
+labels: [documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Docs fixes are always welcome — thanks.
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's wrong or missing?
+      description: Link the page/section and describe the gap.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested change
+      description: Proposed wording, examples, or links.

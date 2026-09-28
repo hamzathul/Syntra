@@ -1,0 +1,27 @@
+name: Greeting message
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    if: github.repository == 'hamzathul/Syntra'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EddieHubCommunity/gh-action-community/src/welcome@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: '<h3>Hey contributor, thank you for opening an issue 🎉.</h3>'
+          pr-message: '<h3>Hey contributor, thank you for opening a pull request 🎉.</h3>'
+          footer: |
+            A maintainer will review your submission soon. Please make sure you have read
+            <a href="https://github.com/hamzathul/Syntra/blob/dev/CONTRIBUTING.md">CONTRIBUTING.md</a>
+            and that CI is green.
+            <br>
+            Show your support by <b>starring ⭐</b> this repository. Thank you for contributing to <b>open source!</b>
+            <br>
+            <b>Stale policy</b>: after 30 days of inactivity this issue/PR is marked stale, then closed in 7 days if no further activity occurs.

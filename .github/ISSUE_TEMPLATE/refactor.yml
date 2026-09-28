@@ -1,0 +1,47 @@
+name: Refactor
+description: Propose a code cleanup or structural improvement (no behavior change)
+title: "refactor: "
+labels: [chore]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For cleanups that change no behavior (ports/adapters, mappers, factories, hooks).
+        If behavior changes, use Bug report or Feature request instead.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: false
+      options:
+        - frontend (port 3000)
+        - core API (port 3001)
+        - erp API (port 3002)
+        - ai API (port 3003)
+        - shared / backend-p package
+        - docs / infra / CI
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current state
+      description: What is messy, duplicated, or against AGENTS.md? Link files.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed shape
+      description: Target structure, keeping behavior identical.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / verification
+      description: How will you prove no behavior changed? (tests, manual checks)
+      placeholder: |
+        - [ ] Existing tests pass unchanged
+        - [ ] …

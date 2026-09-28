@@ -179,6 +179,48 @@ To target a single workspace, use `--filter <package-name>`:
   - Service logic (in `apps/backend` and `apps/erp`)
 - Run with: `pnpm --filter <package> test` or `pnpm test` for all workspaces.
 
+## 7. Open-Source & Docs Maintenance
+
+Every feature/fix must keep the community files in sync — docs rot is a bug.
+
+### CHANGELOG.md (required)
+
+- Add an entry under `[Unreleased]` for every user-facing change (`Added` / `Changed` / `Fixed`).
+- On release (from `main`), move entries into a new versioned section with the date.
+
+### README.md (required)
+
+- New app/package/port/script/route → update the matching section: `Architecture`, `Workspaces` table, `Project Structure` tree, `Scripts` table, `Prerequisites`, `Quick Start`.
+- Keep the `Contents` TOC anchors in sync with headings.
+
+### New Workspace Package
+
+- Set `description` + `keywords` in its `package.json`.
+- Library packages: `"license": "SEE LICENSE IN ../../LICENSE"`. Never `"MIT"` — the repo is PolyForm Noncommercial.
+- Add a row to the README `Workspaces` table.
+
+### Ports & Public Routes
+
+- New port → update README arch bullets + `Quick Start` + `CONTRIBUTING.md` + `.devcontainer/devcontainer.json` `forwardPorts`.
+- New public frontend route → add to `app/robots.ts` `allow`. (`app/sitemap.ts` is intentionally absent until a production domain exists — see the `metadataBase` TODO in `app/layout.tsx`.)
+- Product scope changes → update `app/layout.tsx` metadata (`description`, `keywords`).
+
+### Labels — Keep in Sync
+
+- Issue-template labels (`bug`, `enhancement`, `question`, `documentation`, `chore`) feed `.github/release-drafter.yml` categories. If you add/rename a label, update **both** files.
+
+### Release Flow
+
+- PRs target `dev`; releases cut from `main`. Release Drafter auto-drafts notes — still update `CHANGELOG.md` manually on release.
+
+### Do Not Touch Without Explicit Approval
+
+- `LICENSE` (PolyForm Noncommercial 1.0.0, commercial contact ehamzathulfavas@gmail.com), `CODEOWNERS`, `.github/workflows/*` triggers, `.github/ISSUE_TEMPLATE/config.yml` URLs.
+
+### GitHub UI (not in code — remind the user)
+
+- Topics, About description, social preview image, Discussions, pinning, `good first issue` labels live in GitHub settings — flag them in your summary when relevant instead of editing files.
+
 ## 6. Key Reminders
 
 - **Ports vs. Concrete Classes**: Always import interfaces (`*.port.ts`). Avoid concrete class imports where a port suffices.

@@ -1,0 +1,12 @@
+# Normalize line endings to LF on checkout; Git handles conversion on Windows.
+* text=auto eol=lf
+
+# Images and binaries must not be mangled.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
