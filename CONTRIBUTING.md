@@ -123,4 +123,4 @@ Security vulnerabilities: do **not** open a public issue — see [SECURITY.md](S
 
 ## Questions?
 
-Open a [question issue](../../issues/new?template=question.yml).
+Open a [question issue](https://github.com/hamzathul/Syntra/issues/new?template=question.yml).

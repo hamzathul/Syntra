@@ -6,7 +6,17 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: ["/", "/login", "/register"],
       // App pages require auth; keep crawlers out of private areas.
-      disallow: ["/dashboard", "/onboarding", "/api/"],
+      // Mirrors protectedRoutes in apps/frontend/proxy.ts.
+      disallow: [
+        "/dashboard",
+        "/onboarding",
+        "/api/",
+        "/sales",
+        "/purchases",
+        "/items",
+        "/reports",
+        "/settings",
+      ],
     },
   };
 }

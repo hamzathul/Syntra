@@ -209,6 +209,12 @@ Every feature/fix must keep the community files in sync — docs rot is a bug.
 
 - Issue-template labels (`bug`, `enhancement`, `question`, `documentation`, `chore`) feed `.github/release-drafter.yml` categories. If you add/rename a label, update **both** files.
 
+### Dependency Updates — Do Not Re-add npm to Dependabot
+
+- JS/TS updates: Renovate (`renovate.json`, npm manager — reads `pnpm-lock.yaml` natively).
+- GitHub Actions + Python (`apps/ai`): Dependabot (`.github/dependabot.yml`).
+- Dependabot has no pnpm ecosystem and cannot resolve `workspace:*` — never add an `npm` block to `dependabot.yml`.
+
 ### Release Flow
 
 - PRs target `dev`; releases cut from `main`. Release Drafter auto-drafts notes — still update `CHANGELOG.md` manually on release.

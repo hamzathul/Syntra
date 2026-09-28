@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Open-source community files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
   `SECURITY.md`, `SUPPORT.md`, issue/PR templates, Dependabot.
 - License: Apache License 2.0 (`LICENSE`) — fully open source, commercial use allowed.
+- README documentation: badges, contents guide, prerequisites, quick start,
+  workspaces table, project structure, scripts table, roadmap, contributors,
+  and support sections.
 
 ## [0.1.0] - 2026-09-28
 

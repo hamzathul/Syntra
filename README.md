@@ -130,14 +130,14 @@ Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Roadmap
 
-Tentative direction (see [issues](../../issues) for details):
+Tentative direction (see [issues](https://github.com/hamzathul/Syntra/issues) for details):
 
 - [ ] Harden auth: refresh rotation, rate limiting, audit logs
 - [ ] ERP modules: inventory, invoicing, reporting
 - [ ] AI chatbot: deeper ERP tool coverage, evals
 - [ ] Docs + e2e test coverage
 
-Have an idea? Open a [feature request](../../issues/new?template=feature_request.yml).
+Have an idea? Open a [feature request](https://github.com/hamzathul/Syntra/issues/new?template=feature_request.yml).
 
 ## Contributors
 
@@ -155,7 +155,7 @@ We all need support and motivation. If Syntra ERP helps you, please give it a �
 before you move on — it keeps the project going.
 
 Questions? Start with [SUPPORT.md](SUPPORT.md) or open a
-[question issue](../../issues/new?template=question.yml).
+[question issue](https://github.com/hamzathul/Syntra/issues/new?template=question.yml).
 
 ## Security
 
@@ -165,4 +165,3 @@ Do not open public issues for vulnerabilities — see [SECURITY.md](SECURITY.md)
 
 Licensed under the [Apache License 2.0](LICENSE).
 Copyright 2026 Hamzathul Favas E. See [LICENSE](LICENSE) for details.
-

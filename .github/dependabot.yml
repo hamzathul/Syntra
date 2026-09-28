@@ -1,10 +1,8 @@
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+  # NOTE: no `npm` ecosystem here on purpose — Dependabot cannot read
+  # pnpm-lock.yaml or resolve `workspace:*` deps. JS updates are handled
+  # by Renovate (see renovate.json).
   - package-ecosystem: github-actions
     directory: /
     schedule:
