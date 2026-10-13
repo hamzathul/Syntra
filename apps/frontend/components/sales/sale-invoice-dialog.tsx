@@ -1,7 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { DownloadIcon, Loader2Icon, PrinterIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  DownloadIcon,
+  Loader2Icon,
+  MailIcon,
+  PrinterIcon,
+  ShareIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import type {
   BankDto,
@@ -19,10 +25,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useParty } from "@/hooks/parties/use-parties-query";
+import { useSendSaleInvoiceMutation } from "@/hooks/sales/use-sales-query";
 import { useBanks } from "@/hooks/settings/use-bank-settings-query";
 import { useCompanyProfile } from "@/hooks/settings/use-company-profile-query";
 import { useGeneralSettings } from "@/hooks/settings/use-general-settings-query";
+import { getApiErrorMessage } from "@/lib/api/client/core-client";
 import { SaleInvoicePreview } from "./sale-invoice-preview";
 import {
   buildUpiPayload,
@@ -51,7 +62,7 @@ export function SaleInvoiceDialog({
         <DialogHeader>
           <DialogTitle>Sale invoice</DialogTitle>
           <DialogDescription>
-            Preview the invoice, print it, or download it as a PDF.
+            Preview the invoice, print it, share it, or send it by email.
           </DialogDescription>
         </DialogHeader>
         {sale ? (
@@ -74,14 +85,52 @@ interface InvoiceBodyProps {
   readonly settings: GeneralSettingsDto | null;
 }
 
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error("Failed to read invoice PDF"));
+    reader.readAsDataURL(blob);
+  });
+}
+
 function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
   const { data: party } = useParty(sale.partyId);
   const [printing, setPrinting] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState("");
+  const [notes, setNotes] = useState("");
+  const sendInvoice = useSendSaleInvoiceMutation();
+  const sending = sendInvoice.isPending;
+
+  const partyEmail = party?.email ?? "";
+
+  useEffect(() => {
+    if (emailOpen) {
+      setTo(partyEmail);
+      setSubject("");
+      setNotes("");
+    }
+  }, [emailOpen, partyEmail]);
 
   const currencyCode = settings?.businessCurrency ?? "INR";
   const decimalPlaces = settings?.decimalPlaces ?? 2;
   const dateFormat = settings?.dateFormat ?? "DD/MM/YYYY";
+  const invoiceFilename = `invoice-${sale.id.slice(0, 8)}.pdf`;
 
   const buildQrDataUrls = useCallback(async () => {
     const amount = invoiceQrAmount(sale.balanceDue);
@@ -143,21 +192,14 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
     setDownloading(true);
     try {
       const blob = await renderPdfBlob(party);
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `invoice-${sale.id.slice(0, 8)}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      downloadBlob(blob, invoiceFilename);
       toast.success("Invoice downloaded");
     } catch {
       toast.error("Failed to generate invoice PDF");
     } finally {
       setDownloading(false);
     }
-  }, [renderPdfBlob, party, sale.id]);
+  }, [renderPdfBlob, party, invoiceFilename]);
 
   const handlePrint = useCallback(async () => {
     setPrinting(true);
@@ -184,7 +226,61 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
     }
   }, [renderPdfBlob, party]);
 
-  const busy = printing || downloading;
+  const handleShare = useCallback(async () => {
+    setSharing(true);
+    try {
+      const blob = await renderPdfBlob(party);
+      const file = new File([blob], invoiceFilename, {
+        type: "application/pdf",
+      });
+      if (
+        typeof navigator !== "undefined" &&
+        "canShare" in navigator &&
+        navigator.canShare({ files: [file] })
+      ) {
+        await navigator.share({ files: [file], title: "Sale invoice" });
+      } else {
+        downloadBlob(blob, invoiceFilename);
+        toast.info(
+          "Sharing is not supported on this device — invoice downloaded instead",
+        );
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+      toast.error("Failed to share invoice");
+    } finally {
+      setSharing(false);
+    }
+  }, [renderPdfBlob, party, invoiceFilename]);
+
+  const handleSendEmail = useCallback(async () => {
+    const recipient = to.trim();
+    if (!recipient) {
+      toast.error("Enter a recipient email address");
+      return;
+    }
+    try {
+      const blob = await renderPdfBlob(party);
+      const pdfBase64 = await blobToDataUrl(blob);
+      await sendInvoice.mutateAsync({
+        id: sale.id,
+        dto: {
+          to: recipient,
+          pdfBase64,
+          subject: subject.trim() || undefined,
+          notes: notes.trim() || undefined,
+        },
+      });
+      toast.success("Invoice sent by email");
+      setEmailOpen(false);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
+  }, [to, subject, notes, renderPdfBlob, party, sendInvoice, sale.id]);
+
+  const busy = printing || downloading || sharing || sending;
 
   return (
     <div className="space-y-4">
@@ -197,7 +293,7 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
         decimalPlaces={decimalPlaces}
         dateFormat={dateFormat}
       />
-      <DialogFooter className="gap-2 sm:gap-0">
+      <DialogFooter className="flex-wrap gap-2 sm:gap-2">
         <Button
           type="button"
           variant="outline"
@@ -214,6 +310,21 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
         </Button>
         <Button
           type="button"
+          variant="outline"
+          onClick={handleShare}
+          disabled={busy}
+          className="gap-2"
+        >
+          {sharing ? (
+            <Loader2Icon className="h-4 w-4 animate-spin" />
+          ) : (
+            <ShareIcon className="h-4 w-4" />
+          )}
+          {sharing ? "Sharing..." : "Share"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
           onClick={handleDownload}
           disabled={busy}
           className="gap-2"
@@ -225,7 +336,83 @@ function InvoiceBody({ sale, company, banks, settings }: InvoiceBodyProps) {
           )}
           {downloading ? "Generating..." : "Download PDF"}
         </Button>
+        <Button
+          type="button"
+          onClick={() => setEmailOpen(true)}
+          disabled={busy}
+          className="gap-2"
+        >
+          <MailIcon className="h-4 w-4" />
+          Send by Email
+        </Button>
       </DialogFooter>
+
+      <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send invoice by email</DialogTitle>
+            <DialogDescription>
+              The invoice PDF will be sent as an attachment.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="invoice-email-to">To</Label>
+              <Input
+                id="invoice-email-to"
+                type="email"
+                placeholder="customer@example.com"
+                value={to}
+                onChange={(event) => setTo(event.target.value)}
+                disabled={sending}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="invoice-email-subject">Subject (optional)</Label>
+              <Input
+                id="invoice-email-subject"
+                placeholder={`Sale invoice ${sale.id.slice(0, 8)}`}
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                disabled={sending}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="invoice-email-notes">Notes (optional)</Label>
+              <Textarea
+                id="invoice-email-notes"
+                placeholder="Add a message for the customer"
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                disabled={sending}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEmailOpen(false)}
+              disabled={sending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSendEmail}
+              disabled={sending}
+              className="gap-2"
+            >
+              {sending ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <MailIcon className="h-4 w-4" />
+              )}
+              {sending ? "Sending..." : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
