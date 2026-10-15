@@ -1,6 +1,8 @@
 import type { Router } from "express";
 import { getPrismaClient } from "../../database/prisma.client";
+import { env } from "../../config/env";
 import logger from "../../utils/logger";
+import { EmailModuleFactory } from "../email/email.factory";
 import { SaleRepository } from "./sale.repository";
 import { SaleService } from "./sale.service";
 import { SalesController } from "./sales.controller";
@@ -14,7 +16,11 @@ export class SalesModuleFactory {
     if (SalesModuleFactory.controller === null) {
       const prisma = getPrismaClient();
       const saleRepo = new SaleRepository(prisma);
-      const saleService = new SaleService(saleRepo, logger);
+      const emailProvider = EmailModuleFactory.getProvider();
+      const saleService = new SaleService(saleRepo, logger, emailProvider, {
+        fromName: env.EMAIL_FROM_NAME,
+        fromAddressOverride: env.EMAIL_FROM_ADDRESS ?? "",
+      });
 
       SalesModuleFactory.controller = new SalesController(saleService);
     }

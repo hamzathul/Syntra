@@ -1,6 +1,11 @@
 """Sales aggregation tests — pure `summarize_sales` (fetchers need live ERP)."""
 
+from datetime import UTC, datetime
+
 from ai.modules.chat.tools.erp_sales import summarize_sales
+
+# Fixed clock so period filtering is deterministic (never depends on wall time).
+FIXED_NOW = datetime(2026, 9, 20, 12, 0, 0, tzinfo=UTC)
 
 
 def test_summarize_sales_totals() -> None:
@@ -9,7 +14,7 @@ def test_summarize_sales_totals() -> None:
         {"saleDate": "2026-09-12T00:00:00Z", "totalAmount": 500, "receivedAmount": 500},
     ]
 
-    result = summarize_sales(items, "last_30d")
+    result = summarize_sales(items, "last_30d", now=FIXED_NOW)
 
     assert "count=2" in result
     assert "total=1500.00" in result
@@ -24,7 +29,7 @@ def test_summarize_sales_skips_old_and_bad_rows() -> None:
         {"saleDate": "2026-09-15T00:00:00Z", "totalAmount": 200, "receivedAmount": 50},
     ]
 
-    result = summarize_sales(items, "last_30d")
+    result = summarize_sales(items, "last_30d", now=FIXED_NOW)
 
     assert "count=2" in result
     assert "total=300.00" in result
@@ -46,7 +51,7 @@ def test_summarize_sales_lists_recent_transactions() -> None:
         },
     ]
 
-    result = summarize_sales(items, "last_30d")
+    result = summarize_sales(items, "last_30d", now=FIXED_NOW)
 
     assert "Recent transactions:" in result
     assert "- 2026-09-12 · Sara: total=500.00, received=500.00, due=0.00" in result
@@ -67,6 +72,6 @@ def test_summarize_sales_discloses_truncation() -> None:
         {"saleDate": "2026-09-10T00:00:00Z", "totalAmount": 100, "receivedAmount": 100},
     ]
 
-    result = summarize_sales(items, "last_30d", complete=False)
+    result = summarize_sales(items, "last_30d", complete=False, now=FIXED_NOW)
 
     assert "older records excluded" in result
