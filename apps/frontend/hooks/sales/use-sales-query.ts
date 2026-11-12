@@ -1,5 +1,6 @@
 "use client";
 
+import type { SendSaleInvoiceDto } from "shared";
 import { salesService } from "@/lib/api/services/sales/sales.service";
 import {
   createGetDetailQueryHook,
@@ -36,4 +37,10 @@ export const useDeleteSaleMutation = createMutationHook(
   saleKeys.list,
   (id: string) => salesService.sales.remove(id),
   [bankKeys.list, moneyKeys.cash],
+);
+
+export const useSendSaleInvoiceMutation = createMutationHook(
+  saleKeys.list,
+  (variables: { id: string; dto: SendSaleInvoiceDto }) =>
+    salesService.sendInvoice(variables.id, variables.dto),
 );

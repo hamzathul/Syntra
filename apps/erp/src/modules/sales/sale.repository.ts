@@ -182,6 +182,14 @@ export class SaleRepository implements ISaleRepository {
     return count === uniqueIds.length;
   }
 
+  async getCompanyEmail(companyId: string): Promise<string | null> {
+    const company = await this.db.company.findUnique({
+      where: { id: companyId },
+      select: { email: true },
+    });
+    return company?.email ?? null;
+  }
+
   private async replacePayments(
     tx: DbClient,
     companyId: string,

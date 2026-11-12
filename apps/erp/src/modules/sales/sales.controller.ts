@@ -5,7 +5,7 @@ import {
   getCompanyId,
   getParamId,
 } from "backend-p";
-import type { CreateSaleDto, UpdateSaleDto } from "shared";
+import type { CreateSaleDto, SendSaleInvoiceDto, UpdateSaleDto } from "shared";
 import type { ISaleService } from "./sale.service.port";
 
 export class SalesController extends BaseController {
@@ -76,6 +76,19 @@ export class SalesController extends BaseController {
     this.v1.success(res, {
       request: req,
       message: "Sale deleted successfully",
+      data: null,
+    });
+  });
+
+  readonly sendInvoice: RequestHandler = this.asyncHandler(async (req, res) => {
+    const companyId = getCompanyId(res.locals);
+    const id = getParamId(req, "id");
+    const dto = req.body as SendSaleInvoiceDto;
+    await this.saleService.sendInvoice(companyId, id, dto);
+
+    this.v1.success(res, {
+      request: req,
+      message: "Invoice sent successfully",
       data: null,
     });
   });

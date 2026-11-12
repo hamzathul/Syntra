@@ -27,6 +27,18 @@ const documentString = trimmedString.max(
   "Document is too large",
 );
 
+export const sendSaleInvoiceSchema = z.object({
+  to: z.email("Enter a valid email address"),
+  pdfBase64: trimmedString
+    .startsWith(
+      "data:application/pdf;base64,",
+      "Invoice PDF must be a base64 PDF data URL",
+    )
+    .max(MAX_DOCUMENT_LENGTH, "Invoice PDF is too large"),
+  subject: trimmedString.max(200, "Subject too long").optional(),
+  notes: trimmedString.max(2000, "Notes too long").optional(),
+});
+
 export const saleTypes = ["CASH", "CREDIT"] as const;
 export type SaleType = (typeof saleTypes)[number];
 
@@ -281,3 +293,4 @@ export type SalePaymentDto = z.infer<typeof salePaymentResponseSchema>;
 export type SaleDto = z.infer<typeof saleResponseSchema>;
 export type CreateSaleDto = z.infer<typeof createSaleSchema>;
 export type UpdateSaleDto = z.infer<typeof updateSaleSchema>;
+export type SendSaleInvoiceDto = z.infer<typeof sendSaleInvoiceSchema>;

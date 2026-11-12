@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { AppError } from "./app-error.js";
 import {
+  BadGatewayError,
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
@@ -73,6 +74,19 @@ describe("ConflictError", () => {
     const error = new ConflictError();
     expect(error.statusCode).toBe(409);
     expect(error.code).toBe("CONFLICT");
+  });
+});
+
+describe("BadGatewayError", () => {
+  it("has 502 status", () => {
+    const error = new BadGatewayError();
+    expect(error.statusCode).toBe(502);
+    expect(error.code).toBe("BAD_GATEWAY");
+  });
+
+  it("accepts a custom message", () => {
+    const error = new BadGatewayError("Email provider failed");
+    expect(error.message).toBe("Email provider failed");
   });
 });
 
