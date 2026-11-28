@@ -1,10 +1,20 @@
 import {
+  BadGatewayError,
   BadRequestError,
   ConflictError,
   NotFoundError,
   type LoggerPort,
 } from "backend-p";
-import type { CreateSaleDto, SaleDto, UpdateSaleDto } from "shared";
+import type {
+  CreateSaleDto,
+  SaleDto,
+  SendSaleInvoiceDto,
+  UpdateSaleDto,
+} from "shared";
+import type {
+  IEmailProvider,
+  SendEmailResult,
+} from "../email/email-provider.port";
 
 type SalePaymentInput = CreateSaleDto["payments"][number];
 import type { ISaleRepository } from "./sale.repository.port";
@@ -12,15 +22,21 @@ import type { ISaleService, SaleListParams } from "./sale.service.port";
 import type {
   PaymentCreateData,
   SaleCreateData,
+  SaleEmailSenderConfig,
   SaleRecord,
   SaleUpdateData,
 } from "./sale.types";
 import { toSaleDto } from "./sale.mapper";
 
+const PDF_DATA_URL_PREFIX = "data:application/pdf;base64,";
+const BASE64_PATTERN = /^[A-Za-z0-9+/=\s]+$/;
+
 export class SaleService implements ISaleService {
   constructor(
     private readonly repo: ISaleRepository,
     private readonly logger: LoggerPort,
+    private readonly email: IEmailProvider,
+    private readonly mailSender: SaleEmailSenderConfig,
   ) {}
 
   async list(companyId: string, params?: SaleListParams) {
@@ -111,6 +127,91 @@ export class SaleService implements ISaleService {
         saleType: existing.saleType,
       },
       "Sale deleted",
+    );
+  }
+
+  async sendInvoice(
+    companyId: string,
+    saleId: string,
+    dto: SendSaleInvoiceDto,
+  ): Promise<void> {
+    const sale = await this.repo.findById(saleId, companyId);
+    if (!sale) throw new NotFoundError("Sale");
+
+    const companyEmail = await this.repo.getCompanyEmail(companyId);
+    const senderAddress =
+      this.mailSender.fromAddressOverride.trim() || (companyEmail ?? "").trim();
+    if (!senderAddress) {
+      throw new BadRequestError(
+        "Company email is not configured — add one in company settings before sending invoices",
+      );
+    }
+
+    const contentBase64 = dto.pdfBase64.slice(PDF_DATA_URL_PREFIX.length);
+    if (!contentBase64 || !BASE64_PATTERN.test(contentBase64)) {
+      throw new BadRequestError("Invoice PDF is not valid base64 content");
+    }
+
+    const from =
+      this.mailSender.fromName.trim().length > 0
+        ? `${this.mailSender.fromName.trim()} <${senderAddress}>`
+        : senderAddress;
+    const subject =
+      dto.subject?.trim() || `Sale invoice ${sale.id.slice(0, 8)}`;
+    const lines = [
+      `Dear ${sale.partyName},`,
+      "",
+      "Please find your invoice attached.",
+    ];
+    if (dto.notes?.trim()) {
+      lines.push("", dto.notes.trim());
+    }
+    const text = lines.join("\n");
+
+    let result: SendEmailResult | null = null;
+    try {
+      result =
+        (await this.email.send({
+          from,
+          to: dto.to,
+          subject,
+          text,
+          attachments: [
+            {
+              filename: `invoice-${sale.id.slice(0, 8)}.pdf`,
+              contentBase64,
+              contentType: "application/pdf",
+            },
+          ],
+        })) ?? null;
+    } catch (error) {
+      this.logger.error(
+        {
+          category: "audit",
+          action: "sale.sendInvoice.failed",
+          companyId,
+          saleId,
+          to: dto.to,
+          providerError: error instanceof Error ? error.message : String(error),
+        },
+        "Failed to send sale invoice",
+      );
+      throw new BadGatewayError(
+        "Email provider failed to send the invoice — try again later",
+      );
+    }
+
+    this.logger.info(
+      {
+        category: "audit",
+        action: "sale.sendInvoice",
+        companyId,
+        saleId,
+        partyId: sale.partyId,
+        to: dto.to,
+        previewUrl: result?.previewUrl ?? null,
+      },
+      "Sale invoice sent",
     );
   }
 

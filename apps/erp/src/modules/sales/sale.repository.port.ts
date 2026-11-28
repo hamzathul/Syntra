@@ -21,4 +21,5 @@ export interface ISaleRepository {
   delete(id: string, companyId: string): Promise<void>;
   partyExists(companyId: string, partyId: string): Promise<boolean>;
   banksExist(companyId: string, bankIds: string[]): Promise<boolean>;
+  getCompanyEmail(companyId: string): Promise<string | null>;
 }

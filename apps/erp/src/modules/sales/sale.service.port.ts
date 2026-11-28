@@ -1,5 +1,10 @@
 import type { CursorPaginationResult } from "backend-p";
-import type { CreateSaleDto, SaleDto, UpdateSaleDto } from "shared";
+import type {
+  CreateSaleDto,
+  SaleDto,
+  SendSaleInvoiceDto,
+  UpdateSaleDto,
+} from "shared";
 
 export interface SaleListParams {
   readonly limit?: number;
@@ -15,4 +20,9 @@ export interface ISaleService {
   create(companyId: string, dto: CreateSaleDto): Promise<SaleDto>;
   update(id: string, companyId: string, dto: UpdateSaleDto): Promise<SaleDto>;
   remove(id: string, companyId: string): Promise<void>;
+  sendInvoice(
+    companyId: string,
+    saleId: string,
+    dto: SendSaleInvoiceDto,
+  ): Promise<void>;
 }

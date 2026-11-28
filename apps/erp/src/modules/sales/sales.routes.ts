@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   createSaleSchema,
   listSalesQuerySchema,
+  sendSaleInvoiceSchema,
   updateSaleSchema,
 } from "shared";
 import type { SalesController } from "./sales.controller";
@@ -38,6 +39,11 @@ export function createSalesRouter(controller: SalesController): Router {
     "/:id",
     validateRequest({ params: paramsWithId }),
     controller.deleteSale,
+  );
+  router.post(
+    "/:id/send-invoice",
+    validateRequest({ params: paramsWithId, body: sendSaleInvoiceSchema }),
+    controller.sendInvoice,
   );
 
   return router;

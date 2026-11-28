@@ -31,6 +31,12 @@ export class ConflictError extends AppError {
   }
 }
 
+export class BadGatewayError extends AppError {
+  constructor(message = "Upstream service failed") {
+    super(502, "BAD_GATEWAY", message);
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(resource = "Resource") {
     super(404, "NOT_FOUND", `${resource} was not found`);

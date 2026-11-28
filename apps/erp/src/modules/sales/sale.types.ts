@@ -83,3 +83,8 @@ export interface SaleUpdateData {
   readonly document?: string | null;
   readonly payments?: PaymentCreateData[];
 }
+
+export interface SaleEmailSenderConfig {
+  readonly fromName: string;
+  readonly fromAddressOverride: string;
+}

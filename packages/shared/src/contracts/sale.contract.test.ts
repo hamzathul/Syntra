@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createSaleSchema, updateSaleSchema } from "./sale.contract";
+import {
+  createSaleSchema,
+  sendSaleInvoiceSchema,
+  updateSaleSchema,
+} from "./sale.contract";
 
 const baseSale = {
   partyId: "party_123",
@@ -88,6 +92,52 @@ describe("createSaleSchema", () => {
       ...baseSale,
       saleType: "INSTALLMENT",
       payments: [{ mode: "CASH", amount: 4000 }],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("sendSaleInvoiceSchema", () => {
+  const basePdf = `data:application/pdf;base64,${"a".repeat(100)}`;
+
+  it("accepts a valid recipient with a PDF data URL", () => {
+    const result = sendSaleInvoiceSchema.safeParse({
+      to: "customer@example.com",
+      pdfBase64: basePdf,
+      subject: "Your invoice",
+      notes: "Thanks for your business",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts the minimal payload without subject or notes", () => {
+    const result = sendSaleInvoiceSchema.safeParse({
+      to: "customer@example.com",
+      pdfBase64: basePdf,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an invalid recipient email", () => {
+    const result = sendSaleInvoiceSchema.safeParse({
+      to: "not-an-email",
+      pdfBase64: basePdf,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a PDF that is not a base64 PDF data URL", () => {
+    const result = sendSaleInvoiceSchema.safeParse({
+      to: "customer@example.com",
+      pdfBase64: "data:image/png;base64,abc",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects an oversized PDF payload", () => {
+    const result = sendSaleInvoiceSchema.safeParse({
+      to: "customer@example.com",
+      pdfBase64: `data:application/pdf;base64,${"a".repeat(6_000_000)}`,
     });
     expect(result.success).toBe(false);
   });

@@ -42,9 +42,17 @@ def fetch_sales(bearer_token: str, company_id: str) -> tuple[list[dict[str, Any]
     return [item for item in items if isinstance(item, dict)], complete
 
 
-def summarize_sales(items: list[dict[str, Any]], period: Period, *, complete: bool = True) -> str:
-    now = datetime.now(UTC)
-    cutoff = _cutoff(period, now)
+def summarize_sales(
+    items: list[dict[str, Any]],
+    period: Period,
+    *,
+    complete: bool = True,
+    now: datetime | None = None,
+) -> str:
+    effective_now = now if now is not None else datetime.now(UTC)
+    if effective_now.tzinfo is None:
+        effective_now = effective_now.replace(tzinfo=UTC)
+    cutoff = _cutoff(period, effective_now)
     count = 0
     total = 0.0
     received = 0.0
