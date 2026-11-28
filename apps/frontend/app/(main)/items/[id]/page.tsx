@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useItem } from "@/hooks/items/use-items-query";
 import { PageState } from "@/components/ui/page-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { ItemForm } from "@/components/items/item-form";
 
 export default function EditItemPage() {
@@ -18,12 +19,10 @@ export default function EditItemPage() {
     >
       {(data) => (
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
-            <p className="text-muted-foreground">
-              Edit item details, pricing, tax, and stock
-            </p>
-          </div>
+          <PageHeader
+            title={data.name}
+            description="Edit item details, pricing, tax, and stock."
+          />
 
           <ItemForm item={data} />
         </div>

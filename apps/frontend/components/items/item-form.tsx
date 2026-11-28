@@ -14,6 +14,7 @@ import {
 import type { ItemDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { TabNav } from "@/components/ui/tab-nav";
 import {
   Dialog,
   DialogContent,
@@ -155,35 +156,12 @@ export function ItemForm({ item }: ItemFormProps) {
     }
   }, [item, deleteMutation, router]);
 
-  const tabClass = (tab: Tab) =>
-    `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
-      activeTab === tab
-        ? "border-primary text-primary"
-        : "border-transparent text-muted-foreground hover:text-foreground"
-    }`;
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit, handleInvalid)}
       className="space-y-6"
     >
-      <div className="flex items-center justify-between">
-        <div className="flex gap-0 border-b">
-          {TABS.map((tab) => (
-            <Button
-              key={tab.id}
-              type="button"
-              variant="ghost"
-              className={tabClass(tab.id)}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      <Separator />
+      <TabNav tabs={TABS} value={activeTab} onChange={setActiveTab} />
 
       <div className="max-w-3xl">
         {activeTab === "general" && (

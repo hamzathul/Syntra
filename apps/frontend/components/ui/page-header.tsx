@@ -17,17 +17,16 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between",
-        "animate-fade-up",
+        "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
         className,
       )}
     >
       <div className="min-w-0">
-        <h1 className="text-[28px] font-semibold leading-tight tracking-tight text-foreground">
+        <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-[24px]">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-1 max-w-xl text-[13.5px] leading-relaxed text-muted-foreground">
             {description}
           </p>
         ) : null}

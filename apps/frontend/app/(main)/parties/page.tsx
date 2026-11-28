@@ -39,7 +39,7 @@ export default function PartiesPage() {
             title="Parties"
             description="Manage your customers and suppliers."
             actions={
-              <Button asChild className="rounded-2xl">
+              <Button asChild className="rounded-xl">
                 <Link href="/parties/new">
                   <Plus className="h-4 w-4" />
                   New party
@@ -48,7 +48,7 @@ export default function PartiesPage() {
             }
           />
 
-          <div className="animate-fade-up stagger-1 overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
+          <div className="animate-fade-up stagger-1 overflow-hidden rounded-xl border border-border/60 bg-card shadow-soft">
             {result.items.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="table-shell w-full text-sm">
@@ -78,7 +78,7 @@ export default function PartiesPage() {
                 title="No parties yet"
                 description="Create your first party to start managing customers and suppliers."
                 actions={
-                  <Button asChild variant="outline" className="rounded-2xl">
+                  <Button asChild variant="outline" className="rounded-xl">
                     <Link href="/parties/new">
                       <Plus className="h-4 w-4" />
                       New party
@@ -126,7 +126,7 @@ function PartyRow({ party }: { party: PartyDto }) {
     >
       <td className="px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/[0.16] to-primary/[0.05] text-xs font-bold text-primary">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
             {initials(party.name)}
           </span>
           <span className="font-semibold tracking-tight">{party.name}</span>

@@ -20,29 +20,29 @@ export function PageState<T>({
   if (isLoading) {
     return (
       <div
-        className="space-y-4 animate-fade-up"
+        className="animate-page-in space-y-5"
         role="status"
         aria-label="Loading"
       >
         <div className="flex flex-col gap-2">
-          <div className="skeleton-shimmer h-8 w-48 rounded-xl" />
-          <div className="skeleton-shimmer h-4 w-72 rounded-lg opacity-70" />
+          <div className="skeleton-shimmer h-7 w-40 rounded-lg" />
+          <div className="skeleton-shimmer h-3.5 w-64 rounded" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="rounded-[20px] border border-border/70 bg-card p-5"
+              className="rounded-xl border border-border/80 bg-card p-4"
             >
-              <div className="skeleton-shimmer h-4 w-24 rounded-lg" />
-              <div className="skeleton-shimmer mt-3 h-7 w-20 rounded-lg" />
+              <div className="skeleton-shimmer h-3.5 w-20 rounded" />
+              <div className="skeleton-shimmer mt-3 h-6 w-16 rounded" />
             </div>
           ))}
         </div>
-        <div className="rounded-[20px] border border-border/70 bg-card p-6">
-          <div className="skeleton-shimmer h-4 w-full rounded-lg" />
-          <div className="skeleton-shimmer mt-2 h-4 w-11/12 rounded-lg opacity-80" />
-          <div className="skeleton-shimmer mt-2 h-4 w-2/3 rounded-lg opacity-60" />
+        <div className="rounded-xl border border-border/80 bg-card p-5">
+          <div className="skeleton-shimmer h-3.5 w-full rounded" />
+          <div className="skeleton-shimmer mt-2 h-3.5 w-11/12 rounded opacity-80" />
+          <div className="skeleton-shimmer mt-2 h-3.5 w-2/3 rounded opacity-60" />
         </div>
       </div>
     );
@@ -50,14 +50,14 @@ export function PageState<T>({
 
   if (data === undefined || data === null) {
     return (
-      <div className="animate-scale-in mx-auto flex max-w-md flex-col items-center justify-center rounded-[24px] border border-border/70 bg-card px-8 py-14 text-center shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-destructive/10">
-          <AlertCircleIcon className="h-6 w-6 text-destructive" />
+      <div className="animate-scale-in mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-border/80 bg-card px-8 py-12 text-center">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-destructive/10">
+          <AlertCircleIcon className="h-5 w-5 text-destructive" />
         </div>
-        <p className="mt-4 text-[15px] font-semibold tracking-tight">
+        <p className="mt-4 text-[14px] font-semibold tracking-tight">
           {errorTitle ?? "Something went wrong"}
         </p>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-[13px] text-muted-foreground">
           {(error as Error)?.message ?? "Please try again in a moment."}
         </p>
       </div>

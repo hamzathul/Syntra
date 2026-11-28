@@ -20,30 +20,30 @@ export function CompanySwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-11 gap-2.5 rounded-2xl px-3 max-w-60 font-normal hover:bg-muted/70"
+          className="h-9 max-w-[180px] gap-2 rounded-lg px-2 font-normal hover:bg-accent sm:max-w-60"
         >
           {isLoading ? (
             <>
-              <div className="skeleton-shimmer h-8 w-8 shrink-0 rounded-xl" />
-              <div className="skeleton-shimmer h-3.5 w-24 rounded-lg" />
+              <div className="skeleton-shimmer h-6 w-6 shrink-0 rounded-md" />
+              <div className="skeleton-shimmer h-3 w-20 rounded" />
             </>
           ) : (
             <>
-              <div className="brand-gradient flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white text-xs font-bold shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.5)]">
+              <div className="brand-gradient flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[10px] font-bold text-white">
                 {activeCompany?.name?.charAt(0).toUpperCase() ?? (
-                  <Building2 className="h-3.5 w-3.5" />
+                  <Building2 className="h-3 w-3" />
                 )}
               </div>
-              <span className="truncate text-sm font-semibold tracking-tight">
+              <span className="truncate text-[13px] font-medium tracking-tight">
                 {activeCompany?.name ?? "Select company"}
               </span>
-              <ChevronsUpDown className="ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <ChevronsUpDown className="ml-auto h-3 w-3 shrink-0 text-muted-foreground" />
             </>
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-64 rounded-2xl" align="start">
+      <DropdownMenuContent className="w-64 rounded-xl" align="start">
         <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
           Your companies
         </DropdownMenuLabel>

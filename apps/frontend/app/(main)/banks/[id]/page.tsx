@@ -58,7 +58,7 @@ export default function BankDetailPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.02em] sm:text-[24px]">
                   {bank?.name ?? params.id}
                 </h1>
                 {bank?.printBankDetails && (
@@ -74,7 +74,7 @@ export default function BankDetailPage() {
                   </Badge>
                 )}
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-[13.5px] text-muted-foreground">
                 {bank?.branchName ? `${bank.branchName} · ` : ""}
                 {bank?.accountNumber
                   ? `Account ${bank.accountNumber}`
@@ -100,7 +100,7 @@ export default function BankDetailPage() {
 
           <Separator />
 
-          <div className="rounded-xl border bg-gradient-to-br from-primary/10 to-transparent p-6">
+          <div className="rounded-xl border border-border/80 bg-card p-6 shadow-soft">
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <LandmarkIcon className="h-4 w-4" />
               Current Balance

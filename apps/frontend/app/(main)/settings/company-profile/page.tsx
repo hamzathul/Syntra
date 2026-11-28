@@ -7,7 +7,6 @@ import { CompanyProfileForm } from "@/components/settings/company-profile/compan
 import type { CompanyProfileFormValues } from "@/components/settings/company-profile/company-profile-form";
 import { BusinessCard } from "@/components/settings/company-profile/business-card";
 import { PageState } from "@/components/ui/page-state";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { CompanyProfileDto } from "shared";
@@ -79,18 +78,6 @@ export default function CompanyProfilePage() {
     >
       {(data) => (
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Company Profile
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your business information and create a digital business
-              card
-            </p>
-          </div>
-
-          <Separator />
-
           <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
             {/* Form */}
             <div>
@@ -103,7 +90,7 @@ export default function CompanyProfilePage() {
             {/* Card Preview */}
             <div className="space-y-4 lg:sticky lg:top-8 lg:self-start">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Card Preview</h2>
+                <h2 className="text-[15px] font-semibold tracking-tight">Card Preview</h2>
                 <Button
                   variant="outline"
                   size="sm"

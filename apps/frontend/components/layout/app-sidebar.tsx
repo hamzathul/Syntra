@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   BarChart3,
-  ChevronLeft,
+  ChevronsLeft,
   Landmark,
   LayoutDashboard,
   Package,
@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -70,7 +71,12 @@ const sections: {
   },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  readonly mobileOpen?: boolean;
+  readonly onClose?: () => void;
+}
+
+export function AppSidebar({ mobileOpen = false, onClose }: AppSidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -87,83 +93,108 @@ export function AppSidebar() {
   };
 
   return (
-    <aside
-      className={cn(
-        "flex h-full shrink-0 flex-col overflow-hidden rounded-[24px] border border-border/60 bg-sidebar",
-        "shadow-[0_1px_2px_rgb(16_16_40/0.04),0_12px_32px_-16px_rgb(16_16_40/0.16)]",
-        "transition-all duration-300 ease-out",
-        mounted && collapsed ? "w-[84px]" : "w-[248px]",
+    <>
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-foreground/25 backdrop-blur-[2px] lg:hidden"
+          onClick={onClose}
+          aria-hidden
+        />
       )}
-    >
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-[264px] flex-col border-r border-sidebar-border bg-sidebar",
+          "transition-[transform,width] duration-300 ease-out lg:static lg:z-auto lg:translate-x-0",
+          mounted && collapsed ? "lg:w-[68px]" : "lg:w-[248px]",
+          mobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full",
+        )}
+      >
         {/* Logo */}
-        <div className="flex h-[68px] shrink-0 items-center px-4">
-          <div
+        <div className="flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-4">
+          <Link
+            href="/dashboard"
+            onClick={onClose}
             className={cn(
-              "flex items-center gap-2.5 overflow-hidden",
-              collapsed && "w-full justify-center",
+              "flex min-w-0 items-center gap-2.5",
+              collapsed && "lg:justify-center",
             )}
           >
-            <div className="brand-gradient flex h-9 w-9 shrink-0 items-center justify-center rounded-[13px] text-[15px] font-bold text-white shadow-[0_6px_16px_-4px_hsl(var(--primary)/0.55)]">
+            <div className="brand-gradient flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[14px] font-bold text-white">
               S
             </div>
-            {!collapsed && (
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[17px] font-semibold tracking-tight text-sidebar-foreground">
-                  Syntra
-                </span>
-                <span className="rounded-full bg-primary/[0.1] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                  ERP
-                </span>
-              </div>
-            )}
-          </div>
+            <span
+              className={cn(
+                "flex items-baseline gap-1.5 overflow-hidden",
+                collapsed && "lg:hidden",
+              )}
+            >
+              <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
+                Syntra
+              </span>
+              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+                ERP
+              </span>
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close navigation"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground lg:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="no-scrollbar flex-1 overflow-y-auto px-3 pb-3">
-          <ul className="space-y-4">
+        <nav className="no-scrollbar flex-1 overflow-y-auto px-2.5 py-4">
+          <ul className="space-y-5">
             {sections.map((section) => (
               <li key={section.label}>
-                {!collapsed && (
-                  <p className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70">
-                    {section.label}
-                  </p>
-                )}
-                <ul className="space-y-1">
+                <p
+                  className={cn(
+                    "mb-1 px-2.5 text-[10.5px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60",
+                    collapsed && "lg:hidden",
+                  )}
+                >
+                  {section.label}
+                </p>
+                <ul className="space-y-0.5">
                   {section.items.map(({ href, label, icon: Icon, exact }) => {
                     const isActive = exact
                       ? pathname === href
                       : pathname.startsWith(href);
 
-                    const linkContent = (
+                    const link = (
                       <Link
                         href={href}
+                        onClick={onClose}
+                        aria-current={isActive ? "page" : undefined}
                         className={cn(
-                          "group flex items-center gap-3 rounded-2xl px-2.5 py-2 text-sm transition-all duration-200 ease-out",
-                          collapsed && "justify-center px-2",
+                          "group relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] transition-colors duration-150",
+                          collapsed && "lg:justify-center lg:px-0",
                           isActive
-                            ? "bg-primary/[0.09] font-semibold text-foreground"
-                            : "font-medium text-sidebar-foreground/80 hover:bg-muted/70 hover:text-foreground active:scale-[0.98]",
+                            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                            : "font-normal text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
                         )}
                       >
-                        <span
+                        <Icon
                           className={cn(
-                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-200",
+                            "h-4 w-4 shrink-0",
                             isActive
-                              ? "brand-gradient text-white shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.5)]"
-                              : "bg-muted/80 text-muted-foreground group-hover:bg-card group-hover:text-foreground group-hover:shadow-sm",
+                              ? "text-primary"
+                              : "text-muted-foreground group-hover:text-foreground",
                           )}
+                          strokeWidth={isActive ? 2.1 : 1.9}
+                        />
+                        <span
+                          className={cn("truncate", collapsed && "lg:hidden")}
                         >
-                          <Icon
-                            className="h-4 w-4"
-                            strokeWidth={isActive ? 2.2 : 1.9}
-                          />
+                          {label}
                         </span>
-                        {!collapsed && (
-                          <span className="truncate">{label}</span>
-                        )}
-                        {!collapsed && isActive && (
-                          <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                        {isActive && !collapsed && (
+                          <span className="ml-auto h-1 w-1 rounded-full bg-primary" />
                         )}
                       </Link>
                     );
@@ -172,9 +203,7 @@ export function AppSidebar() {
                       <li key={href}>
                         {collapsed ? (
                           <Tooltip>
-                            <TooltipTrigger asChild>
-                              {linkContent}
-                            </TooltipTrigger>
+                            <TooltipTrigger asChild>{link}</TooltipTrigger>
                             <TooltipContent
                               side="right"
                               className="font-medium"
@@ -183,7 +212,7 @@ export function AppSidebar() {
                             </TooltipContent>
                           </Tooltip>
                         ) : (
-                          linkContent
+                          link
                         )}
                       </li>
                     );
@@ -194,25 +223,23 @@ export function AppSidebar() {
           </ul>
         </nav>
 
-        {/* Collapse toggle */}
-        <div className="shrink-0 p-3 pt-1">
+        {/* Collapse toggle (desktop only) */}
+        <div className="hidden shrink-0 border-t border-sidebar-border/70 p-2.5 lg:block">
           <Tooltip>
             <TooltipTrigger asChild>
               <button
+                type="button"
                 onClick={toggle}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl px-2.5 py-2 text-[13px] font-medium transition-all duration-200",
-                  "text-muted-foreground hover:bg-muted/70 hover:text-foreground active:scale-[0.98]",
-                  collapsed && "justify-center px-2",
+                  "flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-foreground",
+                  collapsed && "justify-center px-0",
                 )}
               >
                 {collapsed ? (
                   <PanelLeft className="h-4 w-4 shrink-0" />
                 ) : (
                   <>
-                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted/80">
-                      <ChevronLeft className="h-4 w-4 shrink-0" />
-                    </span>
+                    <ChevronsLeft className="h-4 w-4 shrink-0" />
                     <span>Collapse</span>
                   </>
                 )}
@@ -225,6 +252,7 @@ export function AppSidebar() {
             )}
           </Tooltip>
         </div>
-    </aside>
+      </aside>
+    </>
   );
 }
