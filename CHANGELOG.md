@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `.github/labeler.yml`: converted label entries to the `actions/labeler@v7` config-option format (was the pre-v5 glob-array form), fixing the "Run actions/labeler@v7" failure.
+
 ### Added
 
 - Sale invoice sharing: Share button on the invoice dialog (native share
