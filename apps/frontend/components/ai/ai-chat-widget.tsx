@@ -90,9 +90,9 @@ export function AiChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-3">
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
       {open && (
-        <Card className="flex h-[480px] w-[min(380px,calc(100vw-3rem))] flex-col shadow-xl">
+        <Card className="flex h-[480px] w-[min(380px,calc(100vw-2.5rem))] flex-col shadow-pop">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b p-4">
             <CardTitle className="flex items-center gap-2 text-base">
               <AssistantLogo className="h-6 w-6" />
@@ -188,14 +188,14 @@ export function AiChatWidget() {
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-label={open ? "Hide AI assistant" : "Open AI assistant"}
-        className="flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex h-11 w-11 items-center justify-center rounded-xl shadow-lg shadow-black/10 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {open ? (
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <X className="h-5 w-5" />
           </span>
         ) : (
-          <AssistantLogo className="h-12 w-12" />
+          <AssistantLogo className="h-11 w-11" />
         )}
       </button>
     </div>

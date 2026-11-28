@@ -1,72 +1,59 @@
 import { CompanyForm } from "@/components/onboarding/company-form";
-import {
-  Building2,
-  Check,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-} from "lucide-react";
+import { Building2, Check } from "lucide-react";
 
-const steps = [
-  { icon: Building2, label: "Company" },
-  { icon: TrendingUp, label: "Sales" },
-  { icon: ShoppingCart, label: "Purchases" },
-  { icon: Package, label: "Inventory" },
-];
+const steps = ["Company", "Sales", "Purchases", "Inventory"];
 
 export default function OnboardingPage() {
   return (
-    <div className="mesh-bg flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="relative z-10 w-full max-w-lg animate-fade-up">
-        {/* Header */}
-        <div className="mb-7 text-center">
-          <div className="brand-gradient mb-4 inline-flex h-14 w-14 items-center justify-center rounded-[20px] text-2xl font-bold text-white shadow-[0_10px_24px_-6px_hsl(var(--primary)/0.6)]">
+    <div className="mesh-bg flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md animate-page-in">
+        <div className="mb-8 text-center">
+          <div className="brand-gradient mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold text-white">
             S
           </div>
-          <h1 className="text-[30px] font-semibold tracking-tight">
+          <h1 className="text-[26px] font-semibold tracking-[-0.02em]">
             Set up your company
           </h1>
-          <p className="mt-1.5 text-[15px] text-muted-foreground">
-            You&apos;re one step away from your calm new workspace.
+          <p className="mt-1 text-[13.5px] text-muted-foreground">
+            One step away from your new workspace.
           </p>
         </div>
 
         {/* Progress */}
-        <div className="mb-5 flex items-center justify-center gap-2">
-          {steps.map(({ icon: Icon, label }, index) => (
-            <div key={label} className="flex items-center gap-2">
+        <ol className="mb-5 flex items-center justify-center gap-1.5">
+          {steps.map((label, index) => (
+            <li key={label} className="flex items-center gap-1.5">
               <span
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                className={
                   index === 0
-                    ? "bg-primary text-primary-foreground shadow-[0_6px_16px_-4px_hsl(var(--primary)/0.55)]"
-                    : "border border-border/70 bg-card text-muted-foreground"
-                }`}
+                    ? "flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] font-medium text-primary-foreground"
+                    : "flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
+                }
               >
                 {index === 0 ? (
-                  <Icon className="h-3.5 w-3.5" />
+                  <Building2 className="h-3 w-3" />
                 ) : (
-                  <Check className="h-3.5 w-3.5 opacity-50" />
+                  <Check className="h-3 w-3 opacity-40" />
                 )}
                 {label}
               </span>
               {index < steps.length - 1 && (
-                <span className="h-px w-4 bg-border" />
+                <span className="h-px w-3 bg-border" aria-hidden />
               )}
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
 
-        {/* Form card */}
-        <div className="rounded-[28px] border border-border/60 bg-card p-7 shadow-[0_2px_4px_rgb(16_16_40/0.05),0_16px_40px_-16px_rgb(16_16_40/0.2)] sm:p-8">
+        <div className="rounded-xl border border-border/80 bg-card p-6 shadow-soft sm:p-7">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/[0.09] text-primary">
-              <Building2 className="h-5 w-5" strokeWidth={1.9} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Building2 className="h-4 w-4" strokeWidth={1.9} />
             </div>
             <div>
-              <p className="text-[15px] font-semibold tracking-tight">
+              <p className="text-[14px] font-semibold tracking-tight">
                 Company details
               </p>
-              <p className="text-[13px] text-muted-foreground">
+              <p className="text-[12.5px] text-muted-foreground">
                 This can be changed later in settings
               </p>
             </div>

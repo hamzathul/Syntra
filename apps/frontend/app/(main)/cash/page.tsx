@@ -48,8 +48,7 @@ export default function CashPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="flex flex-col gap-4">
-              <div className="animate-fade-up relative overflow-hidden rounded-[28px] border border-border/60 bg-card p-7 shadow-[0_1px_2px_rgb(16_16_40/0.04),0_16px_40px_-20px_rgb(16_16_40/0.25)]">
-                <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-to-br from-primary/20 to-transparent blur-2xl" />
+              <div className="animate-fade-up rounded-xl border border-border/80 bg-card p-6 shadow-soft">
                 <div className="relative">
                   <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
                     <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/[0.09] text-primary">
@@ -76,7 +75,7 @@ export default function CashPage() {
 
               <div className="animate-fade-up stagger-1 flex flex-wrap gap-2.5">
                 <Button
-                  className="rounded-2xl"
+                  className="rounded-xl"
                   onClick={() => setAdjustOpen(true)}
                 >
                   <SlidersHorizontal className="h-4 w-4" />
@@ -89,7 +88,7 @@ export default function CashPage() {
               </div>
             </div>
 
-            <div className="animate-fade-up stagger-2 overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
+            <div className="animate-fade-up stagger-2 overflow-hidden rounded-xl border border-border/60 bg-card shadow-soft">
               <div className="border-b border-border/60 px-5 py-4">
                 <h2 className="text-[15px] font-semibold tracking-tight">
                   Transactions

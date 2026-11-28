@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sale invoice sharing: Share button on the invoice dialog (native share
   sheet with download fallback) and Send by Email with the invoice PDF
   attached (`POST /api/v1/sales/:id/send-invoice`).
+- Frontend UI refresh: clean Linear-style app shell (solid sidebar, flat
+  topbar, restrained indigo accent), redesigned auth/onboarding pages,
+  dashboard, settings, and form pages; horizontal settings nav, pill-style
+  tabs, EmptyState panels, reduced-motion support. No new dependencies.
 - Provider-agnostic email infrastructure in the ERP API (`IEmailProvider`
   port, SMTP + Resend adapters, log provider for development) selected via
   `EMAIL_PROVIDER` with per-provider credentials in env (`SMTP_*`,

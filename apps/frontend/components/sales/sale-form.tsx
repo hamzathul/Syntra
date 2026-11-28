@@ -24,6 +24,7 @@ import type { SaleDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/ui/page-header";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -240,25 +241,23 @@ export function SaleForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {isEdit
-              ? "Edit Sale"
-              : isDuplicate
-                ? "New Sale (duplicated)"
-                : "New Sale"}
-          </h1>
-          <p className="text-muted-foreground">
-            {isDuplicate
-              ? "Pre-filled from an existing sale — review and save as a new sale"
-              : "Record a cash or credit sale with its payments"}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={
+          isEdit
+            ? "Edit sale"
+            : isDuplicate
+              ? "New sale (duplicated)"
+              : "New sale"
+        }
+        description={
+          isDuplicate
+            ? "Pre-filled from an existing sale — review and save as a new sale."
+            : "Record a cash or credit sale with its payments."
+        }
+      />
 
       <section className="space-y-6">
-        <h2 className="text-lg font-semibold">Sale Details</h2>
+        <h2 className="text-[15px] font-semibold tracking-tight">Sale Details</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="grid gap-1.5">
             <Label htmlFor="sale-party" className="text-sm font-medium">
@@ -313,7 +312,7 @@ export function SaleForm({
             <Label className="text-sm font-medium">
               Sale Type <span className="text-destructive">*</span>
             </Label>
-            <div className="flex rounded-lg border overflow-hidden">
+            <div className="flex h-10 items-center rounded-lg border border-border/80 bg-muted/40 p-0.5">
               {(["CASH", "CREDIT"] as const).map((type) => (
                 <button
                   key={type}
@@ -321,10 +320,10 @@ export function SaleForm({
                   disabled={isEdit}
                   onClick={() => handleSaleTypeChange(type)}
                   className={cn(
-                    "flex-1 px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                    "h-full flex-1 rounded-md text-[13px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                     saleType === type
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted",
+                      ? "bg-card text-foreground shadow-[0_1px_2px_rgb(16_16_40/0.08)]"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {saleTypeCopy[type]}
@@ -343,7 +342,7 @@ export function SaleForm({
       <Separator />
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Amounts</h2>
+        <h2 className="text-[15px] font-semibold tracking-tight">Amounts</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
           <div className="grid gap-1.5">
             <Label htmlFor="sale-total" className="text-sm font-medium">
@@ -424,7 +423,7 @@ export function SaleForm({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Payments</h2>
+            <h2 className="text-[15px] font-semibold tracking-tight">Payments</h2>
             <p className="text-sm text-muted-foreground">
               Add cash, cheque or bank payments totalling the received amount
             </p>

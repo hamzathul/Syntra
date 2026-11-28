@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { TabNav } from "@/components/ui/tab-nav";
 import type { GeneralSettingsDto } from "shared";
 import { useUpdateGeneralSettingsMutation } from "@/hooks/settings/use-general-settings-query";
 import { TaxRatesTab } from "./tax-rates-tab";
@@ -14,6 +14,11 @@ import { toast } from "sonner";
 interface TaxSettingsFormProps {
   settings: GeneralSettingsDto;
 }
+
+const TABS = [
+  { id: "rates", label: "Tax rates" },
+  { id: "groups", label: "Tax groups" },
+] as const;
 
 export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
   const updateGeneralMutation = useUpdateGeneralSettingsMutation();
@@ -42,13 +47,6 @@ export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
     [updateGeneralMutation],
   );
 
-  const tabClass = (tab: "rates" | "groups") =>
-    `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
-      activeTab === tab
-        ? "border-primary text-primary"
-        : "border-transparent text-muted-foreground hover:text-foreground"
-    }`;
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -70,25 +68,7 @@ export function TaxSettingsForm({ settings }: TaxSettingsFormProps) {
       <Separator />
 
       <div>
-        <h3 className="text-sm font-medium mb-3">Tax List</h3>
-        <div className="flex gap-0 border-b">
-          <Button
-            type="button"
-            variant="ghost"
-            className={tabClass("rates")}
-            onClick={() => setActiveTab("rates")}
-          >
-            Tax Rates
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            className={tabClass("groups")}
-            onClick={() => setActiveTab("groups")}
-          >
-            Tax Groups
-          </Button>
-        </div>
+        <TabNav tabs={TABS} value={activeTab} onChange={setActiveTab} />
         <div className="pt-4">
           {activeTab === "rates" ? <TaxRatesTab /> : <TaxGroupsTab />}
         </div>

@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useParty } from "@/hooks/parties/use-parties-query";
 import { PageState } from "@/components/ui/page-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { PartyForm } from "@/components/parties/party-form";
 
 export default function EditPartyPage() {
@@ -18,12 +19,10 @@ export default function EditPartyPage() {
     >
       {(data) => (
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
-            <p className="text-muted-foreground">
-              Edit party details and address
-            </p>
-          </div>
+          <PageHeader
+            title={data.name}
+            description="Edit party details and address."
+          />
 
           <PartyForm party={data} />
         </div>

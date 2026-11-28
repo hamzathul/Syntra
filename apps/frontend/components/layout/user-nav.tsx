@@ -44,14 +44,14 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-10 w-10 cursor-pointer p-[2px] ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40 hover:scale-[1.03] active:scale-[0.98]">
-          <AvatarFallback className="rounded-full bg-gradient-to-br from-primary/[0.16] to-primary/[0.06] text-primary text-xs font-bold">
+        <Avatar className="h-8 w-8 cursor-pointer ring-1 ring-border transition-shadow hover:ring-primary/40">
+          <AvatarFallback className="rounded-full bg-primary/10 text-[11px] font-semibold text-primary">
             {mounted && user ? getInitials(user.name) : ""}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-60 rounded-2xl p-2" align="end">
+      <DropdownMenuContent className="w-60 rounded-xl p-2" align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-semibold">

@@ -15,6 +15,7 @@ import {
 import type { BankDto } from "shared";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Dialog,
   DialogContent,
@@ -106,7 +107,7 @@ export function BankAccountsSection() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-soft">
         {banks && banks.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="table-shell w-full text-sm">
@@ -136,33 +137,17 @@ export function BankAccountsSection() {
             </table>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-            <div className="relative">
-              <div className="absolute -inset-3 rounded-[28px] bg-primary/[0.07] blur-md" />
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-[20px] border border-primary/15 bg-gradient-to-br from-primary/[0.14] to-primary/[0.04]">
-                <LandmarkIcon
-                  className="h-6 w-6 text-primary"
-                  strokeWidth={1.8}
-                />
-              </div>
-            </div>
-            <div>
-              <p className="text-[15px] font-semibold tracking-tight">
-                No banks yet
-              </p>
-              <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">
-                Add a bank account to print its details or UPI QR on invoices.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="mt-1 rounded-2xl gap-1"
-              onClick={openCreate}
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add bank
-            </Button>
-          </div>
+          <EmptyState
+            icon={LandmarkIcon}
+            title="No banks yet"
+            description="Add a bank account to print its details or UPI QR on invoices."
+            actions={
+              <Button variant="outline" onClick={openCreate}>
+                <PlusIcon className="h-4 w-4" />
+                Add bank
+              </Button>
+            }
+          />
         )}
       </div>
 

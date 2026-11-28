@@ -20,27 +20,23 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3 px-6 py-16 text-center",
-        "animate-fade-up",
+        "flex flex-col items-center justify-center gap-3 px-6 py-14 text-center",
         className,
       )}
     >
-      <div className="relative">
-        <div className="absolute -inset-3 rounded-[28px] bg-primary/[0.07] blur-md" />
-        <div className="relative flex h-14 w-14 items-center justify-center rounded-[20px] border border-primary/15 bg-gradient-to-br from-primary/[0.14] to-primary/[0.04]">
-          <Icon className="h-6 w-6 text-primary" strokeWidth={1.8} />
-        </div>
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/60">
+        <Icon className="h-5 w-5 text-muted-foreground" strokeWidth={1.8} />
       </div>
-      <div className="mt-1">
-        <p className="text-[15px] font-semibold tracking-tight">{title}</p>
+      <div>
+        <p className="text-[14px] font-semibold tracking-tight">{title}</p>
         {description ? (
-          <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
             {description}
           </p>
         ) : null}
       </div>
       {actions ? (
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
           {actions}
         </div>
       ) : null}

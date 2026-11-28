@@ -43,7 +43,7 @@ export default function SalesPage() {
             title="Sales"
             description="Manage and track every sale in one place."
             actions={
-              <Button asChild className="rounded-2xl">
+              <Button asChild className="rounded-xl">
                 <Link href="/sales/new">
                   <Plus className="h-4 w-4" />
                   New sale
@@ -52,7 +52,7 @@ export default function SalesPage() {
             }
           />
 
-          <div className="animate-fade-up stagger-1 overflow-hidden rounded-[24px] border border-border/60 bg-card shadow-[0_1px_2px_rgb(16_16_40/0.04),0_8px_24px_-12px_rgb(16_16_40/0.1)]">
+          <div className="animate-fade-up stagger-1 overflow-hidden rounded-xl border border-border/60 bg-card shadow-soft">
             {result.items.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="table-shell w-full text-sm">
@@ -95,7 +95,7 @@ export default function SalesPage() {
                 title="No sales yet"
                 description="Create your first sale to start recording cash and credit transactions."
                 actions={
-                  <Button asChild variant="outline" className="rounded-2xl">
+                  <Button asChild variant="outline" className="rounded-xl">
                     <Link href="/sales/new">
                       <Plus className="h-4 w-4" />
                       New sale
